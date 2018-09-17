@@ -1,0 +1,1440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+	<snr>
+		<item>
+			<tissue>1</tissue>
+			<value>1.79283</value>
+		</item>
+		<item>
+			<tissue>2</tissue>
+			<value>7.52738</value>
+		</item>
+		<item>
+			<label>3</label>
+			<value>0</value>
+		</item>
+	</snr>
+	<cnr>
+		<item>
+			<tissue1>1</tissue1>
+			<tissue2>2</tissue2>
+			<value>3.09479</value>
+		</item>
+		<item>
+			<tissue1>2</tissue1>
+			<tissue2>3</tissue2>
+			<value>4.38955</value>
+		</item>
+	</cnr>
+	<artefacts>
+		<item>
+			<name>Movement</name>
+			<threshold>60</threshold>
+			<direction>1</direction>
+		</item>
+		<item>
+			<name>Aliasing</name>
+			<threshold>60</threshold>
+			<direction>1</direction>
+		</item>
+		<item>
+			<name>RF Band</name>
+			<threshold>60</threshold>
+			<direction>1</direction>
+		</item>
+	</artefacts>
+	<processing>
+		<item>
+			<name>Model Fit</name>
+			<threshold>60</threshold>
+			<direction>0</direction>
+		</item>
+		<item>
+			<name>Anatomical Abnormality</name>
+			<threshold>60</threshold>
+			<direction>1</direction>
+		</item>
+		<item>
+			<name>Coverage</name>
+			<value>1</value>
+			<threshold>0</threshold>
+			<direction>0</direction>
+		</item>
+	</processing>
+	<tissues>
+		<item>
+			<number>0</number>
+			<name>Non-Brain Outer Tissue</name>
+			<volumeProb>206310</volumeProb>
+			<volumeCat>203344</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>1</number>
+			<name>Cerebral Spinal Fluid</name>
+			<volumeProb>276122</volumeProb>
+			<volumeCat>260946</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>2</number>
+			<name>Grey Matter</name>
+			<volumeProb>673789</volumeProb>
+			<volumeCat>691853</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>3</number>
+			<name>White Matter</name>
+			<volumeProb>516027</volumeProb>
+			<volumeCat>517601</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>4</number>
+			<name>Deep Grey Matter</name>
+			<volumeProb>45501.7</volumeProb>
+			<volumeCat>45468</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>5</number>
+			<name>Brain Stem and Pons</name>
+			<volumeProb>22196</volumeProb>
+			<volumeCat>21042</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>6</number>
+			<name>Non-brain low</name>
+			<volumeProb>183594</volumeProb>
+			<volumeCat>186187</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>7</number>
+			<name>Non-brain med</name>
+			<volumeProb>323684</volumeProb>
+			<volumeCat>325567</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>8</number>
+			<name>Non-brain hight</name>
+			<volumeProb>287384</volumeProb>
+			<volumeCat>286027</volumeCat>
+			<units>ml</units>
+		</item>
+	</tissues>
+	<labels>
+		<item>
+			<number>0</number>
+			<name>Non-Brain Outer Tissue</name>
+			<tissues>0</tissues>
+			<volumeProb>8.81437e+06</volumeProb>
+			<volumeCat>591875</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>1</number>
+			<name>NonBrain Low</name>
+			<tissues>6</tissues>
+			<volumeProb>183859</volumeProb>
+			<volumeCat>186187</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>2</number>
+			<name>NonBrain Mid</name>
+			<tissues>7</tissues>
+			<volumeProb>324269</volumeProb>
+			<volumeCat>325566</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>3</number>
+			<name>NonBrain High</name>
+			<tissues>8</tissues>
+			<volumeProb>288081</volumeProb>
+			<volumeCat>286026</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>4</number>
+			<name>Non-ventricular CSF</name>
+			<tissues>1</tissues>
+			<volumeProb>247009</volumeProb>
+			<volumeCat>231243</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>5</number>
+			<name>3rd Ventricle</name>
+			<tissues>1</tissues>
+			<volumeProb>1394.95</volumeProb>
+			<volumeCat>1366</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>12</number>
+			<name>4th Ventricle</name>
+			<tissues>1</tissues>
+			<volumeProb>2481.82</volumeProb>
+			<volumeCat>2459</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>16</number>
+			<name>5th Ventricle</name>
+			<tissues>1</tissues>
+			<volumeProb>1.62022</volumeProb>
+			<volumeCat>2</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>24</number>
+			<name>Right Accumbens Area</name>
+			<tissues>3,4</tissues>
+			<volumeProb>347.882</volumeProb>
+			<volumeCat>615</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>31</number>
+			<name>Left Accumbens Area</name>
+			<tissues>3,4</tissues>
+			<volumeProb>372.211</volumeProb>
+			<volumeCat>661</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>32</number>
+			<name>Right Amygdala</name>
+			<tissues>2,4</tissues>
+			<volumeProb>1262.34</volumeProb>
+			<volumeCat>1541</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>33</number>
+			<name>Left Amygdala</name>
+			<tissues>2,4</tissues>
+			<volumeProb>1360.99</volumeProb>
+			<volumeCat>1683</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>35</number>
+			<name>Pons</name>
+			<tissues>5</tissues>
+			<volumeProb>9933.97</volumeProb>
+			<volumeCat>9965</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>36</number>
+			<name>Brain Stem</name>
+			<tissues>5</tissues>
+			<volumeProb>8755.63</volumeProb>
+			<volumeCat>8790</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>37</number>
+			<name>Right Caudate</name>
+			<tissues>3,4</tissues>
+			<volumeProb>2012.71</volumeProb>
+			<volumeCat>3862</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>38</number>
+			<name>Left Caudate</name>
+			<tissues>3,4</tissues>
+			<volumeProb>1878.24</volumeProb>
+			<volumeCat>3619</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>39</number>
+			<name>Right Cerebellum Exterior</name>
+			<tissues>2</tissues>
+			<volumeProb>46608.1</volumeProb>
+			<volumeCat>47502</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>40</number>
+			<name>Left Cerebellum Exterior</name>
+			<tissues>2</tissues>
+			<volumeProb>44772.3</volumeProb>
+			<volumeCat>45730</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>41</number>
+			<name>Right Cerebellum White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>18792.5</volumeProb>
+			<volumeCat>18557</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>42</number>
+			<name>Left Cerebellum White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>18696.1</volumeProb>
+			<volumeCat>18518</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>43</number>
+			<name>Right Cerebral Exterior</name>
+			<tissues>1</tissues>
+			<volumeProb>5.72801</volumeProb>
+			<volumeCat>4</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>44</number>
+			<name>Left Cerebral Exterior</name>
+			<tissues>1</tissues>
+			<volumeProb>4.41905</volumeProb>
+			<volumeCat>1</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>47</number>
+			<name>3rd Ventricle (Posterior part)</name>
+			<tissues>1</tissues>
+			<volumeProb>1703.15</volumeProb>
+			<volumeCat>1720</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>48</number>
+			<name>Right Hippocampus</name>
+			<tissues>2,4</tissues>
+			<volumeProb>3430.4</volumeProb>
+			<volumeCat>4303</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>49</number>
+			<name>Left Hippocampus</name>
+			<tissues>2,4</tissues>
+			<volumeProb>3407.97</volumeProb>
+			<volumeCat>4204</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>50</number>
+			<name>Right Inf Lat Vent</name>
+			<tissues>1</tissues>
+			<volumeProb>969.031</volumeProb>
+			<volumeCat>953</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>51</number>
+			<name>Left Inf Lat Vent</name>
+			<tissues>1</tissues>
+			<volumeProb>723.64</volumeProb>
+			<volumeCat>712</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>52</number>
+			<name>Right Lateral Ventricle</name>
+			<tissues>1</tissues>
+			<volumeProb>11019.7</volumeProb>
+			<volumeCat>10878</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>53</number>
+			<name>Left Lateral Ventricle</name>
+			<tissues>1</tissues>
+			<volumeProb>11726</volumeProb>
+			<volumeCat>11607</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>54</number>
+			<name>Right Lesion</name>
+			<tissues>4</tissues>
+			<volumeProb>0</volumeProb>
+			<volumeCat>0</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>55</number>
+			<name>Left Lesion</name>
+			<tissues>4</tissues>
+			<volumeProb>0</volumeProb>
+			<volumeCat>0</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>56</number>
+			<name>Right Pallidum</name>
+			<tissues>3,4</tissues>
+			<volumeProb>1690.54</volumeProb>
+			<volumeCat>1975</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>57</number>
+			<name>Left Pallidum</name>
+			<tissues>3,4</tissues>
+			<volumeProb>1672.05</volumeProb>
+			<volumeCat>1984</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>58</number>
+			<name>Right Putamen</name>
+			<tissues>3,4</tissues>
+			<volumeProb>2872.14</volumeProb>
+			<volumeCat>4637</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>59</number>
+			<name>Left Putamen</name>
+			<tissues>3,4</tissues>
+			<volumeProb>2915.95</volumeProb>
+			<volumeCat>4808</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>60</number>
+			<name>Right Thalamus Proper</name>
+			<tissues>3,4</tissues>
+			<volumeProb>4221.81</volumeProb>
+			<volumeCat>6476</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>61</number>
+			<name>Left Thalamus Proper</name>
+			<tissues>3,4</tissues>
+			<volumeProb>4431.05</volumeProb>
+			<volumeCat>6405</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>62</number>
+			<name>Right Ventral DC</name>
+			<tissues>3,4,5</tissues>
+			<volumeProb>2957.27</volumeProb>
+			<volumeCat>4550</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>63</number>
+			<name>Left Ventral DC</name>
+			<tissues>3,4,5</tissues>
+			<volumeProb>3002.29</volumeProb>
+			<volumeCat>4634</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>64</number>
+			<name>Right vessel</name>
+			<tissues>4</tissues>
+			<volumeProb>49.315</volumeProb>
+			<volumeCat>55</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>65</number>
+			<name>Left vessel</name>
+			<tissues>4</tissues>
+			<volumeProb>61.95</volumeProb>
+			<volumeCat>61</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>66</number>
+			<name>Right Ventricular Lining</name>
+			<tissues>4</tissues>
+			<volumeProb>2604.27</volumeProb>
+			<volumeCat>2559</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>67</number>
+			<name>Left Ventricular Lining</name>
+			<tissues>4</tissues>
+			<volumeProb>2929.34</volumeProb>
+			<volumeCat>2911</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>70</number>
+			<name>Optic Chiasm</name>
+			<tissues>4</tissues>
+			<volumeProb>93.0183</volumeProb>
+			<volumeCat>101</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>72</number>
+			<name>Cerebellar Vermal Lobules I-V</name>
+			<tissues>2</tissues>
+			<volumeProb>3790.58</volumeProb>
+			<volumeCat>3836</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>73</number>
+			<name>Cerebellar Vermal Lobules VI-VII</name>
+			<tissues>2</tissues>
+			<volumeProb>1632.78</volumeProb>
+			<volumeCat>1642</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>74</number>
+			<name>Cerebellar Vermal Lobules VIII-X</name>
+			<tissues>2</tissues>
+			<volumeProb>2538.78</volumeProb>
+			<volumeCat>2581</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>76</number>
+			<name>Left Basal Forebrain</name>
+			<tissues>4</tissues>
+			<volumeProb>557.384</volumeProb>
+			<volumeCat>552</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>77</number>
+			<name>Right Basal Forebrain</name>
+			<tissues>4</tissues>
+			<volumeProb>653.387</volumeProb>
+			<volumeCat>649</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>81</number>
+			<name>Right Temporal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>39103.1</volumeProb>
+			<volumeCat>39033</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>82</number>
+			<name>Right Insula White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>16019.5</volumeProb>
+			<volumeCat>16387</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>83</number>
+			<name>Right Cingulate White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>3921.67</volumeProb>
+			<volumeCat>3886</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>84</number>
+			<name>Right Frontal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>80972.5</volumeProb>
+			<volumeCat>81274</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>85</number>
+			<name>Right Occipital White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>26109.7</volumeProb>
+			<volumeCat>26159</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>86</number>
+			<name>Right Parietal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>55452.6</volumeProb>
+			<volumeCat>55706</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>87</number>
+			<name>Corpus Callosum</name>
+			<tissues>3</tissues>
+			<volumeProb>21620.3</volumeProb>
+			<volumeCat>21596</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>89</number>
+			<name>Left Temporal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>38180.9</volumeProb>
+			<volumeCat>38191</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>90</number>
+			<name>Left Insula White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>16121.7</volumeProb>
+			<volumeCat>16477</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>91</number>
+			<name>Left Cingulate White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>4608.09</volumeProb>
+			<volumeCat>4554</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>92</number>
+			<name>Left Frontal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>81475.5</volumeProb>
+			<volumeCat>81755</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>93</number>
+			<name>Left Occipital White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>25881</volumeProb>
+			<volumeCat>26074</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>94</number>
+			<name>Left Parietal White Matter</name>
+			<tissues>3</tissues>
+			<volumeProb>55449.3</volumeProb>
+			<volumeCat>55501</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>96</number>
+			<name>Right Claustrum</name>
+			<tissues>4</tissues>
+			<volumeProb>2827.91</volumeProb>
+			<volumeCat>2775</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>97</number>
+			<name>Left Claustrum</name>
+			<tissues>4</tissues>
+			<volumeProb>3100.44</volumeProb>
+			<volumeCat>3066</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>101</number>
+			<name>Right ACgG anterior cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4277.23</volumeProb>
+			<volumeCat>4292</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>102</number>
+			<name>Left ACgG anterior cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>5994.92</volumeProb>
+			<volumeCat>6140</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>103</number>
+			<name>Right AIns anterior insula</name>
+			<tissues>2</tissues>
+			<volumeProb>4162.4</volumeProb>
+			<volumeCat>4257</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>104</number>
+			<name>Left AIns anterior insula</name>
+			<tissues>2</tissues>
+			<volumeProb>4170.52</volumeProb>
+			<volumeCat>4254</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>105</number>
+			<name>Right AOrG anterior orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1870.65</volumeProb>
+			<volumeCat>1937</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>106</number>
+			<name>Left AOrG anterior orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1406.84</volumeProb>
+			<volumeCat>1412</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>107</number>
+			<name>Right AnG angular gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>9665.66</volumeProb>
+			<volumeCat>10064</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>108</number>
+			<name>Left AnG angular gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8104.27</volumeProb>
+			<volumeCat>8264</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>109</number>
+			<name>Right Calc calcarine cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>4444.53</volumeProb>
+			<volumeCat>4619</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>110</number>
+			<name>Left Calc calcarine cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>4090.78</volumeProb>
+			<volumeCat>4149</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>113</number>
+			<name>Right CO central operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>4994.92</volumeProb>
+			<volumeCat>5014</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>114</number>
+			<name>Left CO central operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>4430.65</volumeProb>
+			<volumeCat>4603</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>115</number>
+			<name>Right Cun cuneus</name>
+			<tissues>2</tissues>
+			<volumeProb>5285.42</volumeProb>
+			<volumeCat>5409</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>116</number>
+			<name>Left Cun cuneus</name>
+			<tissues>2</tissues>
+			<volumeProb>3995.2</volumeProb>
+			<volumeCat>4125</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>117</number>
+			<name>Right Ent entorhinal area</name>
+			<tissues>2</tissues>
+			<volumeProb>2505.69</volumeProb>
+			<volumeCat>2616</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>118</number>
+			<name>Left Ent entorhinal area</name>
+			<tissues>2</tissues>
+			<volumeProb>2183.85</volumeProb>
+			<volumeCat>2273</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>119</number>
+			<name>Right FO frontal operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>1740.54</volumeProb>
+			<volumeCat>1736</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>120</number>
+			<name>Left FO frontal operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>1936.22</volumeProb>
+			<volumeCat>1866</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>121</number>
+			<name>Right FRP frontal pole</name>
+			<tissues>2</tissues>
+			<volumeProb>3402.22</volumeProb>
+			<volumeCat>3555</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>122</number>
+			<name>Left FRP frontal pole</name>
+			<tissues>2</tissues>
+			<volumeProb>3014.43</volumeProb>
+			<volumeCat>3140</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>123</number>
+			<name>Right FuG fusiform gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>9480.2</volumeProb>
+			<volumeCat>9567</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>124</number>
+			<name>Left FuG fusiform gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8783.64</volumeProb>
+			<volumeCat>8929</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>125</number>
+			<name>Right GRe gyrus rectus</name>
+			<tissues>2</tissues>
+			<volumeProb>2179.9</volumeProb>
+			<volumeCat>2204</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>126</number>
+			<name>Left GRe gyrus rectus</name>
+			<tissues>2</tissues>
+			<volumeProb>1951.09</volumeProb>
+			<volumeCat>1966</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>129</number>
+			<name>Right IOG inferior occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8190.65</volumeProb>
+			<volumeCat>8680</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>130</number>
+			<name>Left IOG inferior occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>7512.79</volumeProb>
+			<volumeCat>8045</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>133</number>
+			<name>Right ITG inferior temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>13749.8</volumeProb>
+			<volumeCat>14028</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>134</number>
+			<name>Left ITG inferior temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>13284.1</volumeProb>
+			<volumeCat>13369</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>135</number>
+			<name>Right LiG lingual gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>9665.95</volumeProb>
+			<volumeCat>10005</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>136</number>
+			<name>Left LiG lingual gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8877.21</volumeProb>
+			<volumeCat>9144</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>137</number>
+			<name>Right LOrG lateral orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>2077.5</volumeProb>
+			<volumeCat>2147</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>138</number>
+			<name>Left LOrG lateral orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1782.71</volumeProb>
+			<volumeCat>1800</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>139</number>
+			<name>Right MCgG middle cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4924.1</volumeProb>
+			<volumeCat>5025</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>140</number>
+			<name>Left MCgG middle cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4920.09</volumeProb>
+			<volumeCat>4880</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>141</number>
+			<name>Right MFC medial frontal cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>2709.39</volumeProb>
+			<volumeCat>2873</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>142</number>
+			<name>Left MFC medial frontal cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>2622.54</volumeProb>
+			<volumeCat>2656</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>143</number>
+			<name>Right MFG middle frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>18439.6</volumeProb>
+			<volumeCat>19354</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>144</number>
+			<name>Left MFG middle frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>19105.3</volumeProb>
+			<volumeCat>20036</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>145</number>
+			<name>Right MOG middle occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4823.49</volumeProb>
+			<volumeCat>4812</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>146</number>
+			<name>Left MOG middle occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>5954.54</volumeProb>
+			<volumeCat>6204</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>147</number>
+			<name>Right MOrG medial orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4468.32</volumeProb>
+			<volumeCat>4520</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>148</number>
+			<name>Left MOrG medial orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4833.8</volumeProb>
+			<volumeCat>4922</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>149</number>
+			<name>Right MPoG postcentral gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>623.748</volumeProb>
+			<volumeCat>606</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>150</number>
+			<name>Left MPoG postcentral gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>528.793</volumeProb>
+			<volumeCat>512</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>151</number>
+			<name>Right MPrG precentral gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>2952.77</volumeProb>
+			<volumeCat>3012</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>152</number>
+			<name>Left MPrG precentral gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>2760.15</volumeProb>
+			<volumeCat>2820</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>153</number>
+			<name>Right MSFG superior frontal gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>7299.58</volumeProb>
+			<volumeCat>7257</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>154</number>
+			<name>Left MSFG superior frontal gyrus medial segment</name>
+			<tissues>2</tissues>
+			<volumeProb>6119.2</volumeProb>
+			<volumeCat>6241</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>155</number>
+			<name>Right MTG middle temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>15952.5</volumeProb>
+			<volumeCat>16453</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>156</number>
+			<name>Left MTG middle temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>15863.6</volumeProb>
+			<volumeCat>16522</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>157</number>
+			<name>Right OCP occipital pole</name>
+			<tissues>2</tissues>
+			<volumeProb>1862.29</volumeProb>
+			<volumeCat>1966</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>158</number>
+			<name>Left OCP occipital pole</name>
+			<tissues>2</tissues>
+			<volumeProb>2338.89</volumeProb>
+			<volumeCat>2607</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>161</number>
+			<name>Right OFuG occipital fusiform gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4478.02</volumeProb>
+			<volumeCat>4522</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>162</number>
+			<name>Left OFuG occipital fusiform gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4712.35</volumeProb>
+			<volumeCat>4823</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>163</number>
+			<name>Right OpIFG opercular part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3611.42</volumeProb>
+			<volumeCat>3765</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>164</number>
+			<name>Left OpIFG opercular part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3187.88</volumeProb>
+			<volumeCat>3151</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>165</number>
+			<name>Right OrIFG orbital part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1650.97</volumeProb>
+			<volumeCat>1655</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>166</number>
+			<name>Left OrIFG orbital part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1893.48</volumeProb>
+			<volumeCat>1950</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>167</number>
+			<name>Right PCgG posterior cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>5138.28</volumeProb>
+			<volumeCat>5155</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>168</number>
+			<name>Left PCgG posterior cingulate gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>5757.59</volumeProb>
+			<volumeCat>5775</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>169</number>
+			<name>Right PCu precuneus</name>
+			<tissues>2</tissues>
+			<volumeProb>12564</volumeProb>
+			<volumeCat>13015</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>170</number>
+			<name>Left PCu precuneus</name>
+			<tissues>2</tissues>
+			<volumeProb>12466.7</volumeProb>
+			<volumeCat>12847</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>171</number>
+			<name>Right PHG parahippocampal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3093.04</volumeProb>
+			<volumeCat>3165</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>172</number>
+			<name>Left PHG parahippocampal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3185.83</volumeProb>
+			<volumeCat>3240</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>173</number>
+			<name>Right PIns posterior insula</name>
+			<tissues>2</tissues>
+			<volumeProb>2216.6</volumeProb>
+			<volumeCat>2283</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>174</number>
+			<name>Left PIns posterior insula</name>
+			<tissues>2</tissues>
+			<volumeProb>1933.04</volumeProb>
+			<volumeCat>1978</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>175</number>
+			<name>Right PO parietal operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>2810.93</volumeProb>
+			<volumeCat>2929</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>176</number>
+			<name>Left PO parietal operculum</name>
+			<tissues>2</tissues>
+			<volumeProb>3101.7</volumeProb>
+			<volumeCat>3004</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>177</number>
+			<name>Right PoG postcentral gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>10320.9</volumeProb>
+			<volumeCat>10706</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>178</number>
+			<name>Left PoG postcentral gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>10317</volumeProb>
+			<volumeCat>10361</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>179</number>
+			<name>Right POrG posterior orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3153.21</volumeProb>
+			<volumeCat>3246</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>180</number>
+			<name>Left POrG posterior orbital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>2944.95</volumeProb>
+			<volumeCat>3066</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>181</number>
+			<name>Right PP planum polare</name>
+			<tissues>2</tissues>
+			<volumeProb>2120.59</volumeProb>
+			<volumeCat>2146</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>182</number>
+			<name>Left PP planum polare</name>
+			<tissues>2</tissues>
+			<volumeProb>2488.3</volumeProb>
+			<volumeCat>2487</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>183</number>
+			<name>Right PrG precentral gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>14050.5</volumeProb>
+			<volumeCat>14240</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>184</number>
+			<name>Left PrG precentral gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>13936.8</volumeProb>
+			<volumeCat>14290</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>185</number>
+			<name>Right PT planum temporale</name>
+			<tissues>2</tissues>
+			<volumeProb>2704.7</volumeProb>
+			<volumeCat>2831</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>186</number>
+			<name>Left PT planum temporale</name>
+			<tissues>2</tissues>
+			<volumeProb>2321.69</volumeProb>
+			<volumeCat>2209</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>187</number>
+			<name>Right SCA subcallosal area</name>
+			<tissues>2</tissues>
+			<volumeProb>1194.75</volumeProb>
+			<volumeCat>1232</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>188</number>
+			<name>Left SCA subcallosal area</name>
+			<tissues>2</tissues>
+			<volumeProb>1292.24</volumeProb>
+			<volumeCat>1305</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>191</number>
+			<name>Right SFG superior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>15522.1</volumeProb>
+			<volumeCat>15975</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>192</number>
+			<name>Left SFG superior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>15557.2</volumeProb>
+			<volumeCat>15908</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>193</number>
+			<name>Right SMC supplementary motor cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>5758.44</volumeProb>
+			<volumeCat>5878</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>194</number>
+			<name>Left SMC supplementary motor cortex</name>
+			<tissues>2</tissues>
+			<volumeProb>5687.81</volumeProb>
+			<volumeCat>5846</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>195</number>
+			<name>Right SMG supramarginal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8450.32</volumeProb>
+			<volumeCat>8918</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>196</number>
+			<name>Left SMG supramarginal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8621.23</volumeProb>
+			<volumeCat>9049</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>197</number>
+			<name>Right SOG superior occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>4845.03</volumeProb>
+			<volumeCat>5040</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>198</number>
+			<name>Left SOG superior occipital gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3064.63</volumeProb>
+			<volumeCat>3024</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>199</number>
+			<name>Right SPL superior parietal lobule</name>
+			<tissues>2</tissues>
+			<volumeProb>9793.52</volumeProb>
+			<volumeCat>10039</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>200</number>
+			<name>Left SPL superior parietal lobule</name>
+			<tissues>2</tissues>
+			<volumeProb>11072.3</volumeProb>
+			<volumeCat>11962</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>201</number>
+			<name>Right STG superior temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>7706.68</volumeProb>
+			<volumeCat>7716</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>202</number>
+			<name>Left STG superior temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>8361.91</volumeProb>
+			<volumeCat>8563</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>203</number>
+			<name>Right TMP temporal pole</name>
+			<tissues>2</tissues>
+			<volumeProb>8256.83</volumeProb>
+			<volumeCat>8512</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>204</number>
+			<name>Left TMP temporal pole</name>
+			<tissues>2</tissues>
+			<volumeProb>7625.83</volumeProb>
+			<volumeCat>7937</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>205</number>
+			<name>Right TrIFG triangular part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3702.48</volumeProb>
+			<volumeCat>3823</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>206</number>
+			<name>Left TrIFG triangular part of the inferior frontal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>3966.8</volumeProb>
+			<volumeCat>4176</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>207</number>
+			<name>Right TTG transverse temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1423.36</volumeProb>
+			<volumeCat>1372</volumeCat>
+			<units>ml</units>
+		</item>
+		<item>
+			<number>208</number>
+			<name>Left TTG transverse temporal gyrus</name>
+			<tissues>2</tissues>
+			<volumeProb>1513.7</volumeProb>
+			<volumeCat>1559</volumeCat>
+			<units>ml</units>
+		</item>
+	</labels>
+	<agregates>
+		<item>
+			<number>0_4</number>
+			<name>Frontal Lobe GM Left</name>
+			<agregates>1_5</agregates>
+		</item>
+		<item>
+			<number>1_5</number>
+			<name>Superior Frontal Lobe GM Left</name>
+			<labels>10, 12, 35</labels>
+		</item>
+	</agregates>
+</document>
+
