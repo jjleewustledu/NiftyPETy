@@ -12,41 +12,46 @@ class TestReconstruction(unittest.TestCase):
 
     def setUp(self):
         os.chdir(self.twiliteLoc)
-        self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+        #self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
 
     #def tearDown(self):
 
     def test_sampleStaticMethod(self):
         self.assertEqual(respet.recon.reconstruction.Reconstruction.sampleStaticMethod(), 0.1234)
 
-    def test_ctor(self):
-        self.assertIsInstance(self.testObj, respet.recon.reconstruction.Reconstruction)
-        print(self.testObj._constants)
-        print(self.testObj._datain)
+    def test_locs(self):
+        self.assertTrue(os.path.exists(self.twiliteLoc))
+        self.assertTrue(os.path.exists(self.tracerLoc))
 
-    def test_time_diff_norm_acq(self):
+    def __test_ctor(self):
+        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+        self.assertIsInstance(obj, respet.recon.reconstruction.Reconstruction)
+        print(obj._constants)
+        print(obj._datain)
+
+    def __test_time_diff_norm_acq(self):
         import nipet
         cnt, txLUG, axLUT = nipet.mmraux.mmrinit()
         datain = nipet.mmraux.explore_input(self.twiliteLoc, cnt)
         nipet.mmraux.time_diff_norm_acq(datain)
         # normal result is silent
 
-    def test_getTimeMax(self):
+    def __test_getTimeMax(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimeMax())
 
-    def test_getTimes(self):
+    def __test_getTimes(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def test_createTwiliteNAC(self):
+    def __test_createTwiliteNAC(self):
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
         nac = obj.createNAC()
         plt.matshow(nac.im[60,:,:])
         plt.matshow(nac.im[:,170,:])
         plt.matshow(nac.im[:,170,:])
 
-    def test_createTracerNAC(self):
+    def __test_createTracerNAC(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         nac = obj.createDynamicNAC()
         plt.matshow(nac[19].im[60,:,:])

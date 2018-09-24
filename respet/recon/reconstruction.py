@@ -143,12 +143,7 @@ class Reconstruction:
 
         self.tracerRawdataLocation = loc
         self._organizeRawdataLocation()
-
-        import nipet
-        self._constants, self._txLUT, self._axLUT = nipet.mmraux.mmrinit()
-        self._constants['SPN'] = self.span
-        self._constants['BTP'] = self.bootstrap
-        self._datain = nipet.mmraux.explore_input(self.tracerRawdataLocation, self._constants)
+        self._mmrinit()
 
     ### PRIVATE
 
@@ -193,6 +188,17 @@ class Reconstruction:
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
+
+    def _mmrinit(self):
+        import nipet
+        c,tx,ax = nipet.mmraux.mmrinit()
+        self._constants = c
+        self._constants['SPN'] = self.span
+        self._constants['BTP'] = self.bootstrap
+        self._txLUT = tx
+        self._axLUT = ax
+        d = nipet.mmraux.explore_input(self.tracerRawdataLocation, self._constants)
+        self._datain = d
 
     def _tracer(self):
         import re
