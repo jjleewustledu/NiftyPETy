@@ -17,17 +17,17 @@ import dicom as dcm
 import nipet
 # get all the constants and LUTs
 Cnt, txLUT, axLUT = nipet.mmraux.mmrinit()
-Cnt['SPN']=1
+Cnt['SPN']=11
 Cnt['BTP']=2
 
 #------------------------------------------------------
 # GET ALL THE INPUT
 # need to have norm in *.{dcm,bf} or in *.ima; same for listmode; need folder with umap (192 DICOMs)
 # optional:   norm files can be in a "norm" folder and listmode in an "LM" folder and umap in "humanumap"; useful for debugging
-folderin = '/home2/Shared/jjlee/Local/Pawel/FDG_V1_NiftyPETx'
+folderin = '/home2/jjlee/Local/Pawel/FDG_V1_NiftyPETx'
 datain = nipet.mmraux.explore_input(folderin, Cnt)
-datain['mumapCT'] = '/home2/Shared/jjlee/Local/Pawel/FDG_V1_NiftyPETx/mumap_obj/mumapCarney.npy'
-datain['mumapUTE'] = '/home2/Shared/jjlee/Local/Pawel/FDG_V1_NiftyPETx/mumap_obj/mumapCarney.npy'
+datain['mumapCT'] = '/home2/jjlee/Local/Pawel/FDG_V1_NiftyPETx/mumap_obj/mumapCarney.npy'
+datain['mumapUTE'] = '/home2/jjlee/Local/Pawel/FDG_V1_NiftyPETx/mumap_obj/mumapCarney.npy'
 Cnt['VERBOSE']=True
 
 #------------------------------------------------------
@@ -72,7 +72,7 @@ petopt: the PET image can be reconstructed from list-mode data without attenuati
 #Usage:/usr/local/nifty_reg/bin/reg_resample -target <referenceImageName> -source <floatingImageName> [OPTIONS].
 #See the help for more details (-h).
 
-hmudic = nipet.img.mmrimg.hdw_mumap(datain, [1,3,4], Cnt, use_stored=True)
+hmudic = nipet.img.mmrimg.hdw_mumap(datain, [1,4,5], Cnt, use_stored=True)
 mumaps = [hmudic['im'], mud['im']]
 #------------------------------------------------------
 hst = nipet.lm.mmrhist.hist(datain, txLUT, axLUT, Cnt, t0=0, t1=3600, store=True, use_stored=True)

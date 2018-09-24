@@ -19,7 +19,7 @@ def main(argv):
          print usage
          sys.exit()
    print 'godo received ' + str(argv)
-   Reconstruction.godo(argv[0], argv[1], argv[2], argv[3], argv[4])
+   recon.Reconstruction.godo(argv[0], argv[1], argv[2], argv[3], argv[4])
 
 
 if __name__ == "__main__":

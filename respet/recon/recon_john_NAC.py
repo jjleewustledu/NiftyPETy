@@ -17,14 +17,14 @@ import dicom as dcm
 import nipet
 # get all the constants and LUTs
 Cnt, txLUT, axLUT = nipet.mmraux.mmrinit()
-Cnt['SPN']=1
+Cnt['SPN']=11
 Cnt['BTP']=2
 
 #------------------------------------------------------
 # GET ALL THE INPUT
 # need to have norm in *.{dcm,bf} or in *.ima; same for listmode; need folder with umap (192 DICOMs)
 # optional:   norm files can be in a "norm" folder and listmode in an "LM" folder and umap in "humanumap"; useful for debugging
-folderin = '/home2/Shared/jjlee/Local/Pawel/FDG_V1_NiftyPETx'
+folderin = '/home2/Shared/jjlee/Local/Pawel/HYGLY28/V1/FDG_V1_NiftyPETx'
 datain = nipet.mmraux.explore_input(folderin, Cnt)
 Cnt['VERBOSE']=True
 
@@ -43,7 +43,7 @@ Cnt['VERBOSE']=True
 ##mud = nipet.img.mmrimg.obj_mumap(datain, Cnt, store=True)
 
 import nibabel as nib
-nim = nib.load('/home2/Shared/jjlee/Local/Pawel/FDG_V1_NiftyPETx/mumap_obj/mumap_fromCT.nii.gz')
+nim = nib.load('/home2/Shared/jjlee/Local/Pawel/HYGLY28/V1/FDG_V1_NiftyPETx/mumap_obj/mumap_fromCT.nii.gz')
 mu = nim.get_data()
 mu = np.transpose(mu[::-1,::-1,::-1], (2, 1, 0))
 mu = np.zeros_like(mu)
@@ -73,11 +73,11 @@ petopt: the PET image can be reconstructed from list-mode data without attenuati
 #Usage:/usr/local/nifty_reg/bin/reg_resample -target <referenceImageName> -source <floatingImageName> [OPTIONS].
 #See the help for more details (-h).
 
-hmudic = nipet.img.mmrimg.hdw_mumap(datain, [1,3,4], Cnt, use_stored=True)
+hmudic = nipet.img.mmrimg.hdw_mumap(datain, [1,4,5], Cnt, use_stored=True)
 mumaps = [hmudic['im'], mud['im']]
 #------------------------------------------------------
-hst = nipet.lm.mmrhist.hist(datain, txLUT, axLUT, Cnt, t0=0, t1=3600, store=True, use_stored=True)
-recon = nipet.prj.mmrprj.osemone(datain, mumaps, hst, txLUT, axLUT, Cnt, recmod=3, itr=10, fwhm=4.0, mask_radious=29, store_img=True, ret_sct=True)
+hst = nipet.lm.mmrhist.hist(datain, txLUT, axLUT, Cnt, t0=3000, t1=3600, store=True, use_stored=True)
+recon = nipet.prj.mmrprj.osemone(datain, mumaps, hst, txLUT, axLUT, Cnt, recmod=3, itr=5, fwhm=4.0, mask_radious=29, store_img=True, ret_sct=True)
 
 
 
