@@ -10,13 +10,13 @@ class TestReconstruction(unittest.TestCase):
     tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY36/V3/FDG_V3-NiftyPETy'
     testObj = []
 
-    def setUp(self):
-        os.chdir(self.twiliteLoc)
+    #def setUp(self):
+        #os.chdir(self.twiliteLoc)
         #self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
 
     #def tearDown(self):
 
-    def test_sampleStaticMethod(self):
+    def __test_sampleStaticMethod(self):
         self.assertEqual(respet.recon.reconstruction.Reconstruction.sampleStaticMethod(), 0.1234)
 
     def test_locs(self):
@@ -44,19 +44,22 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def __test_createTwiliteNAC(self):
+    def __test_createTwilite(self):
+        os.chdir(self.twiliteLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        nac = obj.createNAC()
-        plt.matshow(nac.im[60,:,:])
-        plt.matshow(nac.im[:,170,:])
-        plt.matshow(nac.im[:,170,:])
+        nac = obj.createStaticUTE(fcomment='_createStaticUTE')
+        plt.matshow(nac[0].im[60,:,:])
+        plt.matshow(nac[0].im[:,170,:])
+        plt.matshow(nac[0].im[:,170,:])
 
-    def __test_createTracerNAC(self):
+    def test_createTracer(self):
+        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        nac = obj.createDynamicNAC()
-        plt.matshow(nac[19].im[60,:,:])
-        plt.matshow(nac[19].im[:,170,:])
-        plt.matshow(nac[19].im[:,170,:])
+        obj.verbose = False
+        dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
+        plt.matshow(dyn[0].im[60,:,:])
+        plt.matshow(dyn[0].im[:,170,:])
+        plt.matshow(dyn[0].im[:,170,:])
 
     # def test_custom_mumap(self):
     #     mu = self.testObj.custom_mumap([],

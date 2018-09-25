@@ -15,49 +15,100 @@ class Reconstruction:
     tracerRawdataLocation = ''
     umapFolder = 'umap'
     umapSynthFileprefix = 'umapSynth_full_frame'
-    frameSuffix = '_frame'
+    use_stored = True
     verbose = True
 
     @staticmethod
     def sampleStaticMethod():
         return 0.1234
 
-    def createNAC(self):
-        import nipet
-        self._constants['VERBOSE'] = self.verbose
-        hst = nipet.lm.mmrhist.hist(self._datain,
-                                    self._txLUT, self._axLUT, self._constants,
-                                    t0=self._t0, t1=self._t1,
-                                    store=True, use_stored=True)
-        mumaps = [self.muHardware(), self.muZero()]
-        nac = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
-                                       self._txLUT, self._axLUT, self._constants,
-                                       recmod = self.recmod,
-                                       itr    = self.itr,
-                                       fwhm   = self.fwhm,
-                                       mask_radious = self.maskRadius,
-                                       store_img=True, ret_sct=True)
-        return nac
+    def createStaticNAC(self):
+        times = np.int_([0,0])
+        return self.createDynamic(times, self.muTiny())
 
     def createDynamicNAC(self):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
+        print(times)
+        return self.createDynamic(times, self.muTiny())
+
+    def createStaticUTE(self, fcomment=''):
+        times = np.int_([0,0])
+        return self.createDynamic(times, self.muUTE(), fcomment)
+
+    def createDynamicUTE(self, fcomment=''):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
+        print(times)
+        return self.createDynamic(times, self.muUTE(), fcomment)
+
+    def createDynamic(self, times, muo, fcomment='_createDynamic'):
+        """
+        :param times:  np.int_
+        :param muo:    mu-map of imaged object
+        :return:       dictionary from nipet.prj.mmrprj.osemone
+        """
         import nipet
         self._constants['VERBOSE'] = self.verbose
-        times  = self.getTimes()
-        nac = []
-        mumaps = [self.muHardware(), self.muZero()]
+        mumaps = [self.muHardware(), muo]
+        dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             hst = nipet.lm.mmrhist.hist(self._datain,
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=True)
-            nac[it-1] = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
-                                                self._txLUT, self._axLUT, self._constants,
-                                                recmod = self.recmod,
-                                                itr    = self.itr,
-                                                fwhm   = self.fwhm,
-                                                mask_radious = self.maskRadius,
-                                                store_img=True, ret_sct=True)
-        return nac
+            dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
+                                                 self._txLUT, self._axLUT, self._constants,
+                                                 recmod = self.recmod,
+                                                 itr    = self.itr,
+                                                 fwhm   = self.fwhm,
+                                                 mask_radious = self.maskRadius,
+                                                 store_img=False, ret_sct=True, fcomment='_time'+str(it-1))
+        self.save(dyn, mumaps, hst, fcomment)
+        return dyn
+
+    def save(self, dyn, mumaps, hst, fcomment=''):
+        """
+        :param dyn:       dictionary from nipet.prj.mmrprj.osemone
+        :param mumaps:    dictionary of mu-maps from imaged object, hardware
+        :param hst:       dictionary from nipet.lm.mmrhist.hist
+        :param fcomment:  string to append to canonical filename
+        """
+        import nipet
+        fout = self._createFilename(fcomment)
+        im = self._gatherOsemoneList(dyn)
+        if self._constants['VERBOSE']:
+            print('i> saving '+str(len(im.shape))+'D image to: ', fout)
+
+        A = self.getAffine()
+        muo,muh = mumaps  # object and hardware mu-maps
+        desc = self._createDescrip(hst, muh, muo)
+        if len(im.shape) == 3:
+            nipet.img.mmrimg.array2nii(im[::-1,::-1,:],   A, fout, descrip=desc)
+        elif len(im.shape) == 4:
+            nipet.img.mmrimg.array4D2nii(im[::-1,::-1,:,:], A, fout, descrip=desc)
+
+    def _gatherOsemoneList(self, olist):
+        """
+        :param olist:  list
+        :return:       numpy.array
+        """
+        im = [olist[0].im]
+        for i in range(1, len(olist)):
+            im = np.append(im, [olist[i].im], axis=0)
+        return np.float_(im)
+
+    def getAffine(self):
+        import nipet
+        cnt = self._constants
+        vbed, hbed = nipet.mmraux.vh_bedpos(self._datain, cnt)  # bed positions
+
+        # affine transformations for NIfTI
+        A      = np.diag(np.array([-10*cnt['SO_VXX'], 10*cnt['SO_VXY'], 10*cnt['SO_VXZ'], 1]))
+        A[0,3] = 10*(  0.5*cnt['SO_IMX']     *cnt['SO_VXX'])
+        A[1,3] = 10*((-0.5*cnt['SO_IMY'] + 1)*cnt['SO_VXY'])
+        A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
+        return A
 
     def getTaus(self):
         """
@@ -73,7 +124,8 @@ class Reconstruction:
         """
         taus = self.getTaus()
         t = np.hstack((np.int_(0), np.cumsum(taus)))
-        return t[t <= self.getTimeMax()]
+        t = t[t <= self.getTimeMax()]
+        return np.int_(t)
 
     def getTimeMax(self):
         """
@@ -89,63 +141,61 @@ class Reconstruction:
         See also self.hmuSelection.
         """
         import nipet
-        hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants)
+        hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
-    def muZero(self):
+    def muTiny(self):
         """
-        :return:  mu-map image of zeroes sized according to self._constants['SO_IM*']
+        :return:  mu-map image of mu == 0.01 sized according to self._constants['SO_IM*']
         """
-        return np.zeros((self._constants['SO_IMZ'], self._constants['SO_IMY'], self._constants['SO_IMX']), dtype=np.float32)
+        return 0.01*np.ones((self._constants['SO_IMZ'], self._constants['SO_IMY'], self._constants['SO_IMX']), dtype=np.float32)
 
-    # def custom_mumap(self, datain, fileprefix='', fcomment='', store=False):
-    #     """is a derivative of nipet.img.mmrimg.pct_mumap from Pawel Markiewicz' NiftyPETx"""
-    #     import numpy
-    #     import os
-    #     import nibabel
-    #
-    #     # get the NIfTI of the custom umap
-    #     nim = nibabel.load(
-    #         os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
-    #     cmu = numpy.float32(nim.get_data())
-    #     cmu = cmu[::-1, ::-1, ::-1]
-    #     cmu = numpy.transpose(cmu, (2, 1, 0))
-    #     mu = cmu
-    #     mu[mu < 0] = 0
-    #
-    #     return mu
+    def muUTE(self):
+        """
+        :return:  mu-map image from Siemens UTE
+        :rtype:  numpy.array
+        """
+        import nipet
+        ute = nipet.img.mmrimg.obj_mumap(self._datain, self._constants, store=True)
+        im  = ute['im']
+        return im
+
+    def muCarney(self, fileprefix='', fcomment=''):
+        """is a derivative of nipet.img.mmrimg.pct_mumap from Pawel Markiewicz' NiftyPETx"""
+        import nibabel
+
+        # get the NIfTI of the custom umap
+        nim = nibabel.load(
+            os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
+        cmu = np.float32(nim.get_data())
+        cmu = cmu[::-1, ::-1, ::-1]
+        cmu = np.transpose(cmu, (2, 1, 0))
+        mu = cmu
+        mu[mu < 0] = 0
+        return mu
 
     def __init__(self, loc):
-        """@param loc specifies the location of tracer rawdata.
-           @param self.tracerRawdataLocation contains Siemens sinograms, e.g.:
+        """:param:  loc specifies the location of tracer rawdata.
+           :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
                   -rwxr-xr-x+  1 jjlee wheel     141444 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.dcm
                   -rwxr-xr-x+  1 jjlee wheel  247141283 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000050.bf
                   -rwxr-xr-x+  1 jjlee wheel     151868 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000050.dcm
                   -rw-r--r--+  1 jjlee wheel    3081280 Nov 14 14:53 umapSynth_full_frame0.nii.gz
-           as well as folders:
+           :param:  self.tracerRawdataLocation also contains folders:
                   norm, containing, e.g.:
                         -rwxr-xr-x+  1 jjlee wheel 323404 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000048.bf
                         -rwxr-xr-x+  1 jjlee wheel 143938 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000048.dcm
-                  mumap_hdw, containing:
-                          -rw-r--r--+  1 jjlee wheel  20648135 Oct 31 14:40 hardware_umap.nii.gz
-                          -rw-r--r--+  1 jjlee wheel  60115163 Oct 31 14:40 hmumap.npy
-                          -rw-r--r--+  1 jjlee wheel    262479 Oct 31 14:37 hmuref.nii.gz
-                          -rw-r--r--+  1 jjlee wheel 158313150 Oct 31 14:38 umap_HNMCL_10606489.nii.gz
-                          -rw-r--r--+  1 jjlee wheel   6883547 Oct 31 14:38 umap_HNMCL_10606489_r.nii.gz
-                          -rw-r--r--+  1 jjlee wheel 254435655 Oct 31 14:38 umap_HNMCU_10606489.nii.gz
-                          -rw-r--r--+  1 jjlee wheel  10634278 Oct 31 14:38 umap_HNMCU_10606489_r.nii.gz
-                          -rw-r--r--+  1 jjlee wheel 479244202 Oct 31 14:40 umap_PT_2291734.nii.gz
-                          -rw-r--r--+  1 jjlee wheel  13624762 Oct 31 14:40 umap_PT_2291734_r.nii.gz
                   LM, containing, e.g.:
                           -rwxr-xr-x+  1 jjlee wheel 6817490860 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.bf
                           -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm"""
 
+        os.chdir(loc)
         self.tracerRawdataLocation = loc
         self._organizeRawdataLocation()
         self._mmrinit()
 
-    ### PRIVATE
+    ########## PRIVATE ##########
 
     _constants = {}
     _txLUT = {}
@@ -199,8 +249,54 @@ class Reconstruction:
         self._axLUT = ax
         d = nipet.mmraux.explore_input(self.tracerRawdataLocation, self._constants)
         self._datain = d
+        print("########## respet.recon.reconstruction.Reconstruction._mmrinit ##########")
+        print(self._constants)
+        print(self._datain)
 
     def _tracer(self):
         import re
         return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
+
+    def _createDescrip(self, hst, muh, muo):
+        """
+        :param hst:  from nipet.lm.mmrhist.hist
+        :param muh:  from mumaps dictionary
+        :param muo:  from mumaps dictionary
+        :return:     description text for NIfTI
+        if only bed present, attnum := 0.5
+        """
+        import nipet
+        cnt    = self._constants
+        attnum = (1 * (np.sum(muh) > 0.5) + 1 * (np.sum(muo) > 0.5)) / 2.
+        ncmp,_ = nipet.mmrnorm.get_components(self._datain, cnt)
+        rilut  = self._riLUT()
+        qf     = ncmp['qf'] / rilut[cnt['ISOTOPE']]['BF'] / float(hst['dur'])
+        desc   = 'alg=osem' + \
+                 ';sub=14' + \
+                 ';att='   + str(attnum * (self.recmod > 0)) + \
+                 ';sct='   + str(1 * (self.recmod > 1)) + \
+                 ';spn='   + str(cnt['SPN']) + \
+                 ';itr='   + str(self.itr)   + \
+                 ';fwhm='  + str(self.fwhm)  + \
+                 ';t0='    + str(hst['t0'])  + \
+                 ';t1='    + str(hst['t1'])  + \
+                 ';dur='   + str(hst['dur']) + \
+                 ';qf='    + str(qf)
+        return desc
+
+    def _createFilename(self, fcomment):
+        import nipet
+        fn = os.path.join(self._datain['corepath'], 'img')
+        nipet.mmraux.create_dir(fn)
+        fn = os.path.join(fn, os.path.basename(self._datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
+        return fn
+
+    def _riLUT(self):
+        """
+        :return:  radioisotope look-up table
+        """
+        return {'Ge68':{'BF':0.891, 'thalf':270.9516*24*60*60},
+                'Ga68':{'BF':0.891, 'thalf':67.71*60},
+                 'F18':{'BF':0.967, 'thalf':109.77120*60},
+                 'C11':{'BF':0.998, 'thalf':20.38*60}}
 
