@@ -93,24 +93,24 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def test_createTracerNAC(self):
+    def __test_createTracerNAC(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        plt.matshow(dyn[0].im[60,:,:])
-        plt.matshow(dyn[0].im[:,170,:])
-        plt.matshow(dyn[0].im[:,:,170])
-        plt.show()
+        plt.matshow(dyn[1].im[60,:,:])
+        plt.matshow(dyn[1].im[:,170,:])
+        plt.matshow(dyn[1].im[:,:,170])
+        #plt.show()
 
-    def __test_createTracerUTE(self):
+    def test_createTracerUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
-        plt.matshow(dyn[0].im[60,:,:])
-        plt.matshow(dyn[0].im[:,170,:])
-        plt.matshow(dyn[0].im[:,:,170])
+        plt.matshow(dyn[1].im[60,:,:])
+        plt.matshow(dyn[1].im[:,170,:])
+        plt.matshow(dyn[1].im[:,:,170])
         plt.show()
 
     def __test_createTracerCarney(self):
@@ -118,9 +118,9 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicCarney(fcomment='_createDynamicCarney')
-        plt.matshow(dyn[0].im[60,:,:])
-        plt.matshow(dyn[0].im[:,170,:])
-        plt.matshow(dyn[0].im[:,:,170])
+        plt.matshow(dyn[1].im[60,:,:])
+        plt.matshow(dyn[1].im[:,170,:])
+        plt.matshow(dyn[1].im[:,:,170])
         plt.show()
 
     # def test_custom_mumap(self):

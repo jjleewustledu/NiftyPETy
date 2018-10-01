@@ -128,14 +128,14 @@ class Reconstruction:
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=True)
             dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain,
-                                                 self.getMumaps(muo),
+                                                 self.getMumaps(muo, it-1),
                                                  hst,
                                                  self._txLUT, self._axLUT, self._constants,
                                                  recmod = self.recmod,
                                                  itr    = self.itr,
                                                  fwhm   = self.fwhm,
                                                  mask_radious = self.maskRadius,
-                                                 store_img=True,
+                                                 store_img=False,
                                                  ret_sct=True,
                                                  fcomment=fcomment + '_time' + str(it - 1))
         self.saveDynamic(dyn, self.getMumaps(muo), hst, fcomment)
