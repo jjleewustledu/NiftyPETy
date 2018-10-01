@@ -121,6 +121,7 @@ class Reconstruction:
         """
         import nipet
         self._constants['VERBOSE'] = self.verbose
+        mumaps = [muo, self.muHardware()]
         dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             hst = nipet.lm.mmrhist.hist(self._datain,
@@ -128,17 +129,17 @@ class Reconstruction:
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=True)
             dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain,
-                                                 self.getMumaps(muo),
+                                                 mumaps,
                                                  hst,
                                                  self._txLUT, self._axLUT, self._constants,
                                                  recmod = self.recmod,
                                                  itr    = self.itr,
                                                  fwhm   = self.fwhm,
                                                  mask_radious = self.maskRadius,
-                                                 store_img=False,
+                                                 store_img=True,
                                                  ret_sct=True,
                                                  fcomment=fcomment + '_time' + str(it - 1))
-        self.saveDynamic(dyn, self.getMumaps(muo), hst, fcomment)
+        self.saveDynamic(dyn, mumaps, hst, fcomment)
         return dyn
 
     def saveDynamic(self, dyn, mumaps, hst, fcomment=''):
@@ -187,7 +188,7 @@ class Reconstruction:
             _muo = muo[:,:,:,it]
         else:
             _muo = muo
-        return [np.squeeze(muo), self.muHardware]
+        return [_muo, self.muHardware]
 
     def getTaus(self):
         """
