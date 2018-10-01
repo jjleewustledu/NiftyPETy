@@ -6,7 +6,7 @@ class Scratch:
     '''
     tracerRawdataLocation = ''
     umapFolder = 'umap'
-    umapSynthFileprefix = 'umapSynth_full_frame'
+    UMAP_SYNTH_FILEPREFIX = 'umapSynth_full_frame'
     frameSuffix = '_frame'
     verbose = True
     _frame = 0

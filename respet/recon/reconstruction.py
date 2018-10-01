@@ -5,6 +5,8 @@ class Reconstruction:
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
+    UMAP_SYNTH_FILEPREFIX = 'umapSynthFull'
+
     span = 11
     bootstrap = 2
     recmod = 3
@@ -14,60 +16,132 @@ class Reconstruction:
     hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
     tracerRawdataLocation = ''
     umapFolder = 'umap'
-    umapSynthFileprefix = 'umapSynth_full_frame'
     use_stored = True
     verbose = True
+
+
 
     @staticmethod
     def sampleStaticMethod():
         return 0.1234
 
-    def createStaticNAC(self):
-        times = np.int_([0,0])
-        return self.createDynamic(times, self.muTiny())
 
-    def createDynamicNAC(self):
-        times = self.getTimes()
-        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
-        print(times)
-        return self.createDynamic(times, self.muTiny())
+
+    def createStaticNAC(self, fcomment=''):
+        self.recmod = 1
+        self.itr = 3
+        self.fwhm = 0
+        return self.createStatic(self.muNAC(), fcomment)
 
     def createStaticUTE(self, fcomment=''):
-        times = np.int_([0,0])
-        return self.createDynamic(times, self.muUTE(), fcomment)
+        return self.createStatic(self.muUTE(), fcomment)
 
-    def createDynamicUTE(self, fcomment=''):
+    def createStaticCarney(self, fcomment=''):
+        return self.createStatic(self.muCarney(frames=[0]), fcomment)
+
+    def createDynamicNAC(self, fcomment='_createDynamicNAC'):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
+        print(times)
+        self.recmod = 1
+        self.itr = 3
+        self.fwhm = 0
+        return self.createDynamic(times, self.muNAC(), fcomment)
+
+    def createDynamicTiny(self, fcomment='_createDynamicTiny'):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamicTiny ##########")
+        print(times)
+        self.recmod = 1
+        self.itr = 3
+        self.fwhm = 0
+        return self.createDynamic(times, self.muTiny(), fcomment)
+
+    def createDynamicUTE(self, fcomment='_createDynamicUTE'):
         times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
         print(times)
         return self.createDynamic(times, self.muUTE(), fcomment)
 
-    def createDynamic(self, times, muo, fcomment='_createDynamic'):
+    def createDynamicCarney(self, fcomment='_createDynamicCarney'):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
+        print(times)
+        return self.createDynamic(times, self.muCarney(), fcomment)
+
+    def createStatic(self, muo, fcomment='_createStatic'):
         """
-        :param times:  np.int_
-        :param muo:    mu-map of imaged object
-        :return:       dictionary from nipet.prj.mmrprj.osemone
+        :param muo:       mu-map of imaged object
+        :param fcomment;  string for naming subspace
+        :return:          result from nipet.prj.mmrprj.osemone
+        :rtype:           dictionary
         """
         import nipet
         self._constants['VERBOSE'] = self.verbose
-        mumaps = [self.muHardware(), muo]
+        mumaps = [muo, self.muHardware()]
+        hst = nipet.lm.mmrhist.hist(self._datain,
+                                    self._txLUT, self._axLUT, self._constants,
+                                    t0=0, t1=0,
+                                    store=True, use_stored=True)
+        sta = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
+                                       self._txLUT, self._axLUT, self._constants,
+                                       recmod = self.recmod,
+                                       itr    = self.itr,
+                                       fwhm   = self.fwhm,
+                                       mask_radious = self.maskRadius,
+                                       store_img=False, fcomment=fcomment)
+        self.saveStatic(sta, mumaps, hst, fcomment)
+        return sta
+
+    def saveStatic(self, sta, mumaps, hst, fcomment=''):
+        """
+        :param sta:       dictionary from nipet.prj.mmrprj.osemone
+        :param mumaps:    dictionary of mu-maps from imaged object, hardware
+        :param hst:       dictionary from nipet.lm.mmrhist.hist
+        :param fcomment:  string to append to canonical filename
+        """
+        import nipet
+        fout = self._createFilename(fcomment)
+        im = sta.im
+        if self._constants['VERBOSE']:
+            print('i> saving 3D image to: ', fout)
+
+        A = self.getAffine()
+        muo,muh = mumaps  # object and hardware mu-maps
+        desc = self._createDescrip(hst, muh, muo)
+        assert len(im.shape) == 3, "Reconstruction.saveStatic.im.shape == " + str(len(im.shape))
+        nipet.img.mmrimg.array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
+
+    def createDynamic(self, times, muo, fcomment='_createDynamic'):
+        """
+        :param times:  np.int_; [0,0] produces a single time-frame
+        :param muo:    3D or 4D mu-map of imaged object
+        :return:       result from nipet.prj.mmrprj.osemone
+        :rtype:        dictionary
+        """
+        import nipet
+        self._constants['VERBOSE'] = self.verbose
         dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             hst = nipet.lm.mmrhist.hist(self._datain,
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=True)
-            dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
+            dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain,
+                                                 self.getMumaps(muo),
+                                                 hst,
                                                  self._txLUT, self._axLUT, self._constants,
                                                  recmod = self.recmod,
                                                  itr    = self.itr,
                                                  fwhm   = self.fwhm,
                                                  mask_radious = self.maskRadius,
-                                                 store_img=False, ret_sct=True, fcomment='_time'+str(it-1))
-        self.save(dyn, mumaps, hst, fcomment)
+                                                 store_img=False,
+                                                 ret_sct=True,
+                                                 fcomment=fcomment + '_time' + str(it - 1))
+        self.saveDynamic(dyn, self.getMumaps(muo), hst, fcomment)
         return dyn
 
-    def save(self, dyn, mumaps, hst, fcomment=''):
+    def saveDynamic(self, dyn, mumaps, hst, fcomment=''):
         """
         :param dyn:       dictionary from nipet.prj.mmrprj.osemone
         :param mumaps:    dictionary of mu-maps from imaged object, hardware
@@ -84,31 +158,36 @@ class Reconstruction:
         muo,muh = mumaps  # object and hardware mu-maps
         desc = self._createDescrip(hst, muh, muo)
         if len(im.shape) == 3:
-            nipet.img.mmrimg.array2nii(im[::-1,::-1,:],   A, fout, descrip=desc)
+            nipet.img.mmrimg.array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
         elif len(im.shape) == 4:
             nipet.img.mmrimg.array4D2nii(im[::-1,::-1,:,:], A, fout, descrip=desc)
 
-    def _gatherOsemoneList(self, olist):
-        """
-        :param olist:  list
-        :return:       numpy.array
-        """
-        im = [olist[0].im]
-        for i in range(1, len(olist)):
-            im = np.append(im, [olist[i].im], axis=0)
-        return np.float_(im)
-
     def getAffine(self):
+        """
+        :return:  affine transformations for NIfTI
+        :rtype:   list 2D numeric
+        """
         import nipet
         cnt = self._constants
         vbed, hbed = nipet.mmraux.vh_bedpos(self._datain, cnt)  # bed positions
 
-        # affine transformations for NIfTI
         A      = np.diag(np.array([-10*cnt['SO_VXX'], 10*cnt['SO_VXY'], 10*cnt['SO_VXZ'], 1]))
         A[0,3] = 10*(  0.5*cnt['SO_IMX']     *cnt['SO_VXX'])
         A[1,3] = 10*((-0.5*cnt['SO_IMY'] + 1)*cnt['SO_VXY'])
         A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
         return A
+
+    def getMumaps(self, muo, it = []):
+        """
+        :param muo:  numpy.array of len == 3 or len == 4
+        :param it:   list, default is empty
+        :return:     list of numpy.array := [mu-hardware, mu-object]
+        """
+        if it and muo.ndim == 4:
+            _muo = muo[:,:,:,it]
+        else:
+            _muo = muo
+        return [np.squeeze(muo), self.muHardware]
 
     def getTaus(self):
         """
@@ -144,6 +223,33 @@ class Reconstruction:
         hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
+    def muCarney(self, fileprefix=UMAP_SYNTH_FILEPREFIX, fcomment='', frames=[]):
+        """
+        get NIfTI of the custom umap; see also img.mmrimg.obj_mumap lines 751-758
+        :param fileprefix:  string for fileprefix of 4D image-object
+        :param fcomment:  string to append to fileprefix
+        :param frames:  frame indices to select from mu;  default selects all frames
+        :return:  np.float32
+        """
+        import nibabel
+        nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
+        mu = np.float32(nim.get_data())
+        if (frames):
+            mu = mu[:, ::-1, ::-1, frames]
+        else:
+            mu = mu[:, ::-1, ::-1, :]
+        mu = np.transpose(mu, (2, 1, 0, 3))
+        mu = np.squeeze(mu)
+        mu[mu < 0] = 0
+        return mu
+
+    def muNAC(self):
+        """
+        :return:  mu-map image of mu == 0.01 sized according to self.muHardware()
+        """
+        muh = self.muHardware()
+        return np.zeros(muh.shape, dtype=muh.dtype)
+
     def muTiny(self):
         """
         :return:  mu-map image of mu == 0.01 sized according to self._constants['SO_IM*']
@@ -159,20 +265,6 @@ class Reconstruction:
         ute = nipet.img.mmrimg.obj_mumap(self._datain, self._constants, store=True)
         im  = ute['im']
         return im
-
-    def muCarney(self, fileprefix='', fcomment=''):
-        """is a derivative of nipet.img.mmrimg.pct_mumap from Pawel Markiewicz' NiftyPETx"""
-        import nibabel
-
-        # get the NIfTI of the custom umap
-        nim = nibabel.load(
-            os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
-        cmu = np.float32(nim.get_data())
-        cmu = cmu[::-1, ::-1, ::-1]
-        cmu = np.transpose(cmu, (2, 1, 0))
-        mu = cmu
-        mu[mu < 0] = 0
-        return mu
 
     def __init__(self, loc):
         """:param:  loc specifies the location of tracer rawdata.
@@ -195,7 +287,7 @@ class Reconstruction:
         self._organizeRawdataLocation()
         self._mmrinit()
 
-    ########## PRIVATE ##########
+
 
     _constants = {}
     _txLUT = {}
@@ -205,6 +297,16 @@ class Reconstruction:
     _umapIdx = 0
     _t0 = 0
     _t1 = 0
+
+    def _gatherOsemoneList(self, olist):
+        """
+        :param olist:  list
+        :return:       numpy.array
+        """
+        im = [olist[0].im]
+        for i in range(1, len(olist)):
+            im = np.append(im, [olist[i].im], axis=0)
+        return np.float_(im)
 
     def _organizeRawdataLocation(self):
         import glob

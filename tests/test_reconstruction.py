@@ -19,7 +19,7 @@ class TestReconstruction(unittest.TestCase):
     def __test_sampleStaticMethod(self):
         self.assertEqual(respet.recon.reconstruction.Reconstruction.sampleStaticMethod(), 0.1234)
 
-    def test_locs(self):
+    def __test_locs(self):
         self.assertTrue(os.path.exists(self.twiliteLoc))
         self.assertTrue(os.path.exists(self.tracerLoc))
 
@@ -44,22 +44,84 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def __test_createTwilite(self):
+    def __test_createTwiliteStaticNAC(self):
         os.chdir(self.twiliteLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        nac = obj.createStaticUTE(fcomment='_createStaticUTE')
-        plt.matshow(nac[0].im[60,:,:])
-        plt.matshow(nac[0].im[:,170,:])
-        plt.matshow(nac[0].im[:,170,:])
+        obj.verbose = False
+        sta = obj.createStaticNAC(fcomment='_createStaticNAC')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
 
-    def test_createTracer(self):
+    def __test_createTwiliteStaticUTE(self):
+        os.chdir(self.twiliteLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+        sta = obj.createStaticUTE(fcomment='_createStaticUTE')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
+
+    def __test_createTracerStaticNAC(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        sta = obj.createStaticNAC(fcomment='_createStaticNAC')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
+
+    def __test_createTracerStaticUTE(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        sta = obj.createStaticUTE(fcomment='_createStaticUTE')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
+
+    def __test_createTracerStaticCarney(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        sta = obj.createStaticCarney(fcomment='_createStaticCarney')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
+
+    def test_createTracerNAC(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
+        plt.matshow(dyn.im[60,:,:,0])
+        plt.matshow(dyn.im[:,170,:,0])
+        plt.matshow(dyn.im[:,:,170,0])
+        plt.show()
+
+    def __test_createTracerUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
-        plt.matshow(dyn[0].im[60,:,:])
-        plt.matshow(dyn[0].im[:,170,:])
-        plt.matshow(dyn[0].im[:,170,:])
+        plt.matshow(dyn.im[60,:,:,0])
+        plt.matshow(dyn.im[:,170,:,0])
+        plt.matshow(dyn.im[:,:,170,0])
+        plt.show()
+
+    def __test_createTracerCarney(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        dyn = obj.createDynamicCarney(fcomment='_createDynamicCarney')
+        plt.matshow(dyn.im[60,:,:,0])
+        plt.matshow(dyn.im[:,170,:,0])
+        plt.matshow(dyn.im[:,:,170,0])
+        plt.show()
 
     # def test_custom_mumap(self):
     #     mu = self.testObj.custom_mumap([],
