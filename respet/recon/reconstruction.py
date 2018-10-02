@@ -116,6 +116,35 @@ class Reconstruction:
         """
         :param times:  np.int_; [0,0] produces a single time-frame
         :param muo:    3D or 4D mu-map of imaged object
+        :return:       last result from nipet.prj.mmrprj.osemone
+        :rtype:        dictionary
+        """
+        import nipet
+        self._constants['VERBOSE'] = self.verbose
+        dyn = (times.shape[0]-1)*[None]
+        for it in np.arange(1, times.shape[0]):
+            hst = nipet.lm.mmrhist.hist(self._datain,
+                                        self._txLUT, self._axLUT, self._constants,
+                                        t0=times[it-1], t1=times[it],
+                                        store=True, use_stored=True)
+            dynFrame = nipet.prj.mmrprj.osemone(self._datain,
+                                                self.getMumaps(muo, it-1),
+                                                hst,
+                                                self._txLUT, self._axLUT, self._constants,
+                                                recmod = self.recmod,
+                                                itr    = self.itr,
+                                                fwhm   = self.fwhm,
+                                                mask_radious = self.maskRadius,
+                                                store_img=True,
+                                                ret_sct=True,
+                                                fcomment=fcomment + '_time' + str(it - 1))
+        return dynFrame
+
+    def createDynamicInMemory(self, times, muo, fcomment='_createDynamic'):
+        """
+        within unittest environment, may use ~60 GB memory for 60 min FDG recon with MRAC
+        :param times:  np.int_; [0,0] produces a single time-frame
+        :param muo:    3D or 4D mu-map of imaged object
         :return:       result from nipet.prj.mmrprj.osemone
         :rtype:        dictionary
         """
@@ -160,7 +189,19 @@ class Reconstruction:
         if len(im.shape) == 3:
             nipet.img.mmrimg.array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
         elif len(im.shape) == 4:
-            nipet.img.mmrimg.array4D2nii(im[::-1,::-1,:,:], A, fout, descrip=desc)
+            nipet.img.mmrimg.array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
+
+    def checkTimeAliasingUTE(self, fcomment='_checkTimeAliasingUTE'):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingUTE ##########")
+        print(times[0:2])
+        return self.createDynamicInMemory(times[0:3], self.muUTE(), fcomment)
+
+    def checkTimeAliasingCarney(self, fcomment='_checkTimeAliasingCarney'):
+        times = self.getTimes()
+        print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingCarney ##########")
+        print(times[0:2])
+        return self.createDynamic(times[0:3], self.muCarney(frames=[0,1]), fcomment)
 
     def getAffine(self):
         """
@@ -177,14 +218,14 @@ class Reconstruction:
         A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
         return A
 
-    def getMumaps(self, muo, it = []):
+    def getMumaps(self, muo, it = 0):
         """
         :param muo:  numpy.array of len == 3 or len == 4
         :param it:   list, default is empty
         :return:     list of numpy.array := [mu-hardware, mu-object]
         """
-        if it and muo.ndim == 4:
-            return [muo[:,:,:,it], self.muHardware()]
+        if muo.ndim == 4:
+            return [np.squeeze(muo[it,:,:,:]), self.muHardware()]
         else:
             return [muo, self.muHardware()]
 
@@ -234,10 +275,9 @@ class Reconstruction:
         nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
         mu = np.float32(nim.get_data())
         if (frames):
-            mu = mu[:, ::-1, ::-1, frames]
+            mu = np.transpose(mu[:,::-1,::-1,frames], (3, 2, 1, 0))
         else:
-            mu = mu[:, ::-1, ::-1, :]
-        mu = np.transpose(mu, (2, 1, 0, 3))
+            mu = np.transpose(mu[:,::-1,::-1,:], (3, 2, 1, 0))
         mu = np.squeeze(mu)
         mu[mu < 0] = 0
         return mu
@@ -300,7 +340,7 @@ class Reconstruction:
     def _gatherOsemoneList(self, olist):
         """
         :param olist:  list
-        :return:       numpy.array
+        :return:       numpy.array with times concatenated along axis=0 (c-style)
         """
         im = [olist[0].im]
         for i in range(1, len(olist)):

@@ -98,19 +98,38 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        plt.matshow(dyn[1].im[60,:,:])
-        plt.matshow(dyn[1].im[:,170,:])
-        plt.matshow(dyn[1].im[:,:,170])
+        plt.matshow(dyn.im[60,:,:])
+        plt.matshow(dyn.im[:,170,:])
+        plt.matshow(dyn.im[:,:,170])
         #plt.show()
 
-    def test_createTracerUTE(self):
+    def __test_createTracerUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
+        plt.matshow(dyn.im[60,:,:])
+        plt.matshow(dyn.im[:,170,:])
+        plt.matshow(dyn.im[:,:,170])
+        plt.show()
+
+    def __test_checkTimeAliasingUTE(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
+        plt.matshow(dyn[0].im[60,:,:])
         plt.matshow(dyn[1].im[60,:,:])
-        plt.matshow(dyn[1].im[:,170,:])
-        plt.matshow(dyn[1].im[:,:,170])
+        plt.show()
+
+    def test_checkTimeAliasingCarney(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
+        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[:,170,:])
+        plt.matshow(dyn.im[:,:,170])
         plt.show()
 
     def __test_createTracerCarney(self):
@@ -118,9 +137,9 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamicCarney(fcomment='_createDynamicCarney')
-        plt.matshow(dyn[1].im[60,:,:])
-        plt.matshow(dyn[1].im[:,170,:])
-        plt.matshow(dyn[1].im[:,:,170])
+        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[:,170,:])
+        plt.matshow(dyn.im[:,:,170])
         plt.show()
 
     # def test_custom_mumap(self):
@@ -131,4 +150,3 @@ class TestReconstruction(unittest.TestCase):
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestReconstruction)
 unittest.TextTestRunner(verbosity=2).run(suite)
-
