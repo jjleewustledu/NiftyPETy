@@ -1,11 +1,12 @@
 import numpy as np
 import os
+import respet.recon
+
+UMAP_SYNTH_FILEPREFIX = 'umapSynthFull'
 
 class Reconstruction:
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
-
-    UMAP_SYNTH_FILEPREFIX = 'umapSynthFull'
 
     span = 11
     bootstrap = 2
@@ -19,13 +20,9 @@ class Reconstruction:
     use_stored = True
     verbose = True
 
-
-
     @staticmethod
     def sampleStaticMethod():
         return 0.1234
-
-
 
     def createStaticNAC(self, fcomment=''):
         self.recmod = 1
@@ -63,11 +60,13 @@ class Reconstruction:
         print(times)
         return self.createDynamic(times, self.muUTE(), fcomment)
 
-    def createDynamicCarney(self, fcomment='_createDynamicCarney'):
+    def createDynamic2Carney(self, fcomment='_createDynamicCarney'):
         times = self.getTimes()
-        print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
+        times2 = self.getTimes2()
+        print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
         print(times)
-        return self.createDynamic(times, self.muCarney(), fcomment)
+        print(times2)
+        return self.createDynamic2(times, times2, self.muCarney(), fcomment)
 
     def createStatic(self, muo, fcomment='_createStatic'):
         """
@@ -121,7 +120,6 @@ class Reconstruction:
         """
         import nipet
         self._constants['VERBOSE'] = self.verbose
-        dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             hst = nipet.lm.mmrhist.hist(self._datain,
                                         self._txLUT, self._axLUT, self._constants,
@@ -138,6 +136,37 @@ class Reconstruction:
                                                 store_img=True,
                                                 ret_sct=True,
                                                 fcomment=fcomment + '_time' + str(it - 1))
+        return dynFrame
+
+    def createDynamic2(self, times, times2, muo, fcomment='_createDynamic2'):
+        """
+        :param times:   np.int_; [0,0] produces a single time-frame
+        :param times2:  np.int_
+        :param muo:     3D or 4D mu-map of imaged object
+        :return:        last result from nipet.prj.mmrprj.osemone
+        :rtype:         dictionary
+        """
+        import nipet
+        self._constants['VERBOSE'] = self.verbose
+        it = 1                                     # mu-map frame
+        for it2 in np.arange(1, times2.shape[0]):  # hist frame
+            hst = nipet.lm.mmrhist.hist(self._datain,
+                                        self._txLUT, self._axLUT, self._constants,
+                                        t0=times2[it2-1], t1=times2[it2],
+                                        store=True, use_stored=True)
+            if times2[it2-1] >= times[it]:
+                it = it + 1
+            dynFrame = nipet.prj.mmrprj.osemone(self._datain,
+                                                self.getMumaps(muo, it-1),
+                                                hst,
+                                                self._txLUT, self._axLUT, self._constants,
+                                                recmod = self.recmod,
+                                                itr    = self.itr,
+                                                fwhm   = self.fwhm,
+                                                mask_radious = self.maskRadius,
+                                                store_img=True,
+                                                ret_sct=True,
+                                                fcomment=fcomment + '_time' + str(it2 - 1))
         return dynFrame
 
     def createDynamicInMemory(self, times, muo, fcomment='_createDynamic'):
@@ -203,6 +232,13 @@ class Reconstruction:
         print(times[0:2])
         return self.createDynamic(times[0:3], self.muCarney(frames=[0,1]), fcomment)
 
+    def checkTimeHierarchiesCarney(self, fcomment='_checkTimeHierarchiesCarney'):
+        times = self.getTimes()
+        times2 = self.getTimes(self.getTaus2())
+        print("########## respet.recon.reconstruction.Reconstruction.checkTimeHierarchiesCarney ##########")
+        print(times)
+        return self.createDynamic2(times[0:3], times2[0:7], self.muCarney(frames=[0,1]), fcomment)
+
     def getAffine(self):
         """
         :return:  affine transformations for NIfTI
@@ -229,19 +265,29 @@ class Reconstruction:
         else:
             return [muo, self.muHardware()]
 
-    def getTaus(self):
+    @staticmethod
+    def getTaus():
         """
         :return:  1x65 array of frame durations:  10 x 30-sec-frames + 55 x 60-sec-frames
         :rtype:  numpy.int_
         """
         return np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
 
-    def getTimes(self):
+    @staticmethod
+    def getTaus2():
+        """
+        :return:  1x65 array of frame durations:  12 x 10-sec frames + 6 x 30-sec-frames + 55 x 60-sec-frames
+        :rtype:  numpy.int_
+        """
+        return np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+
+    def getTimes(self, taus=None):
         """
         :return:  up to 1x66 array of times including 0 and np.cumsum(taus); max(times) <= self.getTimeMax
         :rtype:  numpy.int_
         """
-        taus = self.getTaus()
+        if taus is None:
+            taus = self.getTaus()
         t = np.hstack((np.int_(0), np.cumsum(taus)))
         t = t[t <= self.getTimeMax()]
         return np.int_(t)
@@ -263,7 +309,7 @@ class Reconstruction:
         hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
-    def muCarney(self, fileprefix=UMAP_SYNTH_FILEPREFIX, fcomment='', frames=[]):
+    def muCarney(self, fileprefix=UMAP_SYNTH_FILEPREFIX, fcomment='', frames=None):
         """
         get NIfTI of the custom umap; see also img.mmrimg.obj_mumap lines 751-758
         :param fileprefix:  string for fileprefix of 4D image-object
@@ -274,10 +320,10 @@ class Reconstruction:
         import nibabel
         nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
         mu = np.float32(nim.get_data())
-        if (frames):
-            mu = np.transpose(mu[:,::-1,::-1,frames], (3, 2, 1, 0))
-        else:
+        if frames is None:
             mu = np.transpose(mu[:,::-1,::-1,:], (3, 2, 1, 0))
+        else:
+            mu = np.transpose(mu[:,::-1,::-1,frames], (3, 2, 1, 0))
         mu = np.squeeze(mu)
         mu[mu < 0] = 0
         return mu

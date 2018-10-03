@@ -16,35 +16,35 @@ class TestReconstruction(unittest.TestCase):
 
     #def tearDown(self):
 
-    def __test_sampleStaticMethod(self):
+    def _test_sampleStaticMethod(self):
         self.assertEqual(respet.recon.reconstruction.Reconstruction.sampleStaticMethod(), 0.1234)
 
-    def __test_locs(self):
+    def _test_locs(self):
         self.assertTrue(os.path.exists(self.twiliteLoc))
         self.assertTrue(os.path.exists(self.tracerLoc))
 
-    def __test_ctor(self):
+    def _test_ctor(self):
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
         self.assertIsInstance(obj, respet.recon.reconstruction.Reconstruction)
         print(obj._constants)
         print(obj._datain)
 
-    def __test_time_diff_norm_acq(self):
+    def _test_time_diff_norm_acq(self):
         import nipet
         cnt, txLUG, axLUT = nipet.mmraux.mmrinit()
         datain = nipet.mmraux.explore_input(self.twiliteLoc, cnt)
         nipet.mmraux.time_diff_norm_acq(datain)
         # normal result is silent
 
-    def __test_getTimeMax(self):
+    def _test_getTimeMax(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimeMax())
 
-    def __test_getTimes(self):
+    def _test_getTimes(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def __test_createTwiliteStaticNAC(self):
+    def _test_createTwiliteStaticNAC(self):
         os.chdir(self.twiliteLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
         obj.verbose = False
@@ -54,7 +54,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def __test_createTwiliteStaticUTE(self):
+    def _test_createTwiliteStaticUTE(self):
         os.chdir(self.twiliteLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
@@ -63,7 +63,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def __test_createTracerStaticNAC(self):
+    def _test_createTracerStaticNAC(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -73,7 +73,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def __test_createTracerStaticUTE(self):
+    def _test_createTracerStaticUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -83,7 +83,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def __test_createTracerStaticCarney(self):
+    def _test_createTracerStaticCarney(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -93,7 +93,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def __test_createTracerNAC(self):
+    def _test_createTracerNAC(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -103,7 +103,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         #plt.show()
 
-    def __test_createTracerUTE(self):
+    def _test_createTracerUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -113,7 +113,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def __test_checkTimeAliasingUTE(self):
+    def _test_checkTimeAliasingUTE(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -122,7 +122,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn[1].im[60,:,:])
         plt.show()
 
-    def test_checkTimeAliasingCarney(self):
+    def _test_checkTimeAliasingCarney(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
@@ -132,11 +132,21 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def __test_createTracerCarney(self):
+    def _test_checkTimeHierarchiesCarney(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
-        dyn = obj.createDynamicCarney(fcomment='_createDynamicCarney')
+        dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
+        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[:,170,:])
+        plt.matshow(dyn.im[:,:,170])
+        plt.show()
+
+    def test_createTracerCarney(self):
+        os.chdir(self.tracerLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
+        obj.verbose = False
+        dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         plt.matshow(dyn.im[80,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
