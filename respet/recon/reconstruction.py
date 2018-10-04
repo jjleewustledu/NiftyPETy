@@ -361,7 +361,7 @@ class Reconstruction:
         im  = ute['im']
         return im
 
-    def __init__(self, loc, umapSF='umapSynthFull'):
+    def __init__(self, loc, umapSF='umapSynthFull_b43'):
         """:param:  loc specifies the location of tracer rawdata.
            :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
