@@ -2,12 +2,12 @@ import numpy as np
 import os
 import respet.recon
 
-UMAP_SYNTH_FILEPREFIX = 'umapSynthFull'
 
 class Reconstruction:
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
+    umapSynthFileprefix = ''
     span = 11
     bootstrap = 2
     recmod = 3
@@ -18,6 +18,7 @@ class Reconstruction:
     tracerRawdataLocation = ''
     umapFolder = 'umap'
     use_stored = True
+    use_stored_hist = False
     verbose = True
 
     @staticmethod
@@ -31,10 +32,12 @@ class Reconstruction:
         return self.createStatic(self.muNAC(), fcomment)
 
     def createStaticUTE(self, fcomment=''):
+        self.recmod = 1
         return self.createStatic(self.muUTE(), fcomment)
 
     def createStaticCarney(self, fcomment=''):
-        return self.createStatic(self.muCarney(frames=[0]), fcomment)
+        self.recmod = 1
+        return self.createStatic(self.muCarney(), fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
         times = self.getTimes()
@@ -62,7 +65,7 @@ class Reconstruction:
 
     def createDynamic2Carney(self, fcomment='_createDynamicCarney'):
         times = self.getTimes()
-        times2 = self.getTimes2()
+        times2 = self.getTimes(self.getTaus2())
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
         print(times)
         print(times2)
@@ -81,7 +84,7 @@ class Reconstruction:
         hst = nipet.lm.mmrhist.hist(self._datain,
                                     self._txLUT, self._axLUT, self._constants,
                                     t0=0, t1=0,
-                                    store=True, use_stored=True)
+                                    store=True, use_stored=self.use_stored_hist)
         sta = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
                                        self._txLUT, self._axLUT, self._constants,
                                        recmod = self.recmod,
@@ -124,7 +127,7 @@ class Reconstruction:
             hst = nipet.lm.mmrhist.hist(self._datain,
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times[it-1], t1=times[it],
-                                        store=True, use_stored=True)
+                                        store=True, use_stored=self.use_stored_hist)
             dynFrame = nipet.prj.mmrprj.osemone(self._datain,
                                                 self.getMumaps(muo, it-1),
                                                 hst,
@@ -140,8 +143,8 @@ class Reconstruction:
 
     def createDynamic2(self, times, times2, muo, fcomment='_createDynamic2'):
         """
-        :param times:   np.int_; [0,0] produces a single time-frame
-        :param times2:  np.int_
+        :param times:   np.int_ for mu-map frames; [0,0] produces a single time-frame
+        :param times2:  np.int_ for emission frames
         :param muo:     3D or 4D mu-map of imaged object
         :return:        last result from nipet.prj.mmrprj.osemone
         :rtype:         dictionary
@@ -153,7 +156,7 @@ class Reconstruction:
             hst = nipet.lm.mmrhist.hist(self._datain,
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times2[it2-1], t1=times2[it2],
-                                        store=True, use_stored=True)
+                                        store=True, use_stored=self.use_stored_hist)
             if times2[it2-1] >= times[it]:
                 it = it + 1
             dynFrame = nipet.prj.mmrprj.osemone(self._datain,
@@ -309,7 +312,7 @@ class Reconstruction:
         hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
-    def muCarney(self, fileprefix=UMAP_SYNTH_FILEPREFIX, fcomment='', frames=None):
+    def muCarney(self, fileprefix=None, fcomment='', frames=None):
         """
         get NIfTI of the custom umap; see also img.mmrimg.obj_mumap lines 751-758
         :param fileprefix:  string for fileprefix of 4D image-object
@@ -318,10 +321,17 @@ class Reconstruction:
         :return:  np.float32
         """
         import nibabel
+        if fileprefix is None:
+            fileprefix = self.umapSynthFileprefix
         nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
         mu = np.float32(nim.get_data())
         if frames is None:
-            mu = np.transpose(mu[:,::-1,::-1,:], (3, 2, 1, 0))
+            if np.ndim(mu) == 3:
+                mu = np.transpose(mu[:,::-1,::-1], (2, 1, 0))
+            elif np.ndim(mu) == 4:
+                mu = np.transpose(mu[:,::-1,::-1,:], (3, 2, 1, 0))
+            else:
+                raise ValueError('unsupported np.ndim(Reconstruction.muCarney.mu)->' + str(np.ndim(mu)))
         else:
             mu = np.transpose(mu[:,::-1,::-1,frames], (3, 2, 1, 0))
         mu = np.squeeze(mu)
@@ -351,7 +361,7 @@ class Reconstruction:
         im  = ute['im']
         return im
 
-    def __init__(self, loc):
+    def __init__(self, loc, umapSF='umapSynthFull'):
         """:param:  loc specifies the location of tracer rawdata.
            :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
@@ -371,7 +381,7 @@ class Reconstruction:
         self.tracerRawdataLocation = loc
         self._organizeRawdataLocation()
         self._mmrinit()
-
+        self.umapSynthFileprefix = umapSF
 
 
     _constants = {}
