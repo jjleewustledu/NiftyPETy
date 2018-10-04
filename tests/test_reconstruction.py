@@ -63,6 +63,15 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
+    def _test_createTwiliteStaticCarney(self):
+        os.chdir(self.twiliteLoc)
+        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc, umapSF='umapSynth_b43_on_createStaticNAC')
+        sta = obj.createStaticCarney(fcomment='_createStaticCarney')
+        plt.matshow(sta.im[60,:,:])
+        plt.matshow(sta.im[:,170,:])
+        plt.matshow(sta.im[:,:,170])
+        plt.show()
+
     def _test_createTracerStaticNAC(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
@@ -127,27 +136,27 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
-        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def _test_checkTimeHierarchiesCarney(self):
+    def test_checkTimeHierarchiesCarney(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
-        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def test_createTracerCarney(self):
+    def _test_createTracerCarney(self):
         os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.verbose = False
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
-        plt.matshow(dyn.im[80,:,:])
+        plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
         plt.show()
