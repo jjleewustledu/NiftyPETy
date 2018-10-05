@@ -77,7 +77,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def _test_createTwiliteStaticCarney(self):
+    def test_createTwiliteStaticCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc, umapSF='umapSynth_b43_on_createStaticNAC')
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta.im[60,:,:])
@@ -101,7 +101,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def test_createTracerStaticCarney(self):
+    def _test_createTracerStaticCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         obj.itr = 3
         obj.fwhm = 0

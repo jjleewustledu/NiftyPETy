@@ -403,6 +403,7 @@ class Reconstruction:
             self.tracerRawdataLocation = loc
         self.umapSynthFileprefix = umapSF
         self.verbose = verbose
+        self.organizeRawdataLocation()
         self._mmrinit()
 
 
