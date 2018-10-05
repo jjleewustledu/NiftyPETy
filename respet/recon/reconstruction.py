@@ -15,11 +15,20 @@ class Reconstruction:
     fwhm = 4.0
     maskRadius = 29
     hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
-    tracerRawdataLocation = ''
     umapFolder = 'umap'
     use_stored = True
     use_stored_hist = False
-    verbose = True
+    verbose = False
+
+    @property
+    def tracerRawdataLocation(self):
+        return self._tracerRawdataLocation
+
+    @tracerRawdataLocation.setter
+    def tracerRawdataLocation(self, s):
+        assert os.path.exists(s)
+        os.chdir(s)
+        self._tracerRawdataLocation = s
 
     @staticmethod
     def sampleStaticMethod():
@@ -27,8 +36,6 @@ class Reconstruction:
 
     def createStaticNAC(self, fcomment=''):
         self.recmod = 1
-        self.itr = 3
-        self.fwhm = 0
         return self.createStatic(self.muNAC(), fcomment)
 
     def createStaticUTE(self, fcomment=''):
@@ -37,7 +44,7 @@ class Reconstruction:
 
     def createStaticCarney(self, fcomment=''):
         self.recmod = 1
-        return self.createStatic(self.muCarney(), fcomment)
+        return self.createStatic(self.muCarney(frames=[0]), fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
         times = self.getTimes()
@@ -361,7 +368,22 @@ class Reconstruction:
         im  = ute['im']
         return im
 
-    def __init__(self, loc, umapSF='umapSynthFull_b43'):
+    def organizeRawdataLocation(self):
+        import glob
+        import dicom
+        try:
+            fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
+            for fn in fns:
+                ds = dicom.read_file(fn)
+                if ds.ImageType[2] == 'PET_NORM':
+                    self._moveToNamedLocation(fn, 'norm')
+                if ds.ImageType[2] == 'PET_LISTMODE':
+                    self._moveToNamedLocation(fn, 'LM')
+        except OSError:
+            os.listdir(self.tracerRawdataLocation)
+            raise
+
+    def __init__(self, loc=None, umapSF='umapSynthFull_b43', verbose=False):
         """:param:  loc specifies the location of tracer rawdata.
            :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
@@ -377,11 +399,11 @@ class Reconstruction:
                           -rwxr-xr-x+  1 jjlee wheel 6817490860 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.bf
                           -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm"""
 
-        os.chdir(loc)
-        self.tracerRawdataLocation = loc
-        self._organizeRawdataLocation()
-        self._mmrinit()
+        if loc:
+            self.tracerRawdataLocation = loc
         self.umapSynthFileprefix = umapSF
+        self.verbose = verbose
+        self._mmrinit()
 
 
     _constants = {}
@@ -402,21 +424,6 @@ class Reconstruction:
         for i in range(1, len(olist)):
             im = np.append(im, [olist[i].im], axis=0)
         return np.float_(im)
-
-    def _organizeRawdataLocation(self):
-        import glob
-        import dicom
-        try:
-            fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
-            for fn in fns:
-                ds = dicom.read_file(fn)
-                if ds.ImageType[2] == 'PET_NORM':
-                    self._moveToNamedLocation(fn, 'norm')
-                if ds.ImageType[2] == 'PET_LISTMODE':
-                    self._moveToNamedLocation(fn, 'LM')
-        except OSError:
-            os.listdir(self.tracerRawdataLocation)
-            raise
 
     def _moveToNamedLocation(self, dcm, name):
         import shutil
@@ -446,9 +453,10 @@ class Reconstruction:
         self._axLUT = ax
         d = nipet.mmraux.explore_input(self.tracerRawdataLocation, self._constants)
         self._datain = d
-        print("########## respet.recon.reconstruction.Reconstruction._mmrinit ##########")
-        print(self._constants)
-        print(self._datain)
+        if self.verbose:
+            print("########## respet.recon.reconstruction.Reconstruction._mmrinit ##########")
+            print(self._constants)
+            print(self._datain)
 
     def _tracer(self):
         import re

@@ -10,24 +10,43 @@ class TestReconstruction(unittest.TestCase):
     tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY36/V3/FDG_V3-NiftyPETy'
     testObj = []
 
-    #def setUp(self):
-        #os.chdir(self.twiliteLoc)
-        #self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+    @classmethod
+    def setUpClass(self):
+        self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+        self.testObj.itr = 3
+        self.testObj.fwhm = 0
+        self.testObj.use_stored_hist = True
 
-    #def tearDown(self):
+    #@classmethod
+    #def tearDownClass(self):
 
     def _test_sampleStaticMethod(self):
         self.assertEqual(respet.recon.reconstruction.Reconstruction.sampleStaticMethod(), 0.1234)
 
-    def _test_locs(self):
+    def test_locs(self):
         self.assertTrue(os.path.exists(self.twiliteLoc))
         self.assertTrue(os.path.exists(self.tracerLoc))
 
-    def _test_ctor(self):
-        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        self.assertIsInstance(obj, respet.recon.reconstruction.Reconstruction)
-        print(obj._constants)
-        print(obj._datain)
+    def test_ctor(self):
+        self.assertIsInstance(self.testObj, respet.recon.reconstruction.Reconstruction)
+        from numpy import array
+        from numpy.testing import assert_array_equal
+        c = self.testObj._constants
+        self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr'])
+        self.assertEqual(c['NSRNG'], 8)
+        self.assertEqual(c['NSN11'], 837)
+        self.assertEqual(c['NRNG'], 64)
+        self.assertEqual(c['NBCKT'], 224)
+        self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
+        self.assertEqual(c['ISOTOPE'], 'F18')
+        self.assertEqual(c['SPN'], 11)
+        assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
+        self.assertEqual(c['NSN64'], 4096)
+        self.assertEqual(c['CWND'], 5.85938e-09)
+        self.assertEqual(c['SCTSCLEM'], [0.33858267716535434, 0.3313953488372093, 0.3313953488372093])
+        self.assertEqual(c['BTP'], 2)
+        assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
+        self.assertDictEqual(self.testObj._datain, {'em_nocrr': '', 'lm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.bf', 'mumapDCM#': 128, 'mumapUTE': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_obj/mumapUTE.npy', 'mumapCT': '', 'lm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.dcm', 'MRT2W': '', 'pCT': '', 'nrm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.dcm', 'T1nii': '', 'corepath': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy', 'lm_ima': '', 'MRT2WN': 0, 'sinos': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/sinos_s11_n1_frm(0-0).npy', 'MRT1W#': 0, 'nrm_ima': '', 'nrm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.bf', 'hmumap': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_hdw/hmumap.npy', 'T1lbl': '', 'MRT1W': '', 'mumapDCM': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/umap', 'em_crr': '', 'T1bc': ''})
 
     def _test_time_diff_norm_acq(self):
         import nipet
@@ -36,35 +55,29 @@ class TestReconstruction(unittest.TestCase):
         nipet.mmraux.time_diff_norm_acq(datain)
         # normal result is silent
 
-    def _test_getTimeMax(self):
+    def test_getTimeMax(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        print(obj.getTimeMax())
+        self.assertEqual(obj.getTimeMax(), 3601)
 
     def _test_getTimes(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
     def _test_createTwiliteStaticNAC(self):
-        os.chdir(self.twiliteLoc)
-        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        obj.verbose = False
-        sta = obj.createStaticNAC(fcomment='_createStaticNAC')
+        sta = self.testObj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
     def _test_createTwiliteStaticUTE(self):
-        os.chdir(self.twiliteLoc)
-        obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        sta = obj.createStaticUTE(fcomment='_createStaticUTE')
+        sta = self.testObj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
     def _test_createTwiliteStaticCarney(self):
-        os.chdir(self.twiliteLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc, umapSF='umapSynth_b43_on_createStaticNAC')
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta.im[60,:,:])
@@ -73,9 +86,7 @@ class TestReconstruction(unittest.TestCase):
         plt.show()
 
     def _test_createTracerStaticNAC(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
@@ -83,19 +94,17 @@ class TestReconstruction(unittest.TestCase):
         plt.show()
 
     def _test_createTracerStaticUTE(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def _test_createTracerStaticCarney(self):
-        os.chdir(self.tracerLoc)
+    def test_createTracerStaticCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
+        obj.itr = 3
+        obj.fwhm = 0
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
@@ -103,9 +112,7 @@ class TestReconstruction(unittest.TestCase):
         plt.show()
 
     def _test_createTracerNAC(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
@@ -113,9 +120,7 @@ class TestReconstruction(unittest.TestCase):
         #plt.show()
 
     def _test_createTracerUTE(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
@@ -123,28 +128,22 @@ class TestReconstruction(unittest.TestCase):
         plt.show()
 
     def _test_checkTimeAliasingUTE(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
         plt.matshow(dyn[0].im[60,:,:])
         plt.matshow(dyn[1].im[60,:,:])
         plt.show()
 
     def _test_checkTimeAliasingCarney(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def test_checkTimeHierarchiesCarney(self):
-        os.chdir(self.tracerLoc)
+    def _test_checkTimeHierarchiesCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
@@ -152,9 +151,7 @@ class TestReconstruction(unittest.TestCase):
         plt.show()
 
     def _test_createTracerCarney(self):
-        os.chdir(self.tracerLoc)
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
-        obj.verbose = False
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
