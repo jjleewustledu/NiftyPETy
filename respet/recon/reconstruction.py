@@ -3,16 +3,16 @@ import os
 import respet.recon
 
 
-class Reconstruction:
+class Reconstruction(object):
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
     umapSynthFileprefix = ''
-    span = 11
+    span = 1
     bootstrap = 2
     recmod = 3
     itr = 5
-    fwhm = 4.0
+    fwhm = 4.3
     maskRadius = 29
     hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
     umapFolder = 'umap'
@@ -230,6 +230,19 @@ class Reconstruction:
         elif len(im.shape) == 4:
             nipet.img.mmrimg.array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
 
+    def createTimeMerged(self, fprefix='1.3.12.2_itr5_createDynamic2Carney'):
+        from subprocess import check_call
+        import shlex
+        pwd0 = os.getcwd()
+        pwd  = os.path.join(self._datain['corepath'], 'img')
+        os.chdir(pwd)
+        args = fprefix
+        for it in range(len(self.getTimes(self.getTaus2()))-1):
+            args += ' ' + fprefix + '_time' + str(it)
+        check_call(shlex.split("fslmerge -t " + args))
+        os.chdir(pwd0)
+        return os.path.join(pwd, fprefix + '.nii.gz')
+
     def checkTimeAliasingUTE(self, fcomment='_checkTimeAliasingUTE'):
         times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingUTE ##########")
@@ -286,7 +299,7 @@ class Reconstruction:
     @staticmethod
     def getTaus2():
         """
-        :return:  1x65 array of frame durations:  12 x 10-sec frames + 6 x 30-sec-frames + 55 x 60-sec-frames
+        :return:  1x73 array of frame durations:  12 x 10-sec frames + 6 x 30-sec-frames + 55 x 60-sec-frames
         :rtype:  numpy.int_
         """
         return np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
@@ -407,14 +420,15 @@ class Reconstruction:
         self._mmrinit()
 
 
-    _constants = {}
-    _txLUT = {}
-    _axLUT = {}
-    _datain = {}
-    _frame = 0
-    _umapIdx = 0
-    _t0 = 0
-    _t1 = 0
+    # listing of instance variables:
+    # _constants = {}
+    # _txLUT = {}
+    # _axLUT = {}
+    # _datain = {}
+    # _frame = 0
+    # _umapIdx = 0
+    # _t0 = 0
+    # _t1 = 0
 
     def _gatherOsemoneList(self, olist):
         """

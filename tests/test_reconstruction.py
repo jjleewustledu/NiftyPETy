@@ -7,7 +7,7 @@ import numpy as np
 class TestReconstruction(unittest.TestCase):
 
     twiliteLoc = '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy'
-    tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY36/V3/FDG_V3-NiftyPETy'
+    tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY28/V2/FDG_V2-NiftyPETy'
     testObj = []
 
     @classmethod
@@ -39,7 +39,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['NBCKT'], 224)
         self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
         self.assertEqual(c['ISOTOPE'], 'F18')
-        self.assertEqual(c['SPN'], 11)
+        self.assertEqual(c['SPN'], 1)
         assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
         self.assertEqual(c['NSN64'], 4096)
         self.assertEqual(c['CWND'], 5.85938e-09)
@@ -77,7 +77,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def test_createTwiliteStaticCarney(self):
+    def _test_createTwiliteStaticCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc, umapSF='umapSynth_b43_on_createStaticNAC')
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta.im[60,:,:])
@@ -150,7 +150,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def _test_createTracerCarney(self):
+    def test_createTracerCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         plt.matshow(dyn.im[60,:,:])
