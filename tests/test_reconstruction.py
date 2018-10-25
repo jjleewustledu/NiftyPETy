@@ -6,15 +6,15 @@ import numpy as np
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc = '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy'
-    tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY28/V2/FDG_V2-NiftyPETy'
+    twiliteLoc = '/home2/jjlee/Local/Pawel/HYGLY23/V2/Twilite_V2-NiftyPETy'
+    tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY23/V2/FDG_V2-NiftyPETy'
     testObj = []
 
     @classmethod
     def setUpClass(self):
         self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
-        self.testObj.itr = 3
-        self.testObj.fwhm = 0
+        self.testObj.itr = 5
+        self.testObj.fwhm = 4.3/2.08626 # num. of voxels
         self.testObj.use_stored_hist = True
 
     #@classmethod
@@ -46,7 +46,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['SCTSCLEM'], [0.33858267716535434, 0.3313953488372093, 0.3313953488372093])
         self.assertEqual(c['BTP'], 2)
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
-        self.assertDictEqual(self.testObj._datain, {'em_nocrr': '', 'lm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.bf', 'mumapDCM#': 128, 'mumapUTE': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_obj/mumapUTE.npy', 'mumapCT': '', 'lm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.dcm', 'MRT2W': '', 'pCT': '', 'nrm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.dcm', 'T1nii': '', 'corepath': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy', 'lm_ima': '', 'MRT2WN': 0, 'sinos': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/sinos_s11_n1_frm(0-0).npy', 'MRT1W#': 0, 'nrm_ima': '', 'nrm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.bf', 'hmumap': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_hdw/hmumap.npy', 'T1lbl': '', 'MRT1W': '', 'mumapDCM': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/umap', 'em_crr': '', 'T1bc': ''})
+        #self.assertDictEqual(self.testObj._datain, {'em_nocrr': '', 'lm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.bf', 'mumapDCM#': 128, 'mumapUTE': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_obj/mumapUTE.npy', 'mumapCT': '', 'lm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.dcm', 'MRT2W': '', 'pCT': '', 'nrm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.dcm', 'T1nii': '', 'corepath': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy', 'lm_ima': '', 'MRT2WN': 0, 'sinos': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/sinos_s11_n1_frm(0-0).npy', 'MRT1W#': 0, 'nrm_ima': '', 'nrm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.bf', 'hmumap': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_hdw/hmumap.npy', 'T1lbl': '', 'MRT1W': '', 'mumapDCM': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/umap', 'em_crr': '', 'T1bc': ''})
 
     def _test_time_diff_norm_acq(self):
         import nipet
@@ -63,7 +63,7 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def _test_createTwiliteStaticNAC(self):
+    def test_createTwiliteStaticNAC(self):
         sta = self.testObj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
@@ -150,13 +150,22 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def test_createTracerCarney(self):
+    def _test_createTracerCarney(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
         plt.show()
+
+    def _test_createUmapSynthFullBlurred_tracer(self):
+        obj = respet.recon.reconstruction.Reconstruction(
+            self.tracerLoc,
+            '/data/nil-bluearc/raichle/PPGdata/jjlee2/HYGLY23/V2/FDG_V2-NAC')
+        if not os.path.isfile(obj.umapSynthFileprefix + '.nii.gz'):
+            obj.createUmapSynthFullBlurred()
+        else:
+            print(obj.umapSynthFileprefix + '.nii.gz already exists')
 
     # def test_custom_mumap(self):
     #     mu = self.testObj.custom_mumap([],

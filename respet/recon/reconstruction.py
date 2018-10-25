@@ -12,9 +12,10 @@ class Reconstruction(object):
     bootstrap = 2
     recmod = 3
     itr = 5
-    fwhm = 4.3
+    fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
     maskRadius = 29
-    hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    hmuSelection = [1,2] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
     use_stored = True
     use_stored_hist = False
@@ -27,7 +28,6 @@ class Reconstruction(object):
     @tracerRawdataLocation.setter
     def tracerRawdataLocation(self, s):
         assert os.path.exists(s)
-        os.chdir(s)
         self._tracerRawdataLocation = s
 
     @staticmethod
@@ -243,6 +243,24 @@ class Reconstruction(object):
         os.chdir(pwd0)
         return os.path.join(pwd, fprefix + '.nii.gz')
 
+    def createUmapSynthFullBlurred(self):
+        """
+        :return:  os.path.join(tracerRawdataLocation, umapSynthFileprefix+'.nii.gz') with 4.3 mm fwhm blur
+        """
+        from subprocess import call
+        pwd0 = os.getcwd()
+        os.chdir(self._tracerRawdataLocation)
+        call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' + os.path.join(self._tracerNacLocation, self.umap4dfp) + '.ifh umap_.nii',
+             shell=True, executable='/bin/bash')
+        call('/bin/gzip umap_.nii', shell=True, executable='/bin/bash')
+        call('/usr/local/fsl/bin/fslroi umap_ umap__ -86 344 -86 344 0 -1',
+             shell=True, executable='/bin/bash')
+        call('/usr/local/fsl/bin/fslmaths umap__ -s 1.826 ' + self.umapSynthFileprefix,
+             shell=True, executable='/bin/bash')
+        os.remove('umap_.nii.gz')
+        os.remove('umap__.nii.gz')
+        os.chdir(pwd0)
+
     def checkTimeAliasingUTE(self, fcomment='_checkTimeAliasingUTE'):
         times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingUTE ##########")
@@ -343,7 +361,7 @@ class Reconstruction(object):
         import nibabel
         if fileprefix is None:
             fileprefix = self.umapSynthFileprefix
-        nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
+        nim = nibabel.load(os.path.join(self._tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
         mu = np.float32(nim.get_data())
         if frames is None:
             if np.ndim(mu) == 3:
@@ -385,7 +403,7 @@ class Reconstruction(object):
         import glob
         import dicom
         try:
-            fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
+            fns = glob.glob(os.path.join(self._tracerRawdataLocation, '*.dcm'))
             for fn in fns:
                 ds = dicom.read_file(fn)
                 if ds.ImageType[2] == 'PET_NORM':
@@ -393,10 +411,10 @@ class Reconstruction(object):
                 if ds.ImageType[2] == 'PET_LISTMODE':
                     self._moveToNamedLocation(fn, 'LM')
         except OSError:
-            os.listdir(self.tracerRawdataLocation)
+            os.listdir(self._tracerRawdataLocation)
             raise
 
-    def __init__(self, loc=None, umapSF='umapSynthFull_b43', verbose=False):
+    def __init__(self, loc=None, nac=None, umapSF='umapSynthFull_b43', verbose=False):
         """:param:  loc specifies the location of tracer rawdata.
            :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
@@ -413,7 +431,12 @@ class Reconstruction(object):
                           -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm"""
 
         if loc:
-            self.tracerRawdataLocation = loc
+            assert os.path.exists(loc)
+            self._tracerRawdataLocation = loc
+        if nac:
+            assert os.path.exists(nac)
+            self._tracerNacLocation = nac
+        os.chdir(self._tracerRawdataLocation)
         self.umapSynthFileprefix = umapSF
         self.verbose = verbose
         self.organizeRawdataLocation()
@@ -429,6 +452,8 @@ class Reconstruction(object):
     # _umapIdx = 0
     # _t0 = 0
     # _t1 = 0
+    # _tracerNacLocation
+    # _tracerRawdataLocation
 
     def _gatherOsemoneList(self, olist):
         """
@@ -443,7 +468,7 @@ class Reconstruction(object):
     def _moveToNamedLocation(self, dcm, name):
         import shutil
         import errno
-        namedLoc = os.path.join(self.tracerRawdataLocation, name)
+        namedLoc = os.path.join(self._tracerRawdataLocation, name)
         if not os.path.exists(namedLoc):
             os.makedirs(namedLoc)
         try:
@@ -466,7 +491,7 @@ class Reconstruction(object):
         self._constants['BTP'] = self.bootstrap
         self._txLUT = tx
         self._axLUT = ax
-        d = nipet.mmraux.explore_input(self.tracerRawdataLocation, self._constants)
+        d = nipet.mmraux.explore_input(self._tracerRawdataLocation, self._constants)
         self._datain = d
         if self.verbose:
             print("########## respet.recon.reconstruction.Reconstruction._mmrinit ##########")
@@ -475,7 +500,7 @@ class Reconstruction(object):
 
     def _tracer(self):
         import re
-        return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
+        return re.split('_', os.path.basename(self._tracerRawdataLocation))[0]
 
     def _createDescrip(self, hst, muh, muo):
         """
