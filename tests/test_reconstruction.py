@@ -32,7 +32,7 @@ class TestReconstruction(unittest.TestCase):
         from numpy import array
         from numpy.testing import assert_array_equal
         c = self.testObj._constants
-        self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr'])
+        self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr', 'umap_HNMCU_10606489.v.hdr', 'umap_BR4CH_10185525.v.hdr'])
         self.assertEqual(c['NSRNG'], 8)
         self.assertEqual(c['NSN11'], 837)
         self.assertEqual(c['NRNG'], 64)
@@ -48,8 +48,8 @@ class TestReconstruction(unittest.TestCase):
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
         #self.assertDictEqual(self.testObj._datain, {'em_nocrr': '', 'lm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.bf', 'mumapDCM#': 128, 'mumapUTE': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_obj/mumapUTE.npy', 'mumapCT': '', 'lm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.dcm', 'MRT2W': '', 'pCT': '', 'nrm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.dcm', 'T1nii': '', 'corepath': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy', 'lm_ima': '', 'MRT2WN': 0, 'sinos': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/sinos_s11_n1_frm(0-0).npy', 'MRT1W#': 0, 'nrm_ima': '', 'nrm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.bf', 'hmumap': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_hdw/hmumap.npy', 'T1lbl': '', 'MRT1W': '', 'mumapDCM': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/umap', 'em_crr': '', 'T1bc': ''})
 
-    def _test_time_diff_norm_acq(self):
-        import nipet
+    def test_time_diff_norm_acq(self):
+        from niftypet import nipet
         cnt, txLUG, axLUT = nipet.mmraux.mmrinit()
         datain = nipet.mmraux.explore_input(self.twiliteLoc, cnt)
         nipet.mmraux.time_diff_norm_acq(datain)

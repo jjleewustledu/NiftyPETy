@@ -14,10 +14,10 @@ class Reconstruction(object):
     itr = 5
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
     maskRadius = 29
-    hmuSelection = [1,2] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    hmuSelection = [1,4,5] # selects from ~/.niftypet/resources.py:  hrdwr_mu
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
-    use_stored = True
+    use_stored = False #True
     use_stored_hist = False
     verbose = False
 
@@ -36,10 +36,13 @@ class Reconstruction(object):
 
     def createStaticNAC(self, fcomment=''):
         self.recmod = 1
+        self.bootstrap = 0
+        self.fwhm = 0
         return self.createStatic(self.muNAC(), fcomment)
 
     def createStaticUTE(self, fcomment=''):
         self.recmod = 1
+        self.bootstrap = 0
         return self.createStatic(self.muUTE(), fcomment)
 
     def createStaticCarney(self, fcomment=''):
@@ -51,6 +54,7 @@ class Reconstruction(object):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
         print(times)
         self.recmod = 1
+        self.bootstrap = 0
         self.itr = 3
         self.fwhm = 0
         return self.createDynamic(times, self.muNAC(), fcomment)
@@ -85,7 +89,7 @@ class Reconstruction(object):
         :return:          result from nipet.prj.mmrprj.osemone
         :rtype:           dictionary
         """
-        import nipet
+        from niftypet import nipet
         self._constants['VERBOSE'] = self.verbose
         mumaps = [muo, self.muHardware()]
         hst = nipet.lm.mmrhist.hist(self._datain,
@@ -109,7 +113,7 @@ class Reconstruction(object):
         :param hst:       dictionary from nipet.lm.mmrhist.hist
         :param fcomment:  string to append to canonical filename
         """
-        import nipet
+        from niftypet import nipet
         fout = self._createFilename(fcomment)
         im = sta.im
         if self._constants['VERBOSE']:
@@ -128,7 +132,7 @@ class Reconstruction(object):
         :return:       last result from nipet.prj.mmrprj.osemone
         :rtype:        dictionary
         """
-        import nipet
+        from niftypet import nipet
         self._constants['VERBOSE'] = self.verbose
         for it in np.arange(1, times.shape[0]):
             hst = nipet.lm.mmrhist.hist(self._datain,
@@ -156,7 +160,7 @@ class Reconstruction(object):
         :return:        last result from nipet.prj.mmrprj.osemone
         :rtype:         dictionary
         """
-        import nipet
+        from niftypet import nipet
         self._constants['VERBOSE'] = self.verbose
         it = 1                                     # mu-map frame
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
@@ -187,7 +191,7 @@ class Reconstruction(object):
         :return:       result from nipet.prj.mmrprj.osemone
         :rtype:        dictionary
         """
-        import nipet
+        from niftypet import nipet
         self._constants['VERBOSE'] = self.verbose
         dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
@@ -216,7 +220,7 @@ class Reconstruction(object):
         :param hst:       dictionary from nipet.lm.mmrhist.hist
         :param fcomment:  string to append to canonical filename
         """
-        import nipet
+        from niftypet import nipet
         fout = self._createFilename(fcomment)
         im = self._gatherOsemoneList(dyn)
         if self._constants['VERBOSE']:
@@ -285,7 +289,7 @@ class Reconstruction(object):
         :return:  affine transformations for NIfTI
         :rtype:   list 2D numeric
         """
-        import nipet
+        from niftypet import nipet
         cnt = self._constants
         vbed, hbed = nipet.mmraux.vh_bedpos(self._datain, cnt)  # bed positions
 
@@ -337,7 +341,7 @@ class Reconstruction(object):
         """
         :return:  max time available from listmode data in sec.
         """
-        from nipet.lm import mmr_lmproc
+        from niftypet.nipet.lm import mmr_lmproc
         nele, ttags, tpos = mmr_lmproc.lminfo(self._datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
 
@@ -346,7 +350,7 @@ class Reconstruction(object):
         :return:  hardware mu-map image provided by nipet.img.mmrimg.hdw_mumap.
         See also self.hmuSelection.
         """
-        import nipet
+        from niftypet import nipet
         hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
@@ -394,18 +398,18 @@ class Reconstruction(object):
         :return:  mu-map image from Siemens UTE
         :rtype:  numpy.array
         """
-        import nipet
+        from niftypet import nipet
         ute = nipet.img.mmrimg.obj_mumap(self._datain, self._constants, store=True)
         im  = ute['im']
         return im
 
     def organizeRawdataLocation(self):
         import glob
-        import dicom
+        import pydicom
         try:
             fns = glob.glob(os.path.join(self._tracerRawdataLocation, '*.dcm'))
             for fn in fns:
-                ds = dicom.read_file(fn)
+                ds = pydicom.read_file(fn)
                 if ds.ImageType[2] == 'PET_NORM':
                     self._moveToNamedLocation(fn, 'norm')
                 if ds.ImageType[2] == 'PET_LISTMODE':
@@ -484,7 +488,7 @@ class Reconstruction(object):
                 raise
 
     def _mmrinit(self):
-        import nipet
+        from niftypet import nipet
         c,tx,ax = nipet.mmraux.mmrinit()
         self._constants = c
         self._constants['SPN'] = self.span
@@ -510,7 +514,7 @@ class Reconstruction(object):
         :return:     description text for NIfTI
         if only bed present, attnum := 0.5
         """
-        import nipet
+        from niftypet import nipet
         cnt    = self._constants
         attnum = (1 * (np.sum(muh) > 0.5) + 1 * (np.sum(muo) > 0.5)) / 2.
         ncmp,_ = nipet.mmrnorm.get_components(self._datain, cnt)
@@ -530,7 +534,7 @@ class Reconstruction(object):
         return desc
 
     def _createFilename(self, fcomment):
-        import nipet
+        from niftypet import nipet
         fn = os.path.join(self._datain['corepath'], 'img')
         nipet.mmraux.create_dir(fn)
         fn = os.path.join(fn, os.path.basename(self._datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
