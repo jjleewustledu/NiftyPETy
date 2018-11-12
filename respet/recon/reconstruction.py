@@ -14,12 +14,12 @@ class Reconstruction(object):
     itr = 5
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
     maskRadius = 29
-    hmuSelection = [1,4,5] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
     use_stored = False #True
     use_stored_hist = False
-    verbose = False
+    verbose = True
 
     @property
     def tracerRawdataLocation(self):
@@ -96,7 +96,7 @@ class Reconstruction(object):
                                     self._txLUT, self._axLUT, self._constants,
                                     t0=0, t1=0,
                                     store=True, use_stored=self.use_stored_hist)
-        sta = nipet.prj.mmrprj.osemone(self._datain, mumaps, hst,
+        sta = nipet.prj.mmrrec.osemone(self._datain, mumaps, hst,
                                        self._txLUT, self._axLUT, self._constants,
                                        recmod = self.recmod,
                                        itr    = self.itr,
@@ -123,7 +123,7 @@ class Reconstruction(object):
         muo,muh = mumaps  # object and hardware mu-maps
         desc = self._createDescrip(hst, muh, muo)
         assert len(im.shape) == 3, "Reconstruction.saveStatic.im.shape == " + str(len(im.shape))
-        nipet.img.mmrimg.array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
+        self._array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
 
     def createDynamic(self, times, muo, fcomment='_createDynamic'):
         """
@@ -230,9 +230,9 @@ class Reconstruction(object):
         muo,muh = mumaps  # object and hardware mu-maps
         desc = self._createDescrip(hst, muh, muo)
         if len(im.shape) == 3:
-            nipet.img.mmrimg.array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
+            self._array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
         elif len(im.shape) == 4:
-            nipet.img.mmrimg.array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
+            self._array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
 
     def createTimeMerged(self, fprefix='1.3.12.2_itr5_createDynamic2Carney'):
         from subprocess import check_call
@@ -350,7 +350,7 @@ class Reconstruction(object):
         :return:  hardware mu-map image provided by nipet.img.mmrimg.hdw_mumap.
         See also self.hmuSelection.
         """
-        from niftypet import nipet
+        from respet import nipet
         hmudic = nipet.img.mmrimg.hdw_mumap(self._datain, self.hmuSelection, self._constants, use_stored=self.use_stored)
         return hmudic['im']
 
@@ -458,6 +458,40 @@ class Reconstruction(object):
     # _t1 = 0
     # _tracerNacLocation
     # _tracerRawdataLocation
+
+    def _array2nii(self, im, A, fnii, descrip=''):
+        '''
+        Store the numpy array to a NIfTI file <fnii>
+        '''
+
+        if im.ndim == 3:
+            im = np.transpose(im, (2, 1, 0))
+        elif im.ndim == 4:
+            im = np.transpose(im, (3, 2, 1, 0))
+        else:
+            raise StandardError('unrecognised image dimensions')
+
+        import nibabel as nib
+        nii = nib.Nifti1Image(im, A)
+        hdr = nii.header
+        hdr.set_sform(None, code='scanner')
+        hdr['cal_max'] = np.max(im)
+        hdr['cal_min'] = np.min(im)
+        hdr['descrip'] = descrip
+        nib.save(nii, fnii)
+
+    def _array4D2nii(self, im, A, fnii, descrip=''):
+        # print 'A = ', A
+
+        import nibabel as nib
+        im = np.transpose(im, (3, 2, 1, 0))
+        nii = nib.Nifti1Image(im, A)
+        hdr = nii.header
+        hdr.set_sform(None, code='scanner')
+        hdr['cal_max'] = np.max(im)
+        hdr['cal_min'] = np.min(im)
+        hdr['descrip'] = descrip
+        nib.save(nii, fnii)
 
     def _gatherOsemoneList(self, olist):
         """

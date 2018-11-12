@@ -6,13 +6,13 @@ import numpy as np
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc = '/home2/jjlee/Local/Pawel/HYGLY23/V2/Twilite_V2-NiftyPETy'
-    tracerLoc  = '/home2/jjlee/Local/Pawel/HYGLY23/V2/FDG_V2-NiftyPETy'
+    twiliteLoc = '/home2/jjlee/Local/Pawel/NP995-24/V1/Twilite_V1-NiftyPETy'
+    tracerLoc  = '/home2/jjlee/Local/Pawel/NP995-24/V1/FDG_V1-NiftyPETy'
     testObj = []
 
     @classmethod
     def setUpClass(self):
-        self.testObj = respet.recon.reconstruction.Reconstruction(self.twiliteLoc)
+        self.testObj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         self.testObj.itr = 5
         self.testObj.fwhm = 4.3/2.08626 # num. of voxels
         self.testObj.use_stored_hist = True
@@ -49,9 +49,9 @@ class TestReconstruction(unittest.TestCase):
         #self.assertDictEqual(self.testObj._datain, {'em_nocrr': '', 'lm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.bf', 'mumapDCM#': 128, 'mumapUTE': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_obj/mumapUTE.npy', 'mumapCT': '', 'lm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000022.dcm', 'MRT2W': '', 'pCT': '', 'nrm_dcm': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.dcm', 'T1nii': '', 'corepath': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy', 'lm_ima': '', 'MRT2WN': 0, 'sinos': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/LM/sinos_s11_n1_frm(0-0).npy', 'MRT1W#': 0, 'nrm_ima': '', 'nrm_bf': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/norm/1.3.12.2.1107.5.2.38.51010.30000017120616470612500000021.bf', 'hmumap': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/mumap_hdw/hmumap.npy', 'T1lbl': '', 'MRT1W': '', 'mumapDCM': '/home2/jjlee/Local/Pawel/HYGLY36/V3/Twilite_V3-NiftyPETy/umap', 'em_crr': '', 'T1bc': ''})
 
     def test_time_diff_norm_acq(self):
-        from niftypet import nipet
+        from respet import nipet
         cnt, txLUG, axLUT = nipet.mmraux.mmrinit()
-        datain = nipet.mmraux.explore_input(self.twiliteLoc, cnt)
+        datain = nipet.mmraux.explore_input(self.tracerLoc, cnt)
         nipet.mmraux.time_diff_norm_acq(datain)
         # normal result is silent
 
@@ -63,7 +63,7 @@ class TestReconstruction(unittest.TestCase):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         print(obj.getTimes())
 
-    def test_createTwiliteStaticNAC(self):
+    def _test_createTwiliteStaticNAC(self):
         sta = self.testObj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
@@ -93,7 +93,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def _test_createTracerStaticUTE(self):
+    def test_createTracerStaticUTE(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta.im[60,:,:])
@@ -127,7 +127,7 @@ class TestReconstruction(unittest.TestCase):
         plt.matshow(dyn.im[:,:,170])
         plt.show()
 
-    def _test_checkTimeAliasingUTE(self):
+    def test_checkTimeAliasingUTE(self):
         obj = respet.recon.reconstruction.Reconstruction(self.tracerLoc)
         dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
         plt.matshow(dyn[0].im[60,:,:])
