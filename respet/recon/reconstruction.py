@@ -9,8 +9,8 @@ class Reconstruction(object):
 
     umapSynthFileprefix = ''
     span = 1
-    bootstrap = 2
-    recmod = 3
+    bootstrap = 0
+    recmod = 1
     itr = 5
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
     maskRadius = 29
@@ -37,16 +37,16 @@ class Reconstruction(object):
     def createStaticNAC(self, fcomment=''):
         self.recmod = 1
         self.bootstrap = 0
-        self.fwhm = 0
         return self.createStatic(self.muNAC(), fcomment)
 
     def createStaticUTE(self, fcomment=''):
-        self.recmod = 1
+        self.recmod = 3
         self.bootstrap = 0
         return self.createStatic(self.muUTE(), fcomment)
 
     def createStaticCarney(self, fcomment=''):
-        self.recmod = 1
+        self.recmod = 3
+        self.bootstrap = 0
         return self.createStatic(self.muCarney(frames=[0]), fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
@@ -55,8 +55,6 @@ class Reconstruction(object):
         print(times)
         self.recmod = 1
         self.bootstrap = 0
-        self.itr = 3
-        self.fwhm = 0
         return self.createDynamic(times, self.muNAC(), fcomment)
 
     def createDynamicTiny(self, fcomment='_createDynamicTiny'):
@@ -65,7 +63,6 @@ class Reconstruction(object):
         print(times)
         self.recmod = 1
         self.itr = 3
-        self.fwhm = 0
         return self.createDynamic(times, self.muTiny(), fcomment)
 
     def createDynamicUTE(self, fcomment='_createDynamicUTE'):
@@ -86,7 +83,7 @@ class Reconstruction(object):
         """
         :param muo:       mu-map of imaged object
         :param fcomment;  string for naming subspace
-        :return:          result from nipet.prj.mmrprj.osemone
+        :return:          result from nipet.prj.mmrrec.osemone
         :rtype:           dictionary
         """
         from niftypet import nipet
@@ -108,7 +105,7 @@ class Reconstruction(object):
 
     def saveStatic(self, sta, mumaps, hst, fcomment=''):
         """
-        :param sta:       dictionary from nipet.prj.mmrprj.osemone
+        :param sta:       dictionary from nipet.prj.mmrrec.osemone
         :param mumaps:    dictionary of mu-maps from imaged object, hardware
         :param hst:       dictionary from nipet.lm.mmrhist.hist
         :param fcomment:  string to append to canonical filename
@@ -129,7 +126,7 @@ class Reconstruction(object):
         """
         :param times:  np.int_; [0,0] produces a single time-frame
         :param muo:    3D or 4D mu-map of imaged object
-        :return:       last result from nipet.prj.mmrprj.osemone
+        :return:       last result from nipet.prj.mmrrec.osemone
         :rtype:        dictionary
         """
         from niftypet import nipet
@@ -139,7 +136,7 @@ class Reconstruction(object):
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=self.use_stored_hist)
-            dynFrame = nipet.prj.mmrprj.osemone(self._datain,
+            dynFrame = nipet.prj.mmrrec.osemone(self._datain,
                                                 self.getMumaps(muo, it-1),
                                                 hst,
                                                 self._txLUT, self._axLUT, self._constants,
@@ -148,7 +145,6 @@ class Reconstruction(object):
                                                 fwhm   = self.fwhm,
                                                 mask_radious = self.maskRadius,
                                                 store_img=True,
-                                                ret_sct=True,
                                                 fcomment=fcomment + '_time' + str(it - 1))
         return dynFrame
 
@@ -157,7 +153,7 @@ class Reconstruction(object):
         :param times:   np.int_ for mu-map frames; [0,0] produces a single time-frame
         :param times2:  np.int_ for emission frames
         :param muo:     3D or 4D mu-map of imaged object
-        :return:        last result from nipet.prj.mmrprj.osemone
+        :return:        last result from nipet.prj.mmrrec.osemone
         :rtype:         dictionary
         """
         from niftypet import nipet
@@ -170,7 +166,7 @@ class Reconstruction(object):
                                         store=True, use_stored=self.use_stored_hist)
             if times2[it2-1] >= times[it]:
                 it = it + 1
-            dynFrame = nipet.prj.mmrprj.osemone(self._datain,
+            dynFrame = nipet.prj.mmrrec.osemone(self._datain,
                                                 self.getMumaps(muo, it-1),
                                                 hst,
                                                 self._txLUT, self._axLUT, self._constants,
@@ -179,7 +175,6 @@ class Reconstruction(object):
                                                 fwhm   = self.fwhm,
                                                 mask_radious = self.maskRadius,
                                                 store_img=True,
-                                                ret_sct=True,
                                                 fcomment=fcomment + '_time' + str(it2 - 1))
         return dynFrame
 
@@ -188,7 +183,7 @@ class Reconstruction(object):
         within unittest environment, may use ~60 GB memory for 60 min FDG recon with MRAC
         :param times:  np.int_; [0,0] produces a single time-frame
         :param muo:    3D or 4D mu-map of imaged object
-        :return:       result from nipet.prj.mmrprj.osemone
+        :return:       result from nipet.prj.mmrrec.osemone
         :rtype:        dictionary
         """
         from niftypet import nipet
@@ -199,7 +194,7 @@ class Reconstruction(object):
                                         self._txLUT, self._axLUT, self._constants,
                                         t0=times[it-1], t1=times[it],
                                         store=True, use_stored=True)
-            dyn[it-1] = nipet.prj.mmrprj.osemone(self._datain,
+            dyn[it-1] = nipet.prj.mmrrec.osemone(self._datain,
                                                  self.getMumaps(muo, it-1),
                                                  hst,
                                                  self._txLUT, self._axLUT, self._constants,
@@ -208,14 +203,13 @@ class Reconstruction(object):
                                                  fwhm   = self.fwhm,
                                                  mask_radious = self.maskRadius,
                                                  store_img=False,
-                                                 ret_sct=True,
                                                  fcomment=fcomment + '_time' + str(it - 1))
         self.saveDynamic(dyn, self.getMumaps(muo), hst, fcomment)
         return dyn
 
     def saveDynamic(self, dyn, mumaps, hst, fcomment=''):
         """
-        :param dyn:       dictionary from nipet.prj.mmrprj.osemone
+        :param dyn:       dictionary from nipet.prj.mmrrec.osemone
         :param mumaps:    dictionary of mu-maps from imaged object, hardware
         :param hst:       dictionary from nipet.lm.mmrhist.hist
         :param fcomment:  string to append to canonical filename
@@ -418,7 +412,7 @@ class Reconstruction(object):
             os.listdir(self._tracerRawdataLocation)
             raise
 
-    def __init__(self, loc=None, nac=None, umapSF='umapSynthFull_b43', verbose=False):
+    def __init__(self, loc=None, nac=None, umapSF='umapSynth', verbose=False):
         """:param:  loc specifies the location of tracer rawdata.
            :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
