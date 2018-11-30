@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-import nipet
+import matlab
 import recon
 import resolve
