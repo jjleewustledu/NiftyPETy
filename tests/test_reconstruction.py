@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted-NAC'
-    tracerLoc  = '/home2/jjlee/Local/Pawel/NP995_24/V1/FDG_V1-Converted-AC'
+    twiliteLocNac = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted-NAC'
+    tracerLocNac  = '/home2/jjlee/Local/Pawel/NP995_24/V1/FDG_V1-Converted-NAC'
+    twiliteLoc    = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted-AC'
+    tracerLoc     = '/home2/jjlee/Local/Pawel/NP995_24/V1/FDG_V1-Converted-AC'
     testObj = []
 
     def setUp(self):
@@ -57,21 +59,23 @@ class TestReconstruction(unittest.TestCase):
 class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticNAC(self):
-        sta = self.testObj.createStaticNAC(fcomment='_createStaticNAC')
+        obj = Reconstruction(self.twiliteLocNac, v = True)
+        sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
     def _test_createTwiliteStaticUTE(self):
-        sta = self.testObj.createStaticUTE(fcomment='_createStaticUTE')
+        obj = Reconstruction(self.twiliteLoc, v = True)
+        sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
     def _test_createTwiliteStaticCarney(self):
-        obj = Reconstruction(self.twiliteLoc, umapSF='umapSynth_b43_on_createStaticNAC')
+        obj = Reconstruction(self.twiliteLoc, v = True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
@@ -83,58 +87,59 @@ class TestTwilite(TestReconstruction):
 class TestNAC(TestReconstruction):
 
     def _test_createTracerStaticNAC(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerLocNac, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta.im[60,:,:])
         plt.matshow(sta.im[:,170,:])
         plt.matshow(sta.im[:,:,170])
         plt.show()
 
-    def _test_createTracerNAC(self):
-        obj = Reconstruction(self.tracerLoc)
+    def test_createTracerNAC(self):
+        obj = Reconstruction(self.tracerLocNac, v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         plt.matshow(dyn.im[60,:,:])
         plt.matshow(dyn.im[:,170,:])
         plt.matshow(dyn.im[:,:,170])
-        #plt.show()
+        plt.show()
+
 
 
 class TestUTE(TestReconstruction):
 
     def test_createTracerStaticUTE(self):
-        obj = Reconstruction(self.tracerLoc)
-        sta = obj.createStaticUTE(fcomment='_createStaticUTE_recmod3')
-        plt.matshow(sta.im[60,:,:])
-        plt.matshow(sta.im[:,170,:])
-        plt.matshow(sta.im[:,:,170])
+        obj = Reconstruction(self.tracerLoc, v=True)
+        sta = obj.createStaticUTE(fcomment='_createStaticUTE')
+        plt.matshow(sta['im'][60,:,:])
+        plt.matshow(sta['im'][:,170,:])
+        plt.matshow(sta['im'][:,:,170])
         plt.show()
 
-    def _test_createTracerUTE(self):
+    def test_createTracerUTE(self):
         obj = Reconstruction(self.tracerLoc, v=True)
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
-        plt.matshow(dyn.im[60,:,:])
-        plt.matshow(dyn.im[:,170,:])
-        plt.matshow(dyn.im[:,:,170])
+        plt.matshow(dyn['im'][60,:,:])
+        plt.matshow(dyn['im'][:,170,:])
+        plt.matshow(dyn['im'][:,:,170])
         plt.show()
 
 
 
 class TestCarney(TestReconstruction):
 
-    def _test_createTracerStaticCarney(self):
-        obj = Reconstruction(self.tracerLoc)
-        sta = obj.createStaticCarney(fcomment='_createStaticCarney_recmod3')
-        plt.matshow(sta.im[60,:,:])
-        plt.matshow(sta.im[:,170,:])
-        plt.matshow(sta.im[:,:,170])
+    def test_createTracerStaticCarney(self):
+        obj = Reconstruction(self.tracerLoc, v=True)
+        sta = obj.createStaticCarney(fcomment='_createStaticCarney')
+        plt.matshow(sta['im'][60,:,:])
+        plt.matshow(sta['im'][:,170,:])
+        plt.matshow(sta['im'][:,:,170])
         plt.show()
 
-    def _test_createTracerCarney(self):
-        obj = Reconstruction(self.tracerLoc)
+    def test_createTracerCarney(self):
+        obj = Reconstruction(self.tracerLoc, v=True)
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
-        plt.matshow(dyn.im[60,:,:])
-        plt.matshow(dyn.im[:,170,:])
-        plt.matshow(dyn.im[:,:,170])
+        plt.matshow(dyn['im'][60,:,:])
+        plt.matshow(dyn['im'][:,170,:])
+        plt.matshow(dyn['im'][:,:,170])
         plt.show()
 
 

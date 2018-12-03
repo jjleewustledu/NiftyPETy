@@ -11,19 +11,18 @@ class Reconstruction(object):
     __copyright__ = "Copyright 2018"
 
     umapSynthFileprefix = ''
-    span = 1
+    span = 11
     bootstrap = 0
     datain = {}
     recmod = 3
-    itr = 5
+    itr = 4
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
-    maskRadius = 29
     mMRparams = {}
     hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
-    outfolder = 'reconstructed'
+    outfolder = 'output'
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
-    use_stored = False #True
+    use_stored_hdw_mumap = True
     use_stored_hist = False
     verbose = True
 
@@ -53,7 +52,6 @@ class Reconstruction(object):
     def createStaticNAC(self, fcomment='_createStaticNAC'):
         self.recmod = 0
         self.bootstrap = 0
-        self.checkUmaps(self.muNAC(), fcomment)
         _hst = self.checkHistogramming(fcomment)
         return self.createStatic(self.muNAC(), hst=_hst, fcomment=fcomment)
 
@@ -77,7 +75,6 @@ class Reconstruction(object):
         print(times)
         self.recmod = 0
         self.bootstrap = 0
-        self.checkUmaps(self.muNAC(), fcomment)
         self.checkHistogramming(fcomment)
         return self.createDynamic(times, self.muNAC(), fcomment)
 
@@ -108,7 +105,7 @@ class Reconstruction(object):
         print(times2)
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
-        return self.createDynamic2(times, times2, self.muCarney(), fcomment)
+        return self.createDynamic2(times, times2, fcomment)
 
     def createStatic(self, muo, hst=None, fcomment='_createStatic'):
         """
@@ -140,7 +137,7 @@ class Reconstruction(object):
         :param fcomment:  string to append to canonical filename
         """
         fout = self._createFilename(fcomment)
-        im = sta.im
+        im = sta['im']
         if self.mMRparams['Cnt']['VERBOSE']:
             print('i> saving 3D image to: ', fout)
 
@@ -164,7 +161,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         for it in np.arange(1, times.shape[0]):
             dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                      frames    = ['fluid', [times(it-1), times(it)]],
+                                      frames    = ['fluid', [times[it-1], times[it]]],
                                       mu_h      = self.muHardware(),
                                       mu_o      = muo,
                                       itr       = self.itr,
@@ -176,7 +173,7 @@ class Reconstruction(object):
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def createDynamic2(self, times, times2, muo, fcomment='_createDynamic2'):
+    def createDynamic2(self, times, times2, fcomment='_createDynamic2'):
         """
         :param times:   np.int_ for mu-map frames; [0,0] produces a single time-frame
         :param times2:  np.int_ for emission frames
@@ -192,7 +189,7 @@ class Reconstruction(object):
             if times2[it2-1] >= times[it]:
                 it = it + 1
             dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                      frames    = ['fluid', [times2(it2-1), times2(it2)]],
+                                      frames    = ['fluid', [times2[it2-1], times2[it2]]],
                                       mu_h      = self.muHardware(),
                                       mu_o      = self.muCarney(frames=(it-1)),
                                       itr       = self.itr,
@@ -217,7 +214,7 @@ class Reconstruction(object):
         dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             dyn[it-1] = nipet.mmrchain(self.datain, self.mMRparams,
-                                       frames    = ['fluid', [times(it-1), times(it)]],
+                                       frames    = ['fluid', [times[it-1], times[it]]],
                                        mu_h      = self.muHardware(),
                                        mu_o      = muo,
                                        itr       = self.itr,
@@ -273,41 +270,48 @@ class Reconstruction(object):
         from niftypet import nipet
         from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig
 
-        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         hst = nipet.mmrhist(self.datain, self.mMRparams)
+        if not os.path.exists(self.outpath):
+            os.mkdir(self.outpath)
 
         # sinogram index (<127 for direct sinograms, >=127 for oblique sinograms)
         si = 64
 
         # prompt sinogram
+        figure()
         matshow(hst['psino'][si, :, :], cmap='inferno')
         colorbar()
         xlabel('bins')
         ylabel('angles')
-        savefig(os.path.join(self.outpath, fcomment+'_promptsino.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_promptsino.pdf'))
 
         # delayed sinogram
+        figure()
         matshow(hst['dsino'][si, :, :], cmap='inferno')
         colorbar()
         xlabel('bins')
         ylabel('angles')
-        savefig(os.path.join(self.outpath, fcomment+'_delayedsino.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_delayedsino.pdf'))
 
         # head curve for prompt and delayed events
+        figure()
         plot(hst['phc'], label='prompt TAC')
         plot(hst['dhc'], label='delayed TAC')
+        #show()
         legend()
         grid('on')
         xlabel('time/s')
         ylabel('specific activity / (Bq/mL)')
-        savefig(os.path.join(self.outpath, fcomment+'_tacs.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_tacs.pdf'))
 
         # center of mass
+        figure()
         plot(hst['cmass'])
+        #show()
         grid('on')
         xlabel('time / s')
-        ylabel('Centre of mas of radiodistribution')
-        savefig(os.path.join(self.outpath, fcomment+'_cmass.pdf'), bbox_inches='tight')
+        ylabel('center of mas of radiodistribution')
+        savefig(os.path.join(self.outpath, fcomment+'_cmass.pdf'))
 
         return hst
 
@@ -331,7 +335,6 @@ class Reconstruction(object):
         return self.createDynamic2(times[0:3], times2[0:7], self.muCarney(frames=[0,1]), fcomment)
 
     def checkUmaps(self, muo, fcomment=''):
-        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         muh = self.muHardware()
         iz  = 64
         ix  = 172
@@ -339,17 +342,17 @@ class Reconstruction(object):
         # plot axial image with a colour bar
         matshow(muh['im'][iz, :, :] + muo['im'][iz, :, :], cmap='bone')
         colorbar()
-        savefig(os.path.join(self.outpath, fcomment+'_tumaps.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_tumaps.pdf'))
 
         # plot sagittal image with a colour bar
         matshow(muh['im'][:, :, ix] + muo['im'][:, :, ix], cmap='bone')
         colorbar()
-        savefig(os.path.join(self.outpath, fcomment+'_sumaps.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_sumaps.pdf'))
 
         # plot coronal image with a colour bar
         matshow(muh['im'][:, ix, :] + muo['im'][:, ix, :], cmap='bone')
         colorbar()
-        savefig(os.path.join(self.outpath, fcomment+'_cumaps.pdf'), bbox_inches='tight')
+        savefig(os.path.join(self.outpath, fcomment+'_cumaps.pdf'))
 
     def getAffine(self):
         """
@@ -419,41 +422,66 @@ class Reconstruction(object):
         """
         from niftypet import nipet
         return nipet.hdw_mumap(
-            self.datain, self.hmuSelection, self.mMRparams, use_stored=self.use_stored)
+            self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
 
-    def muCarney(self, fileprefix=None, fcomment='', frames=None):
+    def muCarney(self, fileprefix=None, imtype='object mu-map', fcomment='', frames=None):
         """
-        get NIfTI of the custom umap; see also nipet.obj_mumap
-        :param fileprefix:  string for fileprefix of 4D image-object
+        get NIfTI of the custom umap; see also nipet.mmrimg.obtain_image
+        :param fileprefix:  string for fileprefix of 4D image-object; default := self.umapSynthFileprefix
+        :param imgtype:  string; cf. obtain_image
         :param fcomment:  string to append to fileprefix
-        :param frames:  frame indices to select from _mu;  default selects all frames
+        :param frames:  frame indices to select from _im;  default selects all frames
         :return:  np.float32
         """
-        import nibabel
+        from niftypet import nimpa
+
         if fileprefix is None:
             fileprefix = self.umapSynthFileprefix
-        _nim = nibabel.load(os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz'))
-        _mu  = np.float32(_nim.get_data())
-        if frames is None:
-            if np.ndim(_mu) == 3:
-                _mu = np.transpose(_mu[:,::-1,::-1], (2, 1, 0))
-            elif np.ndim(_mu) == 4:
-                _mu = np.transpose(_mu[:,::-1,::-1,:], (3, 2, 1, 0))
-            else:
-                raise ValueError('unsupported np.ndim(Reconstruction.muCarney._mu)->' + str(np.ndim(_mu)))
-        else:
-            _mu = np.transpose(_mu[:,::-1,::-1,frames], (3, 2, 1, 0))
-        _mu = np.squeeze(_mu)
-        _mu[_mu < 0] = 0
-        return dict(im=_mu)
+        fqfn = os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz')
+        nimpa_dct = nimpa.getnii(fqfn, output='all')
+        _im = nimpa_dct['im']
+        if not frames is None:
+            _im = _im[frames,:,:,:]
+        _im = np.squeeze(_im)
+        _im[_im < 0] = 0
+
+        output = {}
+        output['im'] = _im
+        output['affine'] = nimpa_dct['affine']
+        output['exists'] = True
+        output['fim'] = fqfn
+        Cnt = self.mMRparams['Cnt']
+        if Cnt['VERBOSE']:
+            print 'i> using ' + imtype + ' from NIfTI file.'
+        if Cnt and output['im'].shape != (Cnt['SO_IMZ'], Cnt['SO_IMY'], Cnt['SO_IMX']):
+            print 'e> provided ' + imtype + ' via file has inconsistent dimensions compared to Cnt.'
+            raise ValueError('Wrong dimensions of the mu-map')
+        return output
+
+        # PREVIOUSLY:
+        # import nibabel
+        # if fileprefix is None:
+        #     fileprefix = self.umapSynthFileprefix
+        # fqfn = os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz')
+        # nim  = nibabel.load(fqfn)
+        # _im  = np.float32(nim.get_data())
+        # if frames is None:
+        #     if np.ndim(_im) == 3:
+        #         _im = np.transpose(_im[:,::-1,::-1], (2, 1, 0))
+        #     elif np.ndim(_im) == 4:
+        #         _im = np.transpose(_im[:,::-1,::-1,:], (3, 2, 1, 0))
+        #     else:
+        #         raise ValueError('unsupported np.ndim(Reconstruction.muCarney._im)->' + str(np.ndim(_im)))
+        # else:
+        #     _im = np.transpose(_im[:,::-1,::-1,frames], (3, 2, 1, 0))
+        # _im = np.squeeze(_im)
+        # _im[_im < 0] = 0
 
     def muNAC(self):
         """
-        :return:  mu-map image of mu == 0.01 sized according to self.muHardware()
+        :return:  [] which NIPET 1.1 uses for no attenuation correction
         """
-        _muh = self.muHardware()
-        _im  = np.zeros(_muh['im'].shape, dtype=_muh['im'].dtype)
-        return dict(im=_im)
+        return []
 
     def muTiny(self):
         """
@@ -469,7 +497,7 @@ class Reconstruction(object):
         :rtype:  numpy.array
         """
         from niftypet import nipet
-        return nipet.obj_mumap(self.datain, self.mMRparams, store=True)
+        return nipet.obj_mumap(self.datain, self.mMRparams, outpath=self.outpath, store=True)
 
     def organizeRawdataLocation(self):
         import glob
@@ -560,10 +588,10 @@ class Reconstruction(object):
 
     def _gatherOsemoneList(self, olist):
         """
-        :param olist:  list
+        :param olist:  list of dictionaries
         :return:       numpy.array with times concatenated along axis=0 (c-style)
         """
-        im = [olist[0].im]
+        im = [olist[0]['im']]
         for i in range(1, len(olist)):
             im = np.append(im, [olist[i].im], axis=0)
         return np.float_(im)
@@ -630,10 +658,9 @@ class Reconstruction(object):
 
     def _createFilename(self, fcomment):
         from niftypet import nipet
-        fn = os.path.join(self.datain['corepath'], 'img')
-        nipet.mmraux.create_dir(fn)
-        fn = os.path.join(fn, os.path.basename(self.datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
-        return fn
+        nipet.mmraux.create_dir(self.outpath)
+        pth = os.path.join(self.outpath, os.path.basename(self.datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
+        return pth
 
     def _riLUT(self):
         """

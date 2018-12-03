@@ -31,6 +31,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="niftypet.nipet.lm.mmr_lmproc" />
+          <option value="niftypet.nimpa" />
         </list>
       </option>
     </inspection_tool>
