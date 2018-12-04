@@ -98,7 +98,7 @@ class Reconstruction(object):
         self.checkHistogramming(fcomment)
         return self.createDynamic(times, self.muUTE(), fcomment)
 
-    def createDynamic2Carney(self, fcomment='_createDynamicCarney'):
+    def createDynamic2Carney(self, fcomment='_createDynamic2Carney'):
         times = self.getTimes()
         times2 = self.getTimes(self.getTaus2())
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
@@ -202,7 +202,7 @@ class Reconstruction(object):
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def createDynamicInMemory(self, times, muo, hst=None, fcomment='_createDynamic'):
+    def createDynamicInMemory(self, times, muo, hst=None, fcomment='_createDynamicInMemory'):
         """
         within unittest environment, may use ~60 GB memory for 60 min FDG recon with MRAC
         :param times:  np.int_; [0,0] produces a single time-frame
