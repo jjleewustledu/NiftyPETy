@@ -75,6 +75,7 @@ class Reconstruction(object):
         print(times)
         self.recmod = 0
         self.bootstrap = 0
+        self.checkUmaps(self.muHardware(), fcomment)
         self.checkHistogramming(fcomment)
         return self.createDynamic(times, self.muNAC(), fcomment)
 
@@ -255,7 +256,7 @@ class Reconstruction(object):
         from subprocess import call
         pwd0 = os.getcwd()
         os.chdir(self.tracerRawdataLocation)
-        call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' + os.path.join(self._tracerNacLocation, self.umap4dfp) + '.ifh umap_.nii',
+        call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' + os.path.join(self._tracerRawdataLocation, self.umap4dfp) + '.ifh umap_.nii',
              shell=True, executable='/bin/bash')
         call('/bin/gzip umap_.nii', shell=True, executable='/bin/bash')
         call('/usr/local/fsl/bin/fslroi umap_ umap__ -86 344 -86 344 0 -1',
@@ -421,6 +422,9 @@ class Reconstruction(object):
         See also self.hmuSelection.
         """
         from niftypet import nipet
+        if self.use_stored_hdw_mumap:
+            self.datain['hmumap'] = os.path.join(
+                os.getenv('HOME'), 'Local', 'JSRecon12e11p', 'hardwareumaps', 'hmumap.npy')
         return nipet.hdw_mumap(
             self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
 
@@ -534,8 +538,7 @@ class Reconstruction(object):
             assert os.path.exists(loc)
             self._tracerRawdataLocation = loc
         if nac:
-            assert os.path.exists(nac)
-            self._tracerNacLocation = nac
+            self._nac = nac
         os.chdir(self._tracerRawdataLocation)
         self.umapSynthFileprefix = umapSF
         self.verbose = v
@@ -544,11 +547,11 @@ class Reconstruction(object):
 
     # listing of instance variables:
     # _frame = 0
+    # _nac = None
     # _umapIdx = 0
     # _t0 = 0
     # _t1 = 0
-    # _tracerNacLocation
-    # _tracerRawdataLocation
+    # _tracerRawdataLocation = None
 
 
 
