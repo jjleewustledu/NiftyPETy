@@ -189,18 +189,36 @@ class Reconstruction(object):
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
             if times2[it2-1] >= times[it]:
                 it = it + 1
-            dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                      frames    = ['fluid', [times2[it2-1], times2[it2]]],
-                                      mu_h      = self.muHardware(),
-                                      mu_o      = self.muCarney(frames=(it-1)),
-                                      itr       = self.itr,
-                                      fwhm      = self.fwhm,
-                                      recmod    = self.recmod,
-                                      outpath   = self.outpath,
-                                      store_img = True,
-                                      fcomment  = fcomment + '_time' + str(it2 - 1))
+            try:
+                dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
+                                          frames    = ['fluid', [times2[it2-1], times2[it2]]],
+                                          mu_h      = self.muHardware(),
+                                          mu_o      = self.muCarney(frames=(it-1)),
+                                          itr       = self.itr,
+                                          fwhm      = self.fwhm,
+                                          recmod    = self.recmod,
+                                          outpath   = self.outpath,
+                                          store_img = True,
+                                          fcomment  = fcomment + '_time' + str(it2 - 1))
+            except UnboundLocalError as e:
+                print('==========================================================================')
+                print('w> nipet.img.pipe will fail by attempting to use recimg before assignment;')
+                print('w> skip reconstruction of time frame '+str(it2 - 1)+'.')
+                print('==========================================================================')
+                self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
+
         assert isinstance(dynFrame, dict)
         return dynFrame
+
+    def replaceFrameInSitu(self, t0, t1, tag, fr):
+        from shutil import copyfile
+        copyfile(
+            os.path.join(os.getenv('PPG_SUBJECTS_DIR'), 'zero_frame.nii.gz'),
+            self.nipetFrameFilename(t0, t1, fr))
+
+    def nipetFrameFilename(self, t0, t1, tag, fr):
+        #       a_itr-4_t-10-20sec_createDynamic2Carney_time1.nii.gz
+        return 'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz'
 
     def createDynamicInMemory(self, times, muo, hst=None, fcomment='_createDynamicInMemory'):
         """
@@ -606,6 +624,8 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['SPN']     = self.span
         self.mMRparams['Cnt']['BTP']     = self.bootstrap
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
+        if not os.path.exists(self.outpath):
+            os.makedirs(self.outpath)
         if self.verbose:
             print("########## respet.recon.reconstruction.Reconstruction._initializeNiftypet ##########")
             print(self.datain)
