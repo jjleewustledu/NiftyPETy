@@ -5,17 +5,15 @@ import matplotlib.pyplot as plt
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLocNac = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted-NAC'
-    tracerLocNac  = '/home2/jjlee/Local/Pawel/NP995_19/V2/FDG_V2-Converted-NAC'
-    twiliteLoc    = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted-AC'
-    tracerLoc     = '/home2/jjlee/Local/Pawel/NP995_19/V2/FDG_V2-Converted-AC'
+    twiliteLoc    = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted'
+    tracerLoc     = '/home2/jjlee/Local/Pawel/HYGLY48/V1/FDG_V1-Converted' # 20, 21, 22
     testObj = []
 
-    def setUp(self):
-        self.testObj = Reconstruction(self.tracerLocNac, nac = True)
-        self.testObj.itr = 4
-        self.testObj.fwhm = 4.3/2.08626 # num. of voxels
-        self.testObj.use_stored_hist = True
+    # def setUp(self):
+    #     self.testObj = Reconstruction(self.tracerLoc)
+    #     self.testObj.itr = 4
+    #     self.testObj.fwhm = 4.3/2.08626 # num. of voxels
+    #     self.testObj.use_stored_hist = True
 
     #def tearDown(self):
 
@@ -59,7 +57,7 @@ class TestReconstruction(unittest.TestCase):
 class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticNAC(self):
-        obj = Reconstruction(self.twiliteLocNac, v = True)
+        obj = Reconstruction(self.twiliteLoc, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -67,7 +65,7 @@ class TestTwilite(TestReconstruction):
         plt.show()
 
     def _test_createTwiliteStaticUTE(self):
-        obj = Reconstruction(self.twiliteLoc, v = True)
+        obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -75,7 +73,7 @@ class TestTwilite(TestReconstruction):
         plt.show()
 
     def _test_createTwiliteStaticCarney(self):
-        obj = Reconstruction(self.twiliteLoc, v = True)
+        obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -87,7 +85,7 @@ class TestTwilite(TestReconstruction):
 class TestNAC(TestReconstruction):
 
     def _test_createTracerStaticNAC(self):
-        obj = Reconstruction(self.tracerLocNac, nac = True, v = True)
+        obj = Reconstruction(self.tracerLoc, ac = False, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -95,7 +93,7 @@ class TestNAC(TestReconstruction):
         plt.show()
 
     def test_createTracerNAC(self):
-        obj = Reconstruction(self.tracerLocNac, nac = True, v = True)
+        obj = Reconstruction(self.tracerLoc, ac = False, v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -107,7 +105,7 @@ class TestNAC(TestReconstruction):
 class TestUTE(TestReconstruction):
 
     def test_createTracerStaticUTE(self):
-        obj = Reconstruction(self.tracerLoc, v=True)
+        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -115,7 +113,7 @@ class TestUTE(TestReconstruction):
         plt.show()
 
     def test_createTracerUTE(self):
-        obj = Reconstruction(self.tracerLoc, v=True)
+        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -127,7 +125,7 @@ class TestUTE(TestReconstruction):
 class TestCarney(TestReconstruction):
 
     def test_createTracerStaticCarney(self):
-        obj = Reconstruction(self.tracerLoc, v=True)
+        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -135,7 +133,7 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        obj = Reconstruction(self.tracerLoc, v=True)
+        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -160,22 +158,22 @@ class TestOtherUmaps(TestReconstruction):
 class TestTimes(TestReconstruction):
 
     def test_getTimeMax(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerLoc, ac=True)
         self.assertEqual(obj.getTimeMax(), 3601)
 
     def test_getTimes(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerLoc, ac=True)
         print(obj.getTimes())
 
     def _test_checkTimeAliasingUTE(self):
-        obj = Reconstruction(self.tracerLoc, v=True)
+        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
         plt.matshow(dyn[0]['im'][60,:,:])
         plt.matshow(dyn[1]['im'][60,:,:])
         plt.show()
 
     def _test_checkTimeAliasingCarney(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerLoc, ac=True)
         dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -183,7 +181,7 @@ class TestTimes(TestReconstruction):
         plt.show()
 
     def _test_checkTimeHierarchiesCarney(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerLoc, ac=True)
         dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
