@@ -28,12 +28,16 @@ class Reconstruction(object):
 
     @property
     def tracerRawdataLocation(self):
-        return self._tracerRawdataLocation
+        if not self._ac:
+            return self._tracerRawdataLocation+'-NAC'
+        else:
+            return self._tracerRawdataLocation+'-AC'
 
-    @tracerRawdataLocation.setter
-    def tracerRawdataLocation(self, s):
-        assert os.path.exists(s)
-        self._tracerRawdataLocation = s
+    def tracerRawdataLocationWith(self, ac=False):
+        if not ac:
+            return self._tracerRawdataLocation+'-NAC'
+        else:
+            return self._tracerRawdataLocation+'-AC'
 
     @property
     def outpath(self):
@@ -48,6 +52,8 @@ class Reconstruction(object):
         for keys,values in d.items():
             print(keys)
             print(values)
+
+
 
     def createStaticNAC(self, fcomment='_createStaticNAC'):
         self.recmod = 0
@@ -213,12 +219,12 @@ class Reconstruction(object):
     def replaceFrameInSitu(self, t0, t1, tag, fr):
         from shutil import copyfile
         copyfile(
-            os.path.join(os.getenv('PPG_SUBJECTS_DIR'), 'zero_frame.nii.gz'),
-            self.nipetFrameFilename(t0, t1, fr))
+            os.path.join(os.getenv('PPG_SUBJECTS_DIR'), 'zeros_frame.nii.gz'),
+            self.nipetFrameFilename(t0, t1, tag, fr))
 
     def nipetFrameFilename(self, t0, t1, tag, fr):
         #       a_itr-4_t-10-20sec_createDynamic2Carney_time1.nii.gz
-        return 'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz'
+        return os.path.join(self.outpath, 'PET', 'single-frame', 'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz')
 
     def createDynamicInMemory(self, times, muo, hst=None, fcomment='_createDynamicInMemory'):
         """
@@ -273,8 +279,9 @@ class Reconstruction(object):
         """
         from subprocess import call
         pwd0 = os.getcwd()
-        os.chdir(self.tracerRawdataLocation)
-        call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' + os.path.join(self._tracerRawdataLocation, self.umap4dfp) + '.ifh umap_.nii',
+        os.chdir(self.tracerRawdataLocationWith(ac=False))
+        call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' +
+             os.path.join(self.tracerRawdataLocationWith(ac=False), self.umap4dfp) + '.ifh umap_.nii',
              shell=True, executable='/bin/bash')
         call('/bin/gzip umap_.nii', shell=True, executable='/bin/bash')
         call('/usr/local/fsl/bin/fslroi umap_ umap__ -86 344 -86 344 0 -1',
@@ -434,6 +441,9 @@ class Reconstruction(object):
         nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
 
+    def migrateCndaDownloads(self, cndaDownload):
+        return None
+
     def muHardware(self):
         """
         :return:  dictionary for hardware mu-map image provided by nipet.hdw_mumap.  Keys:  'im', ...
@@ -459,7 +469,7 @@ class Reconstruction(object):
 
         if fileprefix is None:
             fileprefix = self.umapSynthFileprefix
-        fqfn = os.path.join(self.tracerRawdataLocation, fileprefix + fcomment + '.nii.gz')
+        fqfn = os.path.join(self.tracerRawdataLocationWith(ac=True), fileprefix + fcomment + '.nii.gz')
         nimpa_dct = nimpa.getnii(fqfn, output='all')
         _im = nimpa_dct['im']
         if not frames is None:
@@ -521,51 +531,75 @@ class Reconstruction(object):
         from niftypet import nipet
         return nipet.obj_mumap(self.datain, self.mMRparams, outpath=self.outpath, store=True)
 
-    def organizeRawdataLocation(self):
+    def organizeRawdataLocation(self, cndaDownload=None):
         import glob
         import pydicom
-        try:
-            fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
-            for fn in fns:
-                ds = pydicom.read_file(fn)
-                if ds.ImageType[2] == 'PET_NORM':
-                    self._moveToNamedLocation(fn, 'norm')
-                if ds.ImageType[2] == 'PET_LISTMODE':
-                    self._moveToNamedLocation(fn, 'LM')
-        except OSError:
-            os.listdir(self.tracerRawdataLocation)
-            raise
+        import shutil
+        import errno
 
-    def __init__(self, loc=None, nac=None, umapSF='umapSynth', v=False):
-        """:param:  loc specifies the location of tracer rawdata.
-           :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
+        if not self._ac:
+            if isinstance(cndaDownload, str):
+                self.migrateCndaDownloads(cndaDownload)
+            try:
+                # NAC:  check umap; move norm and listmode to folders
+                assert(os.path.isdir(os.path.join(self.tracerRawdataLocation, 'umap', '')))
+                fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
+                for fn in fns:
+                    ds = pydicom.read_file(fn)
+                    if ds.ImageType[2] == 'PET_NORM':
+                        self._moveToNamedLocation(fn, 'norm')
+                    if ds.ImageType[2] == 'PET_LISTMODE':
+                        self._moveToNamedLocation(fn, 'LM')
+            except OSError:
+                os.listdir(self.tracerRawdataLocation)
+                raise
+        else:
+            # AC:  move .bf, .dcm and umap to tracerRawdataLocation
+            nac_norm = os.path.join(self.tracerRawdataLocationWith(ac=False), 'norm', '')
+            ac_norm  = os.path.join(self.tracerRawdataLocationWith(ac=True),  'norm', '')
+            nac_lm   = os.path.join(self.tracerRawdataLocationWith(ac=False), 'LM', '')
+            ac_lm    = os.path.join(self.tracerRawdataLocationWith(ac=True),  'LM', '')
+            nac_umap = os.path.join(self.tracerRawdataLocationWith(ac=False), 'umap', '')
+            ac_umap  = os.path.join(self.tracerRawdataLocationWith(ac=True),  'umap', '')
+            if not os.path.isdir(ac_norm):
+                shutil.move(nac_norm, self.tracerRawdataLocation)
+            if not os.path.isdir(ac_lm):
+                shutil.move(nac_lm,   self.tracerRawdataLocation)
+            if not os.path.isdir(ac_umap):
+                shutil.move(nac_umap, self.tracerRawdataLocation)
+
+    def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None):
+        """
+        :param:  loc specifies the location of tracer rawdata.
+        :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
                   -rwxr-xr-x+  1 jjlee wheel     141444 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.dcm
                   -rwxr-xr-x+  1 jjlee wheel  247141283 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000050.bf
                   -rwxr-xr-x+  1 jjlee wheel     151868 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000050.dcm
                   -rw-r--r--+  1 jjlee wheel    3081280 Nov 14 14:53 umapSynth_full_frame0.nii.gz
-           :param:  self.tracerRawdataLocation also contains folders:
+        :param:  self.tracerRawdataLocation also contains folders:
                   norm, containing, e.g.:
                         -rwxr-xr-x+  1 jjlee wheel 323404 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000048.bf
                         -rwxr-xr-x+  1 jjlee wheel 143938 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000048.dcm
                   LM, containing, e.g.:
                           -rwxr-xr-x+  1 jjlee wheel 6817490860 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.bf
-                          -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm"""
-
+                          -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm:param:  cndaDownload is a path
+        :param:  cndaDownload is a path
+        """
         if loc:
-            assert os.path.exists(loc)
             self._tracerRawdataLocation = loc
-        if nac:
-            self._nac = nac
-        os.chdir(self._tracerRawdataLocation)
+        self._ac = ac
+        if not os.path.exists(self.tracerRawdataLocation):
+            os.makedirs(self.tracerRawdataLocation)
+        os.chdir(self.tracerRawdataLocation)
         self.umapSynthFileprefix = umapSF
         self.verbose = v
-        self.organizeRawdataLocation()
+        self.organizeRawdataLocation(cndaDownload)
         self._initializeNiftypet()
 
     # listing of instance variables:
     # _frame = 0
-    # _nac = None
+    # _ac = False
     # _umapIdx = 0
     # _t0 = 0
     # _t1 = 0
@@ -574,10 +608,9 @@ class Reconstruction(object):
 
 
     def _array2nii(self, im, A, fnii, descrip=''):
-        '''
+        """
         Store the numpy array to a NIfTI file <fnii>
-        '''
-
+        """
         if im.ndim == 3:
             im = np.transpose(im, (2, 1, 0))
         elif im.ndim == 4:
