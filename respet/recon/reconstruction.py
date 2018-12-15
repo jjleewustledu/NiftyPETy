@@ -167,16 +167,24 @@ class Reconstruction(object):
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         for it in np.arange(1, times.shape[0]):
-            dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                      frames    = ['fluid', [times[it-1], times[it]]],
-                                      mu_h      = self.muHardware(),
-                                      mu_o      = muo,
-                                      itr       = self.itr,
-                                      fwhm      = self.fwhm,
-                                      recmod    = self.recmod,
-                                      outpath   = self.outpath,
-                                      store_img = True,
-                                      fcomment  = fcomment + '_time' + str(it-1))
+            try:
+                dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
+                                          frames    = ['fluid', [times[it-1], times[it]]],
+                                          mu_h      = self.muHardware(),
+                                          mu_o      = muo,
+                                          itr       = self.itr,
+                                          fwhm      = self.fwhm,
+                                          recmod    = self.recmod,
+                                          outpath   = self.outpath,
+                                          store_img = True,
+                                          fcomment  = fcomment + '_time' + str(it-1))
+            except UnboundLocalError as e:
+                print('==========================================================================')
+                print('w> nipet.img.pipe will fail by attempting to use recimg before assignment;')
+                print('w> skip reconstruction of time frame '+str(it - 1)+'.')
+                print('==========================================================================')
+                self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
+
         assert isinstance(dynFrame, dict)
         return dynFrame
 

@@ -1,79 +1,90 @@
-# packages in environment at /data/nil-bluearc/raichle/jjlee/anaconda2/envs/nipet:
-#
-# Name                    Version                   Build  Channel
-backports                 1.0              py27h63c9359_1    anaconda
-backports.functools_lru_cache 1.4              py27he8db605_1    anaconda
-backports.shutil_get_terminal_size 1.0.0            py27h5bc021e_2    anaconda
-backports_abc             0.5                      py27_0    anaconda
-certifi                   2016.2.28                py27_0
-curl                      7.55.1               hcb0b314_2    anaconda
-cycler                    0.10.0                   py27_0    anaconda
-dbus                      1.10.22              h3b5a359_0    anaconda
-decorator                 4.1.2            py27h1544723_0    anaconda
-enum34                    1.1.6            py27h99a27e9_1    anaconda
-expat                     2.2.4                hc00ebd1_1    anaconda
-fontconfig                2.12.4               h88586e7_1    anaconda
-freetype                  2.8                  h52ed37b_0    anaconda
-functools32               3.2.3.2          py27h4ead58f_1    anaconda
-glib                      2.53.6               hc861d11_1    anaconda
-gst-plugins-base          1.12.2               he3457e5_0    anaconda
-gstreamer                 1.12.2               h4f93127_0    anaconda
-h5py                      2.7.1                    py27_1    conda-forge
-hdf5                      1.8.18                        0    conda-forge
-icu                       58.2                 h211956c_0    anaconda
-intel-openmp              2018.0.0             h15fc484_7    anaconda
-ipython                   5.4.1            py27h36c99b6_1    anaconda
-ipython_genutils          0.2.0                    py27_0    anaconda
-jpeg                      9b                   habf39ab_1    anaconda
-libedit                   3.1                  heed3624_0    anaconda
-libffi                    3.2.1                h4deb6c0_3    anaconda
-libgcc-ng                 7.2.0                h7cc24e2_2    anaconda
-libgfortran               3.0.0                         1
-libgfortran-ng            7.2.0                h9f7466a_2    anaconda
-libpng                    1.6.32               hda9c8bc_2    anaconda
-libssh2                   1.8.0                h8c220ad_2    anaconda
-libstdcxx-ng              7.2.0                h7a57d05_2    anaconda
-libxcb                    1.12                 h84ff03f_3    anaconda
-libxml2                   2.9.4                h6b072ca_5    anaconda
-matplotlib                2.1.0            py27h09aba24_0    anaconda
-mkl                       2018.0.0             hb491cac_4    anaconda
-ncurses                   6.0                  h06874d7_1    anaconda
-nibabel                   2.1.0                    py27_0    conda-forge
-NiftyPET                  0.1                       <pip>
-numpy                     1.10.2                   py27_0
-openblas                  0.2.14                        4
-openssl                   1.0.2l                        0
-pathlib2                  2.3.0            py27h6e9d198_0    anaconda
-pcre                      8.41                 hc71a17e_0    anaconda
-pexpect                   4.2.1            py27hcf82287_0    anaconda
-pickleshare               0.7.4            py27h09770e1_0    anaconda
-pip                       9.0.1                    py27_1
-prompt_toolkit            1.0.15                   py27_0    anaconda
-ptyprocess                0.5.2                    py27_0    anaconda
-pycurl                    7.43.0           py27hcf8ebea_3    anaconda
-pydicom                   0.9.9                    py27_0    conda-forge
-pygments                  2.2.0                    py27_0    anaconda
-pyparsing                 2.2.0            py27hf1513f8_1    anaconda
-pyqt                      5.6.0            py27h4b1e83c_5    anaconda
-python                    2.7.14              hc2b0042_21    anaconda
-python-dateutil           2.6.1            py27h4ca5741_1    anaconda
-pytz                      2017.2           py27hcac29fa_1    anaconda
-qt                        5.6.2               h974d657_12    anaconda
-readline                  7.0                  hac23ff0_3    anaconda
-scandir                   1.6              py27hf7388dc_0    anaconda
-scipy                     0.19.1           py27h1edc525_3    anaconda
-setuptools                36.4.0                   py27_1
-simplegeneric             0.8.1                    py27_1    anaconda
-singledispatch            3.4.0.3          py27h9bcb476_0    anaconda
-sip                       4.18.1           py27he9ba0ab_2    anaconda
-six                       1.10.0           py27hdcd7534_1    anaconda
-sqlite                    3.20.1               h6d8b0f3_1    anaconda
-ssl_match_hostname        3.5.0.1          py27h4ec10b9_2    anaconda
-subprocess32              3.2.7                    py27_0    anaconda
-tk                        8.6.7                h5979e9b_1    anaconda
-tornado                   4.5.2                    py27_0    anaconda
-traitlets                 4.3.2            py27hd6ce930_0    anaconda
-wcwidth                   0.1.7                    py27_0    anaconda
-wheel                     0.29.0                   py27_0
-xz                        5.2.3                h2bcbf08_1    anaconda
-zlib                      1.2.11                        0
+arrow==0.12.1
+asn1crypto==0.24.0
+backports-abc==0.5
+backports.functools-lru-cache==1.5
+backports.shutil-get-terminal-size==1.0.0
+binaryornot==0.4.4
+bleach==3.0.2
+certifi==2018.10.15
+cffi==1.11.5
+chardet==3.0.4
+Click==7.0
+configparser==3.5.0
+cookiecutter==1.6.0
+cryptography==2.3.1
+cycler==0.10.0
+decorator==4.3.0
+entrypoints==0.2.3
+enum34==1.1.6
+fastcache==1.0.2
+functools32==3.2.3.post2
+future==0.17.1
+futures==3.2.0
+gmpy2==2.0.8
+h5py==2.8.0
+idna==2.7
+ipaddress==1.0.22
+ipykernel==4.10.0
+ipython==5.8.0
+ipython-genutils==0.2.0
+ipywidgets==7.4.2
+Jinja2==2.10
+jinja2-time==0.2.0
+jsonschema==2.6.0
+jupyter==1.0.0
+jupyter-client==5.2.3
+jupyter-console==5.2.0
+jupyter-core==4.4.0
+kiwisolver==1.0.1
+linecache2==1.0.0
+MarkupSafe==1.1.0
+matplotlib==2.2.3
+mistune==0.8.4
+mkl-fft==1.0.9
+mkl-random==1.0.2
+mpmath==1.0.0
+nbconvert==5.3.1
+nbformat==4.4.0
+nibabel==2.2.1
+-e git+https://github.com/pjmark/NIMPA.git@7fa68518ec179b64bc90d8eecd593b775ed54081#egg=nimpa
+-e git+https://github.com/pjmark/NIPET.git@d3dca8c4517cffe583426d9049355e517c3212b5#egg=nipet
+notebook==5.7.2
+numpy==1.15.4
+pandocfilters==1.4.2
+pathlib2==2.3.2
+pexpect==4.6.0
+pickleshare==0.7.5
+poyo==0.4.2
+prometheus-client==0.4.2
+prompt-toolkit==1.0.15
+ptyprocess==0.6.0
+pycparser==2.19
+pydicom==1.0.2
+Pygments==2.2.0
+pyOpenSSL==18.0.0
+pyparsing==2.3.0
+PySocks==1.6.8
+python-dateutil==2.7.5
+pytz==2018.7
+pyzmq==17.1.2
+qtconsole==4.4.2
+requests==2.20.1
+scandir==1.9.0
+scipy==1.1.0
+Send2Trash==1.5.0
+simplegeneric==0.8.1
+singledispatch==3.4.0.3
+six==1.11.0
+subprocess32==3.5.3
+sympy==1.3
+terminado==0.8.1
+testpath==0.4.2
+tornado==5.1.1
+traceback2==1.4.0
+traitlets==4.3.2
+unittest2==1.1.0
+urllib3==1.23
+wcwidth==0.1.7
+webencodings==0.5.1
+whichcraft==0.5.2
+widgetsnbextension==3.4.2

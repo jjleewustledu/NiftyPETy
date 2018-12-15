@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/../NIMPA/.idea/NIMPA.iml" filepath="$PROJECT_DIR$/../NIMPA/.idea/NIMPA.iml" />
       <module fileurl="file://$PROJECT_DIR$/../NIPET/.idea/NIPET.iml" filepath="$PROJECT_DIR$/../NIPET/.idea/NIPET.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/NiftyPETy.iml" filepath="$PROJECT_DIR$/.idea/NiftyPETy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../anaconda2/lib/python2.7/site-packages/construct_resolved_mcr/.idea/construct_resolved_mcr.iml" filepath="$PROJECT_DIR$/../../anaconda2/lib/python2.7/site-packages/construct_resolved_mcr/.idea/construct_resolved_mcr.iml" />
     </modules>
   </component>
 </project>

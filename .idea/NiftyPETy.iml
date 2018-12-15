@@ -10,6 +10,8 @@
     <orderEntry type="library" name="R Skeletons" level="application" />
     <orderEntry type="module" module-name="NIPET" />
     <orderEntry type="module" module-name="NIMPA" />
+    <orderEntry type="module" module-name="constructResolved" />
+    <orderEntry type="module" module-name="construct_resolved_mcr" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

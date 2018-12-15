@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 class TestReconstruction(unittest.TestCase):
 
     twiliteLoc    = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted'
-    tracerLoc     = '/home2/jjlee/Local/Pawel/HYGLY48/V1/FDG_V1-Converted' # 20, 21, 22
+    tracerLoc     = '/home2/jjlee/Local/Pawel/HYGLY50/V1/FDG_V1-Converted' # 20, 21, 22
     testObj = []
 
     # def setUp(self):
@@ -93,7 +93,10 @@ class TestNAC(TestReconstruction):
         plt.show()
 
     def test_createTracerNAC(self):
-        obj = Reconstruction(self.tracerLoc, ac = False, v = True)
+        mids = ['HYGLY23/V1/FDG_V1', 'NP995_24/V1/FDG_V1', 'NP995_19/V2/FDG_V2', 'HYGLY48/V1/FDG_V1', 'HYGLY50/V1/FDG_V1', 'HYGLY47/V1/FDG_V1' ]
+        m = mids[0]
+        loc = '/home2/jjlee/Local/Pawel/'+m+'-Converted'
+        obj = Reconstruction(loc, ac = False, v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -133,12 +136,11 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
-        dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
-        plt.matshow(dyn['im'][60,:,:])
-        plt.matshow(dyn['im'][:,170,:])
-        plt.matshow(dyn['im'][:,:,170])
-        plt.show()
+        mids = ['HYGLY23/V1/FDG_V1', 'HYGLY23/V2/FDG_V2']
+        for m in mids:
+            loc = '/home2/jjlee/Local/Pawel/'+m+'-Converted'
+            obj = Reconstruction(loc, ac=True, v=True)
+            obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
 
 
 
@@ -187,6 +189,16 @@ class TestTimes(TestReconstruction):
         plt.matshow(dyn['im'][:,170,:])
         plt.matshow(dyn['im'][:,:,170])
         plt.show()
+
+
+
+class TestMatlab(TestReconstruction):
+
+    def test_MCRtoys(self):
+        import MCRtoys
+
+    def test_constructResolved(self):
+        import constructResolved
 
 
 
