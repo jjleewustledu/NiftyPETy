@@ -144,6 +144,7 @@ class TestCarney(TestReconstruction):
 
 
 
+
 class TestOtherUmaps(TestReconstruction):
 
     def _test_createUmapSynthFullBlurred_tracer(self):
@@ -194,11 +195,26 @@ class TestTimes(TestReconstruction):
 
 class TestMatlab(TestReconstruction):
 
-    def test_MCRtoys(self):
-        import MCRtoys
+    def test_MagicSquarePkg(self):
+        import MagicSquarePkg
+        mcr = MagicSquarePkg.initialize()
+        print(mcr.makesqr(3))
+        mcr.terminate()
 
-    def test_constructResolved(self):
-        import constructResolved
+
+    def test_construct_resolved_mcr(self):
+        loc = '/home2/jjlee/Local/Pawel/HYGLY47/V2/FDG_V2-Converted'
+        obj = Reconstruction(loc, ac = False, v = True)
+        obj.createDynamicNAC(fcomment='_createDynamicNAC')
+        import construct_resolved_mcr
+        mcr = construct_resolved_mcr.initialize()
+        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2', 'ac', False)
+        mcr.terminate()
+        obj._ac = True
+        obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
+        mcr = construct_resolved_mcr.initialize()
+        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2', 'ac', True)
+        mcr.terminate()
 
 
 
