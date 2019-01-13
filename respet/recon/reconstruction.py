@@ -18,7 +18,7 @@ class Reconstruction(object):
     itr = 4
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
     mMRparams = {}
-    hmuSelection = [1,2,4] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    hmuSelection = [1,4,5] # selects from ~/.niftypet/resources.py:  hrdwr_mu
     outfolder = 'output'
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
