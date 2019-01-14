@@ -50,7 +50,7 @@ class TestReconstruction(unittest.TestCase):
         self.testObj.printd(self.testObj.datain)
 
     def test_locs(self):
-        self.assertTrue(os.path.exists(self.twiliteLoc+'-NAC'))
+        self.assertTrue(os.path.exists(self.twiliteLoc+'-AC'))
         self.assertTrue(os.path.exists(self.tracerLoc+'-NAC'))
 
 
@@ -99,9 +99,8 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        mids = ['HYGLY23/V1/FDG_V1', 'NP995_24/V1/FDG_V1', 'NP995_19/V2/FDG_V2', 'HYGLY48/V1/FDG_V1', 'HYGLY50/V1/FDG_V1', 'HYGLY47/V1/FDG_V1' ]
-        m = mids[0]
-        loc = '/home2/jjlee/Local/Pawel/'+m+'-Converted'
+        mids = ['HYGLY30/V2/Twilite_V2' ]
+        loc = '/home2/jjlee/Docker/NiftyPETd/'+mids[0]+'-Converted'
         obj = Reconstruction(loc, ac = False, v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         plt.matshow(dyn['im'][60,:,:])
@@ -115,7 +114,9 @@ class TestUTE(TestReconstruction):
 
     def test_createTracerStaticUTE(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
+        mids = ['HYGLY30/V2/Twilite_V2' ]
+        loc = '/home2/jjlee/Docker/NiftyPETd/'+mids[0]+'-Converted'
+        obj = Reconstruction(loc, ac=True, v=True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
