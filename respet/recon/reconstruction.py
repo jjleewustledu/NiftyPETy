@@ -14,6 +14,7 @@ class Reconstruction(object):
     span = 11
     bootstrap = 0
     datain = {}
+    decayCorr = True
     recmod = 3
     itr = 4
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
@@ -302,7 +303,7 @@ class Reconstruction(object):
 
     def checkHistogramming(self, fcomment=''):
         from niftypet import nipet
-        from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig
+        from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig, matshow, colorbar, legend, grid
 
         hst = nipet.mmrhist(self.datain, self.mMRparams)
         if not os.path.exists(self.outpath):
@@ -369,6 +370,8 @@ class Reconstruction(object):
         return self.createDynamic2(times[0:3], times2[0:7], self.muCarney(frames=[0,1]), fcomment)
 
     def checkUmaps(self, muo, fcomment=''):
+        from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig, matshow, colorbar, legend, grid
+
         muh = self.muHardware()
         iz  = 64
         ix  = 172
@@ -668,6 +671,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['SPN']     = self.span
         self.mMRparams['Cnt']['BTP']     = self.bootstrap
+        self.mMRparams['Cnt']['DCYCRR']  = self.decayCorr
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
         if not os.path.exists(self.outpath):
             os.makedirs(self.outpath)
@@ -700,14 +704,14 @@ class Reconstruction(object):
     def _createDescrip(self, hst, muh, muo):
         """
         :param hst:  from nipet.mmrhist
-        :param muh:  is mumaps dictionary
-        :param muo:  is mumaps dictionary
+        :param muh:  is mumaps list array
+        :param muo:  is mumaps list array
         :return:     description text for NIfTI
         if only bed present, attnum := 0.5
         """
         from niftypet import nipet
         cnt    = self.mMRparams['Cnt']
-        attnum = (1 * (np.sum(muh['im']) > 0.5) + 1 * (np.sum(muo['im']) > 0.5)) / 2.
+        attnum = (1 * (np.sum(muh) > 0.5) + 1 * (np.sum(muo) > 0.5)) / 2.
         ncmp,_ = nipet.mmrnorm.get_components(self.datain, cnt)
         rilut  = self._riLUT()
         qf     = ncmp['qf'] / rilut[cnt['ISOTOPE']]['BF'] / float(hst['dur'])

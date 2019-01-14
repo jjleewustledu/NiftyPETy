@@ -42,6 +42,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['CWND'], 5.85938e-09)
         self.assertEqual(c['SCTSCLEM'], [0.33858267716535434, 0.3313953488372093, 0.3313953488372093])
         self.assertEqual(c['BTP'], 0)
+        self.assertTrue( c['DCYCRR'])
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
 
     def test_data(self):
@@ -49,8 +50,8 @@ class TestReconstruction(unittest.TestCase):
         self.testObj.printd(self.testObj.datain)
 
     def test_locs(self):
-        self.assertTrue(os.path.exists(self.twiliteLoc))
-        self.assertTrue(os.path.exists(self.tracerLoc))
+        self.assertTrue(os.path.exists(self.twiliteLoc+'-NAC'))
+        self.assertTrue(os.path.exists(self.tracerLoc+'-NAC'))
 
 
 
@@ -87,7 +88,7 @@ class TestTwilite(TestReconstruction):
 
 class TestNAC(TestReconstruction):
 
-    def _test_createTracerStaticNAC(self):
+    def test_createTracerStaticNAC(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac = False, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
