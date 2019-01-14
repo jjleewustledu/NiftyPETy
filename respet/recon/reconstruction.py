@@ -463,7 +463,7 @@ class Reconstruction(object):
         from niftypet import nipet
         if self.use_stored_hdw_mumap:
             self.datain['hmumap'] = os.path.join(
-                os.getenv('HOME'), 'Local', 'JSRecon12e11p', 'hardwareumaps', 'hmumap.npy')
+                os.getenv('HARDWAREUMAPS'), 'hmumap.npy')
         return nipet.hdw_mumap(
             self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
 
