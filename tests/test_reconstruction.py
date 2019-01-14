@@ -6,15 +6,17 @@ class TestReconstruction(unittest.TestCase):
 
     twiliteLoc    = '/home2/jjlee/Docker/NiftyPETd/HYGLY30/V2/Twilite_V2-Converted'
     tracerLoc     = '/home2/jjlee/Docker/NiftyPETd/HYGLY30/V2/FDG_V2-Converted' # 20, 21, 22
-    testObj = []
 
-    def setUp(self):
-        self.testObj = Reconstruction(self.tracerLoc)
-        self.testObj.itr = 4
-        self.testObj.fwhm = 4.3/2.08626 # num. of voxels
-        self.testObj.use_stored_hist = True
+    #def setUp(self):
 
     #def tearDown(self):
+
+    def theTestObj(self):
+        obj = Reconstruction(self.tracerLoc)
+        obj.itr = 4
+        obj.fwhm = 4.3 / 2.08626 # num. of voxels
+        obj.use_stored_hist = True
+        return obj
 
     def test_sampleStaticMethod(self):
         self.assertEqual(Reconstruction.sampleStaticMethod(), 0.1234)
@@ -25,10 +27,10 @@ class TestReconstruction(unittest.TestCase):
         print('\n')
 
     def test_ctor(self):
-        self.assertIsInstance(self.testObj, Reconstruction)
+        self.assertIsInstance(self.theTestObj, Reconstruction)
         from numpy import array
         from numpy.testing import assert_array_equal
-        c = self.testObj.mMRparams['Cnt']
+        c = self.theTestObj.mMRparams['Cnt']
         self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HNMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_BR4CH_10185525.v.hdr'])
         self.assertEqual(c['NSRNG'], 8)
         self.assertEqual(c['NSN11'], 837)
@@ -46,8 +48,8 @@ class TestReconstruction(unittest.TestCase):
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
 
     def test_data(self):
-        self.testObj.printd(self.testObj.mMRparams['Cnt'])
-        self.testObj.printd(self.testObj.datain)
+        self.theTestObj.printd(self.theTestObj.mMRparams['Cnt'])
+        self.theTestObj.printd(self.theTestObj.datain)
 
     def test_locs(self):
         self.assertTrue(os.path.exists(self.twiliteLoc+'-AC'))
