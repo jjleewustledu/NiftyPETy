@@ -1,42 +1,42 @@
 import unittest
 from respet.recon.reconstruction import Reconstruction
 import os
-import matplotlib.pyplot as plt
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc    = '/home2/jjlee/Local/Pawel/NP995_24/V1/Twilite_V1-Converted'
-    tracerLoc     = '/home2/jjlee/Local/Pawel/HYGLY50/V1/FDG_V1-Converted' # 20, 21, 22
+    twiliteLoc    = '/home2/jjlee/Docker/NiftyPETd/HYGLY30/V2/Twilite_V2-Converted'
+    tracerLoc     = '/home2/jjlee/Docker/NiftyPETd/HYGLY30/V2/FDG_V2-Converted' # 20, 21, 22
     testObj = []
 
-    # def setUp(self):
-    #     self.testObj = Reconstruction(self.tracerLoc)
-    #     self.testObj.itr = 4
-    #     self.testObj.fwhm = 4.3/2.08626 # num. of voxels
-    #     self.testObj.use_stored_hist = True
+    def setUp(self):
+        self.testObj = Reconstruction(self.tracerLoc)
+        self.testObj.itr = 4
+        self.testObj.fwhm = 4.3/2.08626 # num. of voxels
+        self.testObj.use_stored_hist = True
 
     #def tearDown(self):
 
-    def _test_sampleStaticMethod(self):
+    def test_sampleStaticMethod(self):
         self.assertEqual(Reconstruction.sampleStaticMethod(), 0.1234)
 
     def test_installation(self):
         from niftypet import nipet
         nipet.gpuinfo(extended=True)
+        print('\n')
 
     def test_ctor(self):
         self.assertIsInstance(self.testObj, Reconstruction)
         from numpy import array
         from numpy.testing import assert_array_equal
         c = self.testObj.mMRparams['Cnt']
-        self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr', 'umap_HNMCU_10606489.v.hdr', 'umap_BR4CH_10185525.v.hdr'])
+        self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HNMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_BR4CH_10185525.v.hdr'])
         self.assertEqual(c['NSRNG'], 8)
         self.assertEqual(c['NSN11'], 837)
         self.assertEqual(c['NRNG'], 64)
         self.assertEqual(c['NBCKT'], 224)
         self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
         self.assertEqual(c['ISOTOPE'], 'F18')
-        self.assertEqual(c['SPN'], 1)
+        self.assertEqual(c['SPN'], 11)
         assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
         self.assertEqual(c['NSN64'], 4096)
         self.assertEqual(c['CWND'], 5.85938e-09)
@@ -57,6 +57,7 @@ class TestReconstruction(unittest.TestCase):
 class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticNAC(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.twiliteLoc, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
@@ -65,6 +66,7 @@ class TestTwilite(TestReconstruction):
         plt.show()
 
     def _test_createTwiliteStaticUTE(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
@@ -73,6 +75,7 @@ class TestTwilite(TestReconstruction):
         plt.show()
 
     def _test_createTwiliteStaticCarney(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
@@ -85,6 +88,7 @@ class TestTwilite(TestReconstruction):
 class TestNAC(TestReconstruction):
 
     def _test_createTracerStaticNAC(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac = False, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
@@ -93,6 +97,7 @@ class TestNAC(TestReconstruction):
         plt.show()
 
     def test_createTracerNAC(self):
+        import matplotlib.pyplot as plt
         mids = ['HYGLY23/V1/FDG_V1', 'NP995_24/V1/FDG_V1', 'NP995_19/V2/FDG_V2', 'HYGLY48/V1/FDG_V1', 'HYGLY50/V1/FDG_V1', 'HYGLY47/V1/FDG_V1' ]
         m = mids[0]
         loc = '/home2/jjlee/Local/Pawel/'+m+'-Converted'
@@ -108,6 +113,7 @@ class TestNAC(TestReconstruction):
 class TestUTE(TestReconstruction):
 
     def test_createTracerStaticUTE(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
@@ -116,6 +122,7 @@ class TestUTE(TestReconstruction):
         plt.show()
 
     def test_createTracerUTE(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
         plt.matshow(dyn['im'][60,:,:])
@@ -128,6 +135,7 @@ class TestUTE(TestReconstruction):
 class TestCarney(TestReconstruction):
 
     def test_createTracerStaticCarney(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
@@ -169,6 +177,7 @@ class TestTimes(TestReconstruction):
         print(obj.getTimes())
 
     def _test_checkTimeAliasingUTE(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True, v=True)
         dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
         plt.matshow(dyn[0]['im'][60,:,:])
@@ -176,6 +185,7 @@ class TestTimes(TestReconstruction):
         plt.show()
 
     def _test_checkTimeAliasingCarney(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True)
         dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
         plt.matshow(dyn['im'][60,:,:])
@@ -184,6 +194,7 @@ class TestTimes(TestReconstruction):
         plt.show()
 
     def _test_checkTimeHierarchiesCarney(self):
+        import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerLoc, ac=True)
         dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
         plt.matshow(dyn['im'][60,:,:])
