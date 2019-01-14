@@ -542,28 +542,34 @@ class Reconstruction(object):
         from niftypet import nipet
         return nipet.obj_mumap(self.datain, self.mMRparams, outpath=self.outpath, store=True)
 
-    def organizeRawdataLocation(self, cndaDownload=None):
+    def organizeNormAndListmode(self):
         import glob
         import pydicom
-        import shutil
-        import errno
 
+        try:
+            # check umap; move norm and listmode to folders
+            assert(os.path.isdir(os.path.join(self.tracerRawdataLocation, 'umap', '')))
+            fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
+            for fn in fns:
+                ds = pydicom.read_file(fn)
+                if ds.ImageType[2] == 'PET_NORM':
+                    self._moveToNamedLocation(fn, 'norm')
+                if ds.ImageType[2] == 'PET_LISTMODE':
+                    self._moveToNamedLocation(fn, 'LM')
+        except OSError:
+            os.listdir(self.tracerRawdataLocation)
+            raise
+
+    def organizeRawdataLocation(self, cndaDownload=None):
+        import shutil
+
+        if self.tracerRawdataLocation.find('Twlite'):
+            self.organizeNormAndListmode()
+            return
         if not self._ac:
             if isinstance(cndaDownload, str):
                 self.migrateCndaDownloads(cndaDownload)
-            try:
-                # NAC:  check umap; move norm and listmode to folders
-                assert(os.path.isdir(os.path.join(self.tracerRawdataLocation, 'umap', '')))
-                fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
-                for fn in fns:
-                    ds = pydicom.read_file(fn)
-                    if ds.ImageType[2] == 'PET_NORM':
-                        self._moveToNamedLocation(fn, 'norm')
-                    if ds.ImageType[2] == 'PET_LISTMODE':
-                        self._moveToNamedLocation(fn, 'LM')
-            except OSError:
-                os.listdir(self.tracerRawdataLocation)
-                raise
+            self.organizeNormAndListmode()
         else:
             # AC:  move .bf, .dcm and umap to tracerRawdataLocation
             nac_norm = os.path.join(self.tracerRawdataLocationWith(ac=False), 'norm', '')
