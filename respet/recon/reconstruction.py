@@ -2,7 +2,7 @@ import numpy as np
 import sys, os
 import respet.recon
 #from niftypet import nimpa
-from pylab import *
+#from pylab import *
 
 
 
@@ -592,10 +592,14 @@ class Reconstruction(object):
                   LM, containing, e.g.:
                           -rwxr-xr-x+  1 jjlee wheel 6817490860 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.bf
                           -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm:param:  cndaDownload is a path
+        :param:  ac, attenuation correction, is bool
+        :param:  umapSF is a fileprefix
+        :param:  v, verbosity, is bool
         :param:  cndaDownload is a path
         """
-        if loc:
-            self._tracerRawdataLocation = loc
+        if loc is None:
+            return
+        self._tracerRawdataLocation = loc
         self._ac = ac
         if not os.path.exists(self.tracerRawdataLocation):
             os.makedirs(self.tracerRawdataLocation)
