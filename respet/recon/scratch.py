@@ -24,7 +24,7 @@ class Scratch:
     def replaceFrameInSitu(self, t0, t1, tag, fr):
         from shutil import copyfile
         copyfile(
-            os.path.join(os.getenv('PPG_SUBJECTS_DIR'), 'zero_frame.nii.gz'),
+            os.path.join(os.getenv('SUBJECTS_DIR'), 'zero_frame.nii.gz'),
             self.nipetFrameFilename(t0, t1, fr))
 
     def nipetFrameFilename(self, t0, t1, tag, fr):
