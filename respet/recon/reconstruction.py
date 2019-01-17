@@ -563,7 +563,7 @@ class Reconstruction(object):
     def organizeRawdataLocation(self, cndaDownload=None):
         import shutil
 
-        if self.tracerRawdataLocation.find('Twlite'):
+        if self.tracerRawdataLocation.find('Twilite'):
             self.organizeNormAndListmode()
             return
         if not self._ac:
