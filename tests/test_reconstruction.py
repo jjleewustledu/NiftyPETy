@@ -101,14 +101,15 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        mids = ['HYGLY30/V2/Twilite_V2' ]
-        loc = '/home2/jjlee/Docker/NiftyPETd/'+mids[0]+'-Converted'
-        obj = Reconstruction(loc, ac = False, v = True)
-        dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        plt.matshow(dyn['im'][60,:,:])
-        plt.matshow(dyn['im'][:,170,:])
-        plt.matshow(dyn['im'][:,:,170])
-        plt.show()
+        mids = [ 'HYGLY48/V1/FDG_V1' ] #[ 'NP995_26/V1/FDG_V1', 'NP995_26/V2/FDG_V2' ]
+        for m in mids:
+            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
+            obj = Reconstruction(loc, ac = False, v = True)
+            dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
+            plt.matshow(dyn['im'][60,:,:])
+            plt.matshow(dyn['im'][:,170,:])
+            plt.matshow(dyn['im'][:,:,170])
+            plt.show()
 
 
 
@@ -148,9 +149,9 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        mids = ['HYGLY23/V1/FDG_V1', 'HYGLY23/V2/FDG_V2']
+        mids = ['NP995_26/V1/FDG_V1', 'NP995_26/V2/FDG_V2']
         for m in mids:
-            loc = '/home2/jjlee/Local/Pawel/'+m+'-Converted'
+            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
             obj = Reconstruction(loc, ac=True, v=True)
             obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
 
