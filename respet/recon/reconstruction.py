@@ -10,22 +10,53 @@ class Reconstruction(object):
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
-    umapSynthFileprefix = ''
-    span = 11
+    DCYCRR = True
     bootstrap = 0
     datain = {}
-    decayCorr = True
-    recmod = 3
-    itr = 4
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
-    mMRparams = {}
     hmuSelection = [1,4,5] # selects from ~/.niftypet/resources.py:  hrdwr_mu
+    itr = 4
+    mMRparams = {}
     outfolder = 'output'
+    recmod = 3
+    span = 11
+    tracerMemory = None
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
+    umapSynthFileprefix = ''
     use_stored_hdw_mumap = True
     use_stored_hist = False
     verbose = True
+
+
+
+    @property
+    def acTag(self):
+        if self._ac:
+            return 'AC'
+        else:
+            return 'NAC'
+
+    @property
+    def outpath(self):
+        return os.path.join(self.datain['corepath'], self.outfolder)
+
+    @property
+    def tracer(self):
+        import re
+        from warnings import warn
+        if self.tracerMemory:
+            return self.tracerMemory
+        try:
+            with open(self.lm_dcm(), 'r') as fid:
+                fcontent = fid.read()
+                p = re.compile('(?<=Radiopharmaceutical:)[A-Za-z\-]+')
+                m = re.search(p, fcontent)
+                self.tracerMemory = m.group(0)
+                return self.tracerMemory
+        except IOError as e:
+            warn(e.message)
+        raise AssertionError("Reconstruction.tracer could not open LM *.dcm")
 
     @property
     def tracerRawdataLocation(self):
@@ -39,22 +70,6 @@ class Reconstruction(object):
             return self._tracerRawdataLocation+'-NAC'
         else:
             return self._tracerRawdataLocation+'-AC'
-
-    @property
-    def outpath(self):
-        return os.path.join(self.datain['corepath'], self.outfolder)
-
-    @staticmethod
-    def sampleStaticMethod():
-        return 0.1234
-
-    @staticmethod
-    def printd(d):
-        for keys,values in d.items():
-            print(keys)
-            print(values)
-
-
 
     def createStaticNAC(self, fcomment='_createStaticNAC'):
         self.recmod = 0
@@ -77,43 +92,24 @@ class Reconstruction(object):
         return self.createStatic(self.muCarney(frames=[0]), hst=_hst, fcomment=fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
-        times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
-        print(times)
         self.recmod = 0
         self.bootstrap = 0
         self.checkUmaps(self.muHardware(), fcomment)
         self.checkHistogramming(fcomment)
-        return self.createDynamic(times, self.muNAC(), fcomment)
-
-    def createDynamicTiny(self, fcomment='_createDynamicTiny'):
-        times = self.getTimes()
-        print("########## respet.recon.reconstruction.Reconstruction.createDynamicTiny ##########")
-        print(times)
-        self.recmod = 1
-        self.bootstrap = 0
-        self.itr = 3
-        self.checkUmaps(self.muTiny(), fcomment)
-        self.checkHistogramming(fcomment)
-        return self.createDynamic(times, self.muTiny(), fcomment)
+        return self.createDynamic(self.getTaus(), self.muNAC(), fcomment)
 
     def createDynamicUTE(self, fcomment='_createDynamicUTE'):
-        times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
-        print(times)
         self.checkUmaps(self.muUTE(), fcomment)
         self.checkHistogramming(fcomment)
-        return self.createDynamic(times, self.muUTE(), fcomment)
+        return self.createDynamic(self.getTaus(), self.muUTE(), fcomment)
 
     def createDynamic2Carney(self, fcomment='_createDynamic2Carney'):
-        times = self.getTimes()
-        times2 = self.getTimes(self.getTaus2())
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
-        print(times)
-        print(times2)
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
-        return self.createDynamic2(times, times2, fcomment)
+        return self.createDynamic2(self.getTaus(), self.getTaus2(), fcomment)
 
     def createStatic(self, muo, hst=None, fcomment='_createStatic'):
         """
@@ -124,6 +120,7 @@ class Reconstruction(object):
         """
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
+        self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         hst = nipet.mmrhist(self.datain, self.mMRparams)
         sta = nipet.mmrchain(self.datain, self.mMRparams,
                              mu_h      = self.muHardware(),
@@ -137,37 +134,22 @@ class Reconstruction(object):
         self.saveStatic(sta, [muo, self.muHardware()], hst, fcomment)
         return sta
 
-    def saveStatic(self, sta, mumaps, hst, fcomment=''):
+    def createDynamic(self, taus, muo, fcomment='_createDynamic'):
         """
-        :param sta:       dictionary from nipet.mmrchain
-        :param mumaps:    dictionary of mu-maps from imaged object, hardware
-        :param hst:       dictionary from nipet.mmrhist
-        :param fcomment:  string to append to canonical filename
-        """
-        fout = self._createFilename(fcomment)
-        im = sta['im']
-        if self.mMRparams['Cnt']['VERBOSE']:
-            print('i> saving 3D image to: ', fout)
-
-        A = self.getAffine()
-        muo,muh = mumaps  # object and hardware mu-maps
-        if hst is None:
-            hst = self.checkHistogramming()
-        desc = self._createDescrip(hst, muh, muo)
-        assert len(im.shape) == 3, "Reconstruction.saveStatic.im.shape == " + str(len(im.shape))
-        self._array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
-
-    def createDynamic(self, times, muo, fcomment='_createDynamic'):
-        """
-        :param times:  np.int_; [0,0] produces a single time-frame
-        :param muo:    3D or 4D mu-map of imaged object
-        :return:       last result from nipet.mmrchain
-        :rtype:        dictionary
+        :param taus: np.int_
+        :param muo:  3D or 4D mu-map of imaged object
+        :return:     last result from nipet.mmrchain
+        :rtype:      dictionary
         """
         global dynFrame
         from niftypet import nipet
+        from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
+        self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        times = self.getTimes(taus)
+        it_ = None
         for it in np.arange(1, times.shape[0]):
+            it_ = it
             try:
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                           frames    = ['fluid', [times[it-1], times[it]]],
@@ -180,28 +162,38 @@ class Reconstruction(object):
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
             except UnboundLocalError as e:
-                print('==========================================================================')
-                print('w> nipet.img.pipe will fail by attempting to use recimg before assignment;')
-                print('w> skip reconstruction of time frame '+str(it - 1)+'.')
-                print('==========================================================================')
-                self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
+                warn(e.message)
+                warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
+                if it < len(times)/2:
+                    warn('Reconstruction.createDynamic:  calling requestFrameInSitu')
+                    self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
+                else:
+                    warn('Reconstruction.createDynamic:  break for it->' + it)
+                    break
 
+        self.save_timings_json(taus[:it_-1])
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def createDynamic2(self, times, times2, fcomment='_createDynamic2'):
+    def createDynamic2(self, taus, taus2, fcomment='_createDynamic2'):
         """
-        :param times:   np.int_ for mu-map frames; [0,0] produces a single time-frame
-        :param times2:  np.int_ for emission frames
-        :param muo:     3D or 4D mu-map of imaged object
-        :return:        last result from nipet.mmrchain
-        :rtype:         dictionary
+        :param taus:   np.int_ for mu-map frames
+        :param taus2:  np.int_ for emission frames
+        :param muo:    3D or 4D mu-map of imaged object
+        :return:       last result from nipet.mmrchain
+        :rtype:        dictionary
         """
         global dynFrame
         from niftypet import nipet
+        from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
+        self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        times = self.getTimes(taus)
+        times2 = self.getTimes(taus2)
         it = 1                                     # mu-map frame
+        it2_ = None
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
+            it2_ = it2
             if times2[it2-1] >= times[it]:
                 it = it + 1
             try:
@@ -216,35 +208,32 @@ class Reconstruction(object):
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it2 - 1))
             except UnboundLocalError as e:
-                print('==========================================================================')
-                print('w> nipet.img.pipe will fail by attempting to use recimg before assignment;')
-                print('w> skip reconstruction of time frame '+str(it2 - 1)+'.')
-                print('==========================================================================')
-                self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
+                warn(e.message)
+                warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
+                if it2 < len(times2)/2:
+                    warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
+                    self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
+                else:
+                    warn('Reconstruction.createDynamic2:  break for it2->' + it2)
+                    break
 
+        self.save_timings_json(taus[:it2_-1])
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def replaceFrameInSitu(self, t0, t1, tag, fr):
-        from shutil import copyfile
-        copyfile(
-            os.path.join(os.getenv('SUBJECTS_DIR'), 'zeros_frame.nii.gz'),
-            self.nipetFrameFilename(t0, t1, tag, fr))
 
-    def nipetFrameFilename(self, t0, t1, tag, fr):
-        #       a_itr-4_t-10-20sec_createDynamic2Carney_time1.nii.gz
-        return os.path.join(self.outpath, 'PET', 'single-frame', 'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz')
-
-    def createDynamicInMemory(self, times, muo, hst=None, fcomment='_createDynamicInMemory'):
+    def createDynamicInMemory(self, taus, muo, hst=None, fcomment='_createDynamicInMemory'):
         """
         within unittest environment, may use ~60 GB memory for 60 min FDG recon with MRAC
-        :param times:  np.int_; [0,0] produces a single time-frame
-        :param muo:    3D or 4D mu-map of imaged object
-        :return:       result from nipet.mmrchain
-        :rtype:        dictionary
+        :param taus:  np.int_
+        :param muo:   3D or 4D mu-map of imaged object
+        :return:      result from nipet.mmrchain
+        :rtype:       dictionary
         """
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
+        self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        times = self.getTimes(taus)[0:3] # abbreviated for testing
         dyn = (times.shape[0]-1)*[None]
         for it in np.arange(1, times.shape[0]):
             dyn[it-1] = nipet.mmrchain(self.datain, self.mMRparams,
@@ -259,28 +248,6 @@ class Reconstruction(object):
                                        fcomment  = fcomment + '_time' + str(it - 1))
         self.saveDynamicInMemory(dyn, [muo, self.muHardware()], hst, fcomment)
         return dyn
-
-    def saveDynamicInMemory(self, dyn, mumaps, hst, fcomment=''):
-        """
-        :param dyn:       dictionary from nipet.mmrchain
-        :param mumaps:    dictionary of mu-maps from imaged object, hardware
-        :param hst:       dictionary from nipet.mmrhist
-        :param fcomment:  string to append to canonical filename
-        """
-        fout = self._createFilename(fcomment)
-        im = self._gatherOsemoneList(dyn)
-        if self.mMRparams['Cnt']['VERBOSE']:
-            print('i> saving '+str(len(im.shape))+'D image to: ', fout)
-
-        A = self.getAffine()
-        muo,muh = mumaps  # object and hardware mu-maps
-        if hst is None:
-            hst = self.checkHistogramming()
-        desc = self._createDescrip(hst, muh, muo)
-        if len(im.shape) == 3:
-            self._array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
-        elif len(im.shape) == 4:
-            self._array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
 
     def createUmapSynthFullBlurred(self):
         """
@@ -351,23 +318,21 @@ class Reconstruction(object):
         return hst
 
     def checkTimeAliasingUTE(self, fcomment='_checkTimeAliasingUTE'):
-        times = self.getTimes()
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingUTE ##########")
-        print(times[0:2])
-        return self.createDynamicInMemory(times[0:3], self.muUTE(), fcomment)
+        return self.createDynamicInMemory(self.getTaus(), self.muUTE(), fcomment)
 
     def checkTimeAliasingCarney(self, fcomment='_checkTimeAliasingCarney'):
-        times = self.getTimes()
+        times = self.getTimes(self.getTaus())
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingCarney ##########")
         print(times[0:2])
-        return self.createDynamic(times[0:3], self.muCarney(frames=[0,1]), fcomment)
+        return self.createDynamic(self.getTaus()[0:2], self.muCarney(frames=[0,1]), fcomment)
 
     def checkTimeHierarchiesCarney(self, fcomment='_checkTimeHierarchiesCarney'):
-        times = self.getTimes()
+        times = self.getTimes(self.getTaus())
         times2 = self.getTimes(self.getTaus2())
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeHierarchiesCarney ##########")
         print(times)
-        return self.createDynamic2(times[0:3], times2[0:7], self.muCarney(frames=[0,1]), fcomment)
+        return self.createDynamic2(self.getTaus()[0:2], self.getTaus2()[0:6], self.muCarney(frames=[0,1]), fcomment)
 
     def checkUmaps(self, muo, fcomment=''):
         from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig, matshow, colorbar, legend, grid
@@ -417,29 +382,41 @@ class Reconstruction(object):
         else:
             return [muo, self.muHardware()]
 
-    @staticmethod
-    def getTaus():
+    def getTaus(self, json_file=None):
         """
-        :return:  1x65 array of frame durations:  10 x 30-sec-frames + 55 x 60-sec-frames
+        :param:  json_file containing taus
+        :return:  np array of frame durations
         :rtype:  numpy.int_
         """
-        return np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+        if json_file:
+            return self.open_timings_json(json_file)
+        if self.tracerMemory == 'Fluorodeoxyglucose':
+            taus = np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+        else:
+            taus = np.int_([30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+        return taus
 
-    @staticmethod
-    def getTaus2():
+    def getTaus2(self, json_file=None):
         """
-        :return:  1x73 array of frame durations:  12 x 10-sec frames + 6 x 30-sec-frames + 55 x 60-sec-frames
+        :param:  json_file containing taus
+        :return:  np array of frame durations
         :rtype:  numpy.int_
         """
-        return np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+        if json_file:
+            return self.open_timings_json(json_file)
+        if self.tracerMemory == 'Fluorodeoxyglucose':
+            taus = np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+        else:
+            taus = np.int_([3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,12,13,13,15,16,17,19,21,24,27,32,38,47,62,88])
+        return taus
 
     def getTimes(self, taus=None):
         """
         :return:  up to 1x66 array of times including 0 and np.cumsum(taus); max(times) <= self.getTimeMax
         :rtype:  numpy.int_
         """
-        if taus is None:
-            taus = self.getTaus()
+        if not isinstance(taus, np.ndarray):
+            raise AssertionError('Reconstruction.getTimes.taus is missing');
         t = np.hstack((np.int_(0), np.cumsum(taus)))
         t = t[t <= self.getTimeMax()]
         return np.int_(t) # TODO return np.trunc(t)
@@ -451,6 +428,34 @@ class Reconstruction(object):
         from niftypet.nipet.lm import mmr_lmproc #CUDA
         nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
+
+    def lm_dcm(self):
+        from glob import glob
+        dcms = glob(os.path.join(self.tracerRawdataLocation, 'LM', '*.dcm'))
+        for d in dcms:
+            if os.path.exists(d):
+                return d
+        raise AssertionError("Reconstruction.lm_dcm could not open LM *.dcm")
+
+    def lm_dcmread(self):
+        """
+        :return dcm_datset is a pydicom.dataset.FileDataset containing properties for DICOM fields:
+        """
+        from pydicom import dcmread
+        try:
+            dcm_datset = dcmread(self.lm_dcm())
+        except (AttributeError, TypeError):
+            raise AssertionError('dcm must be a filename')
+        return dcm_datset
+
+    def lm_studytime(self):
+        """
+        provides best estimate of start time (GMT) of listmode collection
+        :param dcm filename:
+        :return:
+        """
+        d = self.lm_dcmread()
+        return d.StudyTime # hhmmss.ffffff after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
 
     def migrateCndaDownloads(self, cndaDownload):
         return None
@@ -526,14 +531,6 @@ class Reconstruction(object):
         """
         return []
 
-    def muTiny(self):
-        """
-        :return:  mu-map image of mu == 0.01 sized according to self.mMRparams['Cnt']['SO_IM*']
-        """
-        _cnt = self.mMRparams['Cnt']
-        _im  = 0.01*np.ones((_cnt['SO_IMZ'], _cnt['SO_IMY'], _cnt['SO_IMX']), dtype=np.float32)
-        return dict(im=_im)
-
     def muUTE(self):
         """
         :return:  mu-map image from Siemens UTE
@@ -541,6 +538,11 @@ class Reconstruction(object):
         """
         from niftypet import nipet
         return nipet.obj_mumap(self.datain, self.mMRparams, outpath=self.outpath, store=True)
+
+    def nipetFrameFilename(self, t0, t1, tag, fr):
+        #       a_itr-4_t-10-20sec_createDynamic2Carney_time1.nii.gz
+        return os.path.join(self.outpath, 'PET', 'single-frame',
+                            'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz')
 
     def organizeNormAndListmode(self):
         import glob
@@ -567,7 +569,7 @@ class Reconstruction(object):
             self.organizeNormAndListmode()
             return
         if not self._ac:
-            if isinstance(cndaDownload, str):
+            if cndaDownload:
                 self.migrateCndaDownloads(cndaDownload)
             self.organizeNormAndListmode()
         else:
@@ -584,6 +586,228 @@ class Reconstruction(object):
                 shutil.move(nac_lm,   self.tracerRawdataLocation)
             if not os.path.isdir(ac_umap):
                 shutil.move(nac_umap, self.tracerRawdataLocation)
+
+    @staticmethod
+    def printd(d):
+        for keys, values in d.items():
+            print(keys)
+            print(values)
+
+    def replaceFrameInSitu(self, t0, t1, tag, fr):
+        from shutil import copyfile
+        copyfile(
+            os.path.join(os.getenv('SUBJECTS_DIR'), 'zeros_frame.nii.gz'),
+            self.nipetFrameFilename(t0, t1, tag, fr))
+
+    @staticmethod
+    def sampleStaticMethod():
+        return 0.1234
+
+    def saveDynamicInMemory(self, dyn, mumaps, hst, fcomment=''):
+        """
+        :param dyn:       dictionary from nipet.mmrchain
+        :param mumaps:    dictionary of mu-maps from imaged object, hardware
+        :param hst:       dictionary from nipet.mmrhist
+        :param fcomment:  string to append to canonical filename
+        """
+        fout = self._createFilename(fcomment)
+        im = self._gatherOsemoneList(dyn)
+        if self.mMRparams['Cnt']['VERBOSE']:
+            print('i> saving '+str(len(im.shape))+'D image to: ', fout)
+
+        A = self.getAffine()
+        muo,muh = mumaps  # object and hardware mu-maps
+        if hst is None:
+            hst = self.checkHistogramming()
+        desc = self._createDescrip(hst, muh, muo)
+        if len(im.shape) == 3:
+            self._array2nii(im[::-1,::-1,:],     A, fout, descrip=desc)
+        elif len(im.shape) == 4:
+            self._array4D2nii(im[:,::-1,::-1,:], A, fout, descrip=desc)
+
+    def saveStatic(self, sta, mumaps, hst, fcomment=''):
+        """
+        :param sta:       dictionary from nipet.mmrchain
+        :param mumaps:    dictionary of mu-maps from imaged object, hardware
+        :param hst:       dictionary from nipet.mmrhist
+        :param fcomment:  string to append to canonical filename
+        """
+        fout = self._createFilename(fcomment)
+        im = sta['im']
+        if self.mMRparams['Cnt']['VERBOSE']:
+            print('i> saving 3D image to: ', fout)
+
+        A = self.getAffine()
+        muo,muh = mumaps  # object and hardware mu-maps
+        if hst is None:
+            hst = self.checkHistogramming()
+        desc = self._createDescrip(hst, muh, muo)
+        assert len(im.shape) == 3, "Reconstruction.saveStatic.im.shape == " + str(len(im.shape))
+        self._array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
+
+
+
+    # METHODS FOR TIMINGS
+
+    def open_timings_json(self, json_file=None):
+        """
+        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
+        :param json_file, a str:
+        :return taus, a np array:
+        """
+        import codecs, json
+        if not json_file:
+            raise AssertionError('Reconstruction.open_timings_json.json_file is missing')
+        t = codecs.open(json_file, 'r', encoding='utf-8').read()
+        jt = json.loads(t)
+        taus = np.array(jt)
+        return taus
+
+    def save_timings_json(self, taus=None):
+        """
+        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
+        :param taus, a np array:
+        :return jfile, a canonical json filename for timings saved with self.lm_studytime, taus:
+        """
+        import codecs, json
+        if not taus:
+            raise AssertionError('Reconstruction.save_timings_json.taus is missing')
+        jdict = {
+            "study time" : self.lm_studytime(),
+            "taus" : taus.tolist(),
+        }
+        jfile = self.timings_json_filename()
+        j = codecs.open(jfile, 'w', encoding='utf-8') # overwrites existing
+        json.dump(jdict, j, separators=(',', ':'), sort_keys=True, indent=4)
+        return jfile
+
+    def timings_json_filename(self):
+        return self.tracer + self.acTag + '-timings.json'
+
+
+
+    # CLASS PRIVATE METHODS
+
+    def _array2nii(self, im, A, fnii, descrip=''):
+        """
+        Store the numpy array to a NIfTI file <fnii>
+        """
+        if im.ndim == 3:
+            im = np.transpose(im, (2, 1, 0))
+        elif im.ndim == 4:
+            im = np.transpose(im, (3, 2, 1, 0))
+        else:
+            raise StandardError('unrecognised image dimensions')
+
+        import nibabel as nib
+        nii = nib.Nifti1Image(im, A)
+        hdr = nii.header
+        hdr.set_sform(None, code='scanner')
+        hdr['cal_max'] = np.max(im)
+        hdr['cal_min'] = np.min(im)
+        hdr['descrip'] = descrip
+        nib.save(nii, fnii)
+
+    def _array4D2nii(self, im, A, fnii, descrip=''):
+        # print 'A = ', A
+
+        import nibabel as nib
+        im = np.transpose(im, (3, 2, 1, 0))
+        nii = nib.Nifti1Image(im, A)
+        hdr = nii.header
+        hdr.set_sform(None, code='scanner')
+        hdr['cal_max'] = np.max(im)
+        hdr['cal_min'] = np.min(im)
+        hdr['descrip'] = descrip
+        nib.save(nii, fnii)
+
+    def _createDescrip(self, hst, muh, muo):
+        """
+        :param hst:  from nipet.mmrhist
+        :param muh:  is mumaps list array
+        :param muo:  is mumaps list array
+        :return:     description text for NIfTI
+        if only bed present, attnum := 0.5
+        """
+        from niftypet import nipet
+        cnt    = self.mMRparams['Cnt']
+        attnum = (1 * (np.sum(muh) > 0.5) + 1 * (np.sum(muo) > 0.5)) / 2.
+        ncmp,_ = nipet.mmrnorm.get_components(self.datain, cnt)
+        rilut  = self._riLUT()
+        qf     = ncmp['qf'] / rilut[cnt['ISOTOPE']]['BF'] / float(hst['dur'])
+        desc   = 'alg=osem' + \
+                 ';sub=14' + \
+                 ';att='   + str(attnum * (self.recmod > 0)) + \
+                 ';sct='   + str(1 * (self.recmod > 1)) + \
+                 ';spn='   + str(cnt['SPN']) + \
+                 ';itr='   + str(self.itr)   + \
+                 ';fwhm='  + str(self.fwhm)  + \
+                 ';t0='    + str(hst['t0'])  + \
+                 ';t1='    + str(hst['t1'])  + \
+                 ';dur='   + str(hst['dur']) + \
+                 ';qf='    + str(qf)
+        return desc
+
+    def _createFilename(self, fcomment):
+        from niftypet import nipet
+        nipet.mmraux.create_dir(self.outpath)
+        pth = os.path.join(self.outpath, os.path.basename(self.datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
+        return pth
+
+    def _gatherOsemoneList(self, olist):
+        """
+        :param olist:  list of dictionaries
+        :return:       numpy.array with times concatenated along axis=0 (c-style)
+        """
+        im = [olist[0]['im']]
+        for i in range(1, len(olist)):
+            im = np.append(im, [olist[i].im], axis=0)
+        return np.float_(im)
+
+    def _initializeNiftypet(self):
+        from niftypet import nipet
+        self.mMRparams = nipet.get_mmrparams()
+        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
+        self.mMRparams['Cnt']['SPN']     = self.span
+        self.mMRparams['Cnt']['BTP']     = self.bootstrap
+        self.mMRparams['Cnt']['DCYCRR']  = self.DCYCRR
+        self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
+        if not os.path.exists(self.outpath):
+            os.makedirs(self.outpath)
+        if self.verbose:
+            print("########## respet.recon.reconstruction.Reconstruction._initializeNiftypet ##########")
+            print(self.datain)
+            
+    def _moveToNamedLocation(self, dcm, name):
+        import shutil
+        import errno
+        namedLoc = os.path.join(self.tracerRawdataLocation, name)
+        if not os.path.exists(namedLoc):
+            os.makedirs(namedLoc)
+        try:
+            bf = os.path.splitext(dcm)[0]+'.bf'
+            shutil.move(bf,  os.path.join(namedLoc, os.path.basename(bf)))
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+        try:
+            shutil.move(dcm, os.path.join(namedLoc, os.path.basename(dcm)))
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+    def _riLUT(self):
+        """
+        :return:  radioisotope look-up table
+        """
+        return {'Ge68':{'BF':0.891, 'thalf':270.9516*24*60*60},
+                'Ga68':{'BF':0.891, 'thalf':67.71*60},
+                 'F18':{'BF':0.967, 'thalf':109.77120*60},
+                 'C11':{'BF':0.998, 'thalf':20.38*60}}
+
+    def _tracer(self):
+        import re
+        return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
 
     def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None):
         """
@@ -625,127 +849,3 @@ class Reconstruction(object):
     # _t0 = 0
     # _t1 = 0
     # _tracerRawdataLocation = None
-
-
-
-    def _array2nii(self, im, A, fnii, descrip=''):
-        """
-        Store the numpy array to a NIfTI file <fnii>
-        """
-        if im.ndim == 3:
-            im = np.transpose(im, (2, 1, 0))
-        elif im.ndim == 4:
-            im = np.transpose(im, (3, 2, 1, 0))
-        else:
-            raise StandardError('unrecognised image dimensions')
-
-        import nibabel as nib
-        nii = nib.Nifti1Image(im, A)
-        hdr = nii.header
-        hdr.set_sform(None, code='scanner')
-        hdr['cal_max'] = np.max(im)
-        hdr['cal_min'] = np.min(im)
-        hdr['descrip'] = descrip
-        nib.save(nii, fnii)
-
-    def _array4D2nii(self, im, A, fnii, descrip=''):
-        # print 'A = ', A
-
-        import nibabel as nib
-        im = np.transpose(im, (3, 2, 1, 0))
-        nii = nib.Nifti1Image(im, A)
-        hdr = nii.header
-        hdr.set_sform(None, code='scanner')
-        hdr['cal_max'] = np.max(im)
-        hdr['cal_min'] = np.min(im)
-        hdr['descrip'] = descrip
-        nib.save(nii, fnii)
-
-    def _gatherOsemoneList(self, olist):
-        """
-        :param olist:  list of dictionaries
-        :return:       numpy.array with times concatenated along axis=0 (c-style)
-        """
-        im = [olist[0]['im']]
-        for i in range(1, len(olist)):
-            im = np.append(im, [olist[i].im], axis=0)
-        return np.float_(im)
-
-    def _initializeNiftypet(self):
-        from niftypet import nipet
-        self.mMRparams = nipet.get_mmrparams()
-        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
-        self.mMRparams['Cnt']['SPN']     = self.span
-        self.mMRparams['Cnt']['BTP']     = self.bootstrap
-        self.mMRparams['Cnt']['DCYCRR']  = self.decayCorr
-        self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
-        if not os.path.exists(self.outpath):
-            os.makedirs(self.outpath)
-        if self.verbose:
-            print("########## respet.recon.reconstruction.Reconstruction._initializeNiftypet ##########")
-            print(self.datain)
-            
-    def _moveToNamedLocation(self, dcm, name):
-        import shutil
-        import errno
-        namedLoc = os.path.join(self.tracerRawdataLocation, name)
-        if not os.path.exists(namedLoc):
-            os.makedirs(namedLoc)
-        try:
-            bf = os.path.splitext(dcm)[0]+'.bf'
-            shutil.move(bf,  os.path.join(namedLoc, os.path.basename(bf)))
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-        try:
-            shutil.move(dcm, os.path.join(namedLoc, os.path.basename(dcm)))
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-
-    def _tracer(self):
-        import re
-        return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
-
-    def _createDescrip(self, hst, muh, muo):
-        """
-        :param hst:  from nipet.mmrhist
-        :param muh:  is mumaps list array
-        :param muo:  is mumaps list array
-        :return:     description text for NIfTI
-        if only bed present, attnum := 0.5
-        """
-        from niftypet import nipet
-        cnt    = self.mMRparams['Cnt']
-        attnum = (1 * (np.sum(muh) > 0.5) + 1 * (np.sum(muo) > 0.5)) / 2.
-        ncmp,_ = nipet.mmrnorm.get_components(self.datain, cnt)
-        rilut  = self._riLUT()
-        qf     = ncmp['qf'] / rilut[cnt['ISOTOPE']]['BF'] / float(hst['dur'])
-        desc   = 'alg=osem' + \
-                 ';sub=14' + \
-                 ';att='   + str(attnum * (self.recmod > 0)) + \
-                 ';sct='   + str(1 * (self.recmod > 1)) + \
-                 ';spn='   + str(cnt['SPN']) + \
-                 ';itr='   + str(self.itr)   + \
-                 ';fwhm='  + str(self.fwhm)  + \
-                 ';t0='    + str(hst['t0'])  + \
-                 ';t1='    + str(hst['t1'])  + \
-                 ';dur='   + str(hst['dur']) + \
-                 ';qf='    + str(qf)
-        return desc
-
-    def _createFilename(self, fcomment):
-        from niftypet import nipet
-        nipet.mmraux.create_dir(self.outpath)
-        pth = os.path.join(self.outpath, os.path.basename(self.datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
-        return pth
-
-    def _riLUT(self):
-        """
-        :return:  radioisotope look-up table
-        """
-        return {'Ge68':{'BF':0.891, 'thalf':270.9516*24*60*60},
-                'Ga68':{'BF':0.891, 'thalf':67.71*60},
-                 'F18':{'BF':0.967, 'thalf':109.77120*60},
-                 'C11':{'BF':0.998, 'thalf':20.38*60}}
-
