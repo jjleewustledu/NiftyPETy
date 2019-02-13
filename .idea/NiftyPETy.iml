@@ -12,6 +12,7 @@
     <orderEntry type="module" module-name="construct_resolved_mcr" />
     <orderEntry type="module" module-name="xnatpy" />
     <orderEntry type="module" module-name="NIPET" />
+    <orderEntry type="module" module-name="interfile" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

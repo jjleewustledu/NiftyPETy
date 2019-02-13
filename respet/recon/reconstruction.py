@@ -39,37 +39,51 @@ class Reconstruction(object):
 
     @property
     def outpath(self):
+        """
+        :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC/output':
+        """
         return os.path.join(self.datain['corepath'], self.outfolder)
 
     @property
+    def PETpath(self):
+        """
+        :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC/output/PET':
+        """
+        return os.path.join(self.outpath, 'PET')
+
+    @property
     def tracer(self):
+        """
+        :return e.g., 'OO1':
+        """
         import re
-        from warnings import warn
-        if self.tracerMemory:
-            return self.tracerMemory
-        try:
-            with open(self.lm_dcm(), 'r') as fid:
-                fcontent = fid.read()
-                p = re.compile('(?<=Radiopharmaceutical:)[A-Za-z\-]+')
-                m = re.search(p, fcontent)
-                self.tracerMemory = m.group(0)
-                return self.tracerMemory
-        except IOError as e:
-            warn(e.message)
-        raise AssertionError("Reconstruction.tracer could not open LM *.dcm")
+        return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
 
     @property
     def tracerRawdataLocation(self):
+        """
+        :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC':
+        """
         if not self._ac:
             return self._tracerRawdataLocation+'-NAC'
         else:
             return self._tracerRawdataLocation+'-AC'
 
-    def tracerRawdataLocationWith(self, ac=False):
+    def tracerRawdataLocation_with(self, ac=False):
         if not ac:
             return self._tracerRawdataLocation+'-NAC'
         else:
             return self._tracerRawdataLocation+'-AC'
+
+    @property
+    def visitStr(self):
+        """
+        :return e.g., 'v1':
+        """
+        import re
+        return re.split('_', os.path.basename(self.tracerRawdataLocation))[1].lower()
+
+
 
     def createStaticNAC(self, fcomment='_createStaticNAC'):
         self.recmod = 0
@@ -109,7 +123,8 @@ class Reconstruction(object):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
-        return self.createDynamic2(self.getTaus(), self.getTaus2(), fcomment)
+        taus, waittime = self.getTaus(self.json_filename_with(ac=False))
+        return self.createDynamic2(waittime, taus, self.getTaus2(), fcomment)
 
     def createStatic(self, muo, hst=None, fcomment='_createStatic'):
         """
@@ -147,9 +162,9 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
-        it_ = None
+        wtime = times[0]
+        it = None
         for it in np.arange(1, times.shape[0]):
-            it_ = it
             try:
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                           frames    = ['fluid', [times[it-1], times[it]]],
@@ -167,21 +182,23 @@ class Reconstruction(object):
                 if it < len(times)/2:
                     warn('Reconstruction.createDynamic:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
+                    wtime = times[it]
                 else:
                     warn('Reconstruction.createDynamic:  break for it->' + it)
                     break
 
-        self.save_timings_json(taus[:it_-1])
+        self.save_json(taus[:it - 1], waittime=wtime)
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def createDynamic2(self, taus, taus2, fcomment='_createDynamic2'):
+    def createDynamic2(self, waittime, taus, taus2, fcomment='_createDynamic2'):
         """
-        :param taus:   np.int_ for mu-map frames
-        :param taus2:  np.int_ for emission frames
-        :param muo:    3D or 4D mu-map of imaged object
-        :return:       last result from nipet.mmrchain
-        :rtype:        dictionary
+        :param waittime:
+        :param taus   np.int_ for mu-map frames:
+        :param taus2  np.int_ for emission frames:
+        :param muo    3D or 4D mu-map of imaged object:
+        :return       last result from nipet.mmrchain:
+        :rtype        dictionary:
         """
         global dynFrame
         from niftypet import nipet
@@ -190,10 +207,12 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
         times2 = self.getTimes(taus2)
+        timew = times2[0]
         it = 1                                     # mu-map frame
-        it2_ = None
+        it2 = None
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
-            it2_ = it2
+            if times[it2-1] < waittime:
+                continue
             if times2[it2-1] >= times[it]:
                 it = it + 1
             try:
@@ -213,11 +232,12 @@ class Reconstruction(object):
                 if it2 < len(times2)/2:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
+                    timew = times2[it2]
                 else:
                     warn('Reconstruction.createDynamic2:  break for it2->' + it2)
                     break
 
-        self.save_timings_json(taus[:it2_-1])
+        self.save_json(taus2[:it2 - 1], waittime=timew)
         assert isinstance(dynFrame, dict)
         return dynFrame
 
@@ -255,9 +275,9 @@ class Reconstruction(object):
         """
         from subprocess import call
         pwd0 = os.getcwd()
-        os.chdir(self.tracerRawdataLocationWith(ac=False))
+        os.chdir(self.tracerRawdataLocation_with(ac=False))
         call('/data/nil-bluearc/raichle/lin64-tools/nifti_4dfp -n ' +
-             os.path.join(self.tracerRawdataLocationWith(ac=False), self.umap4dfp) + '.ifh umap_.nii',
+             os.path.join(self.tracerRawdataLocation_with(ac=False), self.umap4dfp) + '.ifh umap_.nii',
              shell=True, executable='/bin/bash')
         call('/bin/gzip umap_.nii', shell=True, executable='/bin/bash')
         call('/usr/local/fsl/bin/fslroi umap_ umap__ -86 344 -86 344 0 -1',
@@ -371,6 +391,18 @@ class Reconstruction(object):
         A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
         return A
 
+    def getInterfile(self, dcm):
+        """
+        :param dcm:
+        :return lm_dict, a dictionary of interfile fields:
+        """
+        from interfile import Interfile
+        try:
+            lm_dict = Interfile.load(dcm)
+        except (AttributeError, TypeError):
+            raise AssertionError('dcm must be a filename')
+        return lm_dict
+
     def getMumaps(self, muo, it = 0):
         """
         :param muo:  numpy.array of len == 3 or len == 4
@@ -385,25 +417,25 @@ class Reconstruction(object):
     def getTaus(self, json_file=None):
         """
         :param:  json_file containing taus
-        :return:  np array of frame durations
+        :return:  np array of frame durations, waiting time
         :rtype:  numpy.int_
         """
         if json_file:
-            return self.open_timings_json(json_file)
+            return self.open_json(json_file)
         if self.tracerMemory == 'Fluorodeoxyglucose':
             taus = np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
         else:
             taus = np.int_([30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
-        return taus
+        return taus, 0
 
     def getTaus2(self, json_file=None):
         """
         :param:  json_file containing taus
-        :return:  np array of frame durations
+        :return:  np array of frame durations, waiting time
         :rtype:  numpy.int_
         """
         if json_file:
-            return self.open_timings_json(json_file)
+            return self.open_json(json_file)
         if self.tracerMemory == 'Fluorodeoxyglucose':
             taus = np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
         else:
@@ -416,7 +448,7 @@ class Reconstruction(object):
         :rtype:  numpy.int_
         """
         if not isinstance(taus, np.ndarray):
-            raise AssertionError('Reconstruction.getTimes.taus is missing');
+            raise AssertionError('Reconstruction.getTimes.taus is missing')
         t = np.hstack((np.int_(0), np.cumsum(taus)))
         t = t[t <= self.getTimeMax()]
         return np.int_(t) # TODO return np.trunc(t)
@@ -428,6 +460,49 @@ class Reconstruction(object):
         from niftypet.nipet.lm import mmr_lmproc #CUDA
         nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
+
+    def json_filename(self):
+        return os.path.join(self.PETpath,
+                            self.tracer() + self.visitStr + '.json')
+
+    def json_filename_with(self, ac=False):
+        return os.path.join(self.tracerRawdataLocation_with(ac), 'output', 'PET',
+                            self.tracer() + self.visitStr + '.json')
+
+    def open_json(self, json_file=None):
+        """
+        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
+        :param json_file, a str:
+        :return taus, a np array:
+        """
+        import codecs, json
+        if not json_file:
+            raise AssertionError('Reconstruction.open_json.json_file is missing')
+        t = codecs.open(json_file, 'r', encoding='utf-8').read()
+        jt = json.loads(t)
+        taus = np.array(jt['taus'])
+        wtime = int(float(jt['waiting time']))
+        return taus, wtime
+
+    def save_json(self, taus=None, waittime=0):
+        """
+        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
+        :param taus, a np array:
+        :return json_file, a canonical json filename for timings saved with self.lm_studytime, taus:
+        """
+        import codecs, json
+        if not isinstance(taus, np.ndarray):
+            raise AssertionError('Reconstruction.save_json.taus is missing')
+        jdict = {
+            "study date": self.lm_studydate(),
+            "study time": self.lm_studytime(),
+            "waiting time": waittime,
+            "taus": taus.tolist()
+        }
+        json_file = self.json_filename()
+        j = codecs.open(json_file, 'w', encoding='utf-8')  # overwrites existing
+        json.dump(jdict, j)
+        return json_file
 
     def lm_dcm(self):
         from glob import glob
@@ -448,6 +523,19 @@ class Reconstruction(object):
             raise AssertionError('dcm must be a filename')
         return dcm_datset
 
+    def lm_imageduration(self):
+        lm_dict = self.getInterfile(self.lm_dcm())
+        return lm_dict['image duration']['value'] # sec
+
+    def lm_studydate(self):
+        """
+        provides best estimate of date of listmode collection
+        :param dcm filename:
+        :return:
+        """
+        d = self.lm_dcmread()
+        return d.StudyDate # YYYYMMDD after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+
     def lm_studytime(self):
         """
         provides best estimate of start time (GMT) of listmode collection
@@ -456,6 +544,22 @@ class Reconstruction(object):
         """
         d = self.lm_dcmread()
         return d.StudyTime # hhmmss.ffffff after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+
+    def lm_tracer(self):
+        import re
+        from warnings import warn
+        if self.tracerMemory:
+            return self.tracerMemory
+        try:
+            with open(self.lm_dcm(), 'r') as fid:
+                fcontent = fid.read()
+                p = re.compile('(?<=Radiopharmaceutical:)[A-Za-z\-]+')
+                m = re.search(p, fcontent)
+                self.tracerMemory = m.group(0)
+                return self.tracerMemory
+        except IOError as e:
+            warn(e.message)
+        raise AssertionError("Reconstruction.lm_tracer could not open LM *.dcm")
 
     def migrateCndaDownloads(self, cndaDownload):
         return None
@@ -485,7 +589,7 @@ class Reconstruction(object):
 
         if fileprefix is None:
             fileprefix = self.umapSynthFileprefix
-        fqfn = os.path.join(self.tracerRawdataLocationWith(ac=True), fileprefix + fcomment + '.nii.gz')
+        fqfn = os.path.join(self.tracerRawdataLocation_with(ac=True), fileprefix + fcomment + '.nii.gz')
         nimpa_dct = nimpa.getnii(fqfn, output='all')
         _im = nimpa_dct['im']
         if not frames is None:
@@ -565,27 +669,29 @@ class Reconstruction(object):
     def organizeRawdataLocation(self, cndaDownload=None):
         import shutil
 
-        if self.tracerRawdataLocation.find('Twilite'):
+        if self.tracerRawdataLocation.find('Twilite') > 0:
             self.organizeNormAndListmode()
             return
         if not self._ac:
             if cndaDownload:
                 self.migrateCndaDownloads(cndaDownload)
             self.organizeNormAndListmode()
-        else:
-            # AC:  move .bf, .dcm and umap to tracerRawdataLocation
-            nac_norm = os.path.join(self.tracerRawdataLocationWith(ac=False), 'norm', '')
-            ac_norm  = os.path.join(self.tracerRawdataLocationWith(ac=True),  'norm', '')
-            nac_lm   = os.path.join(self.tracerRawdataLocationWith(ac=False), 'LM', '')
-            ac_lm    = os.path.join(self.tracerRawdataLocationWith(ac=True),  'LM', '')
-            nac_umap = os.path.join(self.tracerRawdataLocationWith(ac=False), 'umap', '')
-            ac_umap  = os.path.join(self.tracerRawdataLocationWith(ac=True),  'umap', '')
-            if not os.path.isdir(ac_norm):
-                shutil.move(nac_norm, self.tracerRawdataLocation)
-            if not os.path.isdir(ac_lm):
-                shutil.move(nac_lm,   self.tracerRawdataLocation)
-            if not os.path.isdir(ac_umap):
-                shutil.move(nac_umap, self.tracerRawdataLocation)
+            return
+
+        # AC:  move .bf, .dcm and umap to tracerRawdataLocation
+        nac_norm = os.path.join(self.tracerRawdataLocation_with(ac=False), 'norm', '')
+        ac_norm  = os.path.join(self.tracerRawdataLocation_with(ac=True), 'norm', '')
+        nac_lm   = os.path.join(self.tracerRawdataLocation_with(ac=False), 'LM', '')
+        ac_lm    = os.path.join(self.tracerRawdataLocation_with(ac=True), 'LM', '')
+        nac_umap = os.path.join(self.tracerRawdataLocation_with(ac=False), 'umap', '')
+        ac_umap  = os.path.join(self.tracerRawdataLocation_with(ac=True), 'umap', '')
+        if not os.path.isdir(ac_norm):
+            shutil.move(nac_norm, self.tracerRawdataLocation)
+        if not os.path.isdir(ac_lm):
+            shutil.move(nac_lm,   self.tracerRawdataLocation)
+        if not os.path.isdir(ac_umap):
+            shutil.move(nac_umap, self.tracerRawdataLocation)
+        return
 
     @staticmethod
     def printd(d):
@@ -644,45 +750,6 @@ class Reconstruction(object):
         desc = self._createDescrip(hst, muh, muo)
         assert len(im.shape) == 3, "Reconstruction.saveStatic.im.shape == " + str(len(im.shape))
         self._array2nii(im[::-1,::-1,:], A, fout, descrip=desc)
-
-
-
-    # METHODS FOR TIMINGS
-
-    def open_timings_json(self, json_file=None):
-        """
-        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
-        :param json_file, a str:
-        :return taus, a np array:
-        """
-        import codecs, json
-        if not json_file:
-            raise AssertionError('Reconstruction.open_timings_json.json_file is missing')
-        t = codecs.open(json_file, 'r', encoding='utf-8').read()
-        jt = json.loads(t)
-        taus = np.array(jt)
-        return taus
-
-    def save_timings_json(self, taus=None):
-        """
-        https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
-        :param taus, a np array:
-        :return jfile, a canonical json filename for timings saved with self.lm_studytime, taus:
-        """
-        import codecs, json
-        if not taus:
-            raise AssertionError('Reconstruction.save_timings_json.taus is missing')
-        jdict = {
-            "study time" : self.lm_studytime(),
-            "taus" : taus.tolist(),
-        }
-        jfile = self.timings_json_filename()
-        j = codecs.open(jfile, 'w', encoding='utf-8') # overwrites existing
-        json.dump(jdict, j, separators=(',', ':'), sort_keys=True, indent=4)
-        return jfile
-
-    def timings_json_filename(self):
-        return self.tracer + self.acTag + '-timings.json'
 
 
 
@@ -804,10 +871,6 @@ class Reconstruction(object):
                 'Ga68':{'BF':0.891, 'thalf':67.71*60},
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
-
-    def _tracer(self):
-        import re
-        return re.split('_', os.path.basename(self.tracerRawdataLocation))[0]
 
     def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None):
         """

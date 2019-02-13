@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" filepath="$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/NiftyPETy.iml" filepath="$PROJECT_DIR$/.idea/NiftyPETy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../PycharmProjects/interfile/.idea/interfile.iml" filepath="$PROJECT_DIR$/../../../PycharmProjects/interfile/.idea/interfile.iml" />
     </modules>
   </component>
 </project>
