@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="Reconstruction.hmuSelection -&gt; [1,2,4]">
-      <change afterPath="$PROJECT_DIR$/test_save_timings_json.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/NiftyPETy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NiftyPETy.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/respet/recon/reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/recon/reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_reconstruction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -89,8 +83,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="214" column="24" lean-forward="true" selection-start-line="214" selection-start-column="24" selection-end-line="214" selection-end-column="24" />
+            <state relative-caret-position="423">
+              <caret line="498" column="90" selection-start-line="498" selection-start-column="90" selection-end-line="498" selection-end-column="90" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -488,7 +482,7 @@
       <workItem from="1549502776492" duration="12396000" />
       <workItem from="1549593515253" duration="61000" />
       <workItem from="1549594313821" duration="19984000" />
-      <workItem from="1549850476063" duration="18085000" />
+      <workItem from="1549850476063" duration="19946000" />
     </task>
     <task id="LOCAL-00001" summary="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed">
       <created>1540445211132</created>
@@ -623,7 +617,14 @@
       <option name="project" value="LOCAL" />
       <updated>1547696223694</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Added open_json and save_json which provide waiting time features.">
+      <created>1550024550424</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1550024550424</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -659,7 +660,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51029000" />
+    <option name="totallyTimeSpent" value="52890000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -672,9 +673,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="24" width="1920" height="1152" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4992908" visible="true" weight="0.1511254" />
-      <window_info id="Structure" order="1" weight="0.1511254" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4992908" weight="0.1511254" />
+      <window_info active="true" id="Structure" order="1" visible="true" weight="0.1511254" />
       <window_info id="Favorites" order="2" sideWeight="0.50070924" side_tool="true" weight="0.16291533" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49785638" weight="0.16809116" />
@@ -1067,8 +1069,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="214" column="24" lean-forward="true" selection-start-line="214" selection-start-column="24" selection-end-line="214" selection-end-column="24" />
+        <state relative-caret-position="423">
+          <caret line="498" column="90" selection-start-line="498" selection-start-column="90" selection-end-line="498" selection-end-column="90" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

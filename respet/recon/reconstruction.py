@@ -163,7 +163,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
         wtime = times[0]
-        it = None
+        fit = times.shape[0]
         for it in np.arange(1, times.shape[0]):
             try:
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
@@ -185,9 +185,10 @@ class Reconstruction(object):
                     wtime = times[it]
                 else:
                     warn('Reconstruction.createDynamic:  break for it->' + it)
+                    fit = it
                     break
 
-        self.save_json(taus[:it - 1], waittime=wtime)
+        self.save_json(taus[:fit - 1], waittime=wtime) # always report early taus
         assert isinstance(dynFrame, dict)
         return dynFrame
 
@@ -207,11 +208,11 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
         times2 = self.getTimes(taus2)
-        timew = times2[0]
+        wtime = times2[0]
+        fit2 = times2.shape[0]
         it = 1                                     # mu-map frame
-        it2 = None
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
-            if times[it2-1] < waittime:
+            if times2[it2-1] < waittime:
                 continue
             if times2[it2-1] >= times[it]:
                 it = it + 1
@@ -232,12 +233,13 @@ class Reconstruction(object):
                 if it2 < len(times2)/2:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
-                    timew = times2[it2]
+                    wtime = times2[it2]
                 else:
                     warn('Reconstruction.createDynamic2:  break for it2->' + it2)
+                    fit2 = it2
                     break
 
-        self.save_json(taus2[:it2 - 1], waittime=timew)
+        self.save_json(taus2[:fit2 - 1], waittime=wtime) # always report early taus
         assert isinstance(dynFrame, dict)
         return dynFrame
 
@@ -473,7 +475,8 @@ class Reconstruction(object):
         """
         https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
         :param json_file, a str:
-        :return taus, a np array:
+        :return taus, a np array of frame durations, including waiting frames but only frames in the listmode archive:
+        :return wtime, the waiting time in the early scan in sec:
         """
         import codecs, json
         if not json_file:
@@ -487,8 +490,9 @@ class Reconstruction(object):
     def save_json(self, taus=None, waittime=0):
         """
         https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
-        :param taus, a np array:
-        :return json_file, a canonical json filename for timings saved with self.lm_studytime, taus:
+        :param taus, an np array of frame durations, including waiting frames but only frames in the listmode archive:
+        :param waittime, the witing time in the early scan in sec:
+        :return json_file, a canonical json filename for ancillary data including timings:
         """
         import codecs, json
         if not isinstance(taus, np.ndarray):
