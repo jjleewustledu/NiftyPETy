@@ -101,7 +101,7 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        mids = [ 'HYGLY48/V1/HO1_V1', 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO3_V1', 'HYGLY48/V1/OO4_V1' ] #[ 'NP995_26/V1/FDG_V1', 'NP995_26/V2/FDG_V2' ]
+        mids = ['HYGLY48/V1/OO3_V1'] #[ 'HYGLY48/V1/HO1_V1', 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1']
         for m in mids:
             loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
             obj = Reconstruction(loc, ac = False, v = True)
@@ -149,7 +149,7 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        mids = [ 'HYGLY48/V1/OO1_V1' ] #, 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO3_V1', 'HYGLY48/V1/OO4_V1' ] # 'HYGLY48/V1/HO1_V1'
+        mids = ['HYGLY48/V1/OO3_V1'] # [ 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO3_V1', 'HYGLY48/V1/OO4_V1' ] # 'HYGLY48/V1/HO1_V1'
         for m in mids:
             loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
             obj = Reconstruction(loc, ac=True, v=True)

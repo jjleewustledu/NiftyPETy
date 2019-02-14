@@ -81,7 +81,9 @@ class Reconstruction(object):
         :return e.g., 'v1':
         """
         import re
-        return re.split('_', os.path.basename(self.tracerRawdataLocation))[1].lower()
+        v = re.split('_', os.path.basename(self.tracerRawdataLocation))[1]
+        v = re.split('-', v)[0]
+        return v.lower()
 
 
 
@@ -123,8 +125,8 @@ class Reconstruction(object):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
-        taus, waittime = self.getTaus(self.json_filename_with(ac=False))
-        return self.createDynamic2(waittime, taus, self.getTaus2(), fcomment)
+        taus, wtime = self.getTaus(self.json_filename_with(ac=False))
+        return self.createDynamic2(wtime, taus, self.getTaus2(), fcomment)
 
     def createStatic(self, muo, hst=None, fcomment='_createStatic'):
         """
@@ -163,7 +165,6 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
         wtime = times[0]
-        fit = times.shape[0]
         for it in np.arange(1, times.shape[0]):
             try:
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
@@ -176,30 +177,30 @@ class Reconstruction(object):
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
-            except UnboundLocalError as e:
+                fit = it - 1
+            except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
-                if it < len(times)/2:
+                if times[it] < times[-1]/2:
                     warn('Reconstruction.createDynamic:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
                     wtime = times[it]
                 else:
                     warn('Reconstruction.createDynamic:  break for it->' + it)
-                    fit = it
                     break
 
-        self.save_json(taus[:fit - 1], waittime=wtime) # always report early taus
+        self.save_json(taus[:fit], waittime=wtime)
         assert isinstance(dynFrame, dict)
         return dynFrame
 
-    def createDynamic2(self, waittime, taus, taus2, fcomment='_createDynamic2'):
+    def createDynamic2(self, wtime, taus, taus2, fcomment='_createDynamic2'):
         """
-        :param waittime:
-        :param taus   np.int_ for mu-map frames:
-        :param taus2  np.int_ for emission frames:
-        :param muo    3D or 4D mu-map of imaged object:
-        :return       last result from nipet.mmrchain:
-        :rtype        dictionary:
+        :param wtime is determined by createDynamic:
+        :param taus     np.int_ for mu-map frames:
+        :param taus2    np.int_ for emission frames:
+        :param muo      3D or 4D mu-map of imaged object:
+        :return         last result from nipet.mmrchain:
+        :rtype          dictionary:
         """
         global dynFrame
         from niftypet import nipet
@@ -207,42 +208,44 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         times = self.getTimes(taus)
-        times2 = self.getTimes(taus2)
-        wtime = times2[0]
-        fit2 = times2.shape[0]
+        times2 = self.getTimes(taus2) + wtime
+        wtime2 = times2[0] - wtime
         it = 1                                     # mu-map frame
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
-            if times2[it2-1] < waittime:
-                continue
-            if times2[it2-1] >= times[it]:
-                it = it + 1
             try:
-                dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                          frames    = ['fluid', [times2[it2-1], times2[it2]]],
-                                          mu_h      = self.muHardware(),
-                                          mu_o      = self.muCarney(frames=(it-1)),
-                                          itr       = self.itr,
-                                          fwhm      = self.fwhm,
-                                          recmod    = self.recmod,
-                                          outpath   = self.outpath,
-                                          store_img = True,
-                                          fcomment  = fcomment + '_time' + str(it2 - 1))
-            except UnboundLocalError as e:
+                while times[it] < times2[it2-1] and times[it] < times[-1]:
+                    it += 1 # find the best mu-map
+                if self.frame_exists(times2[it2-1], times2[it2], fcomment, it2):
+                    continue
+                if times2[it2-1] < min(times2[it2], times[-1]):
+                    dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
+                                              frames    = ['fluid', [times2[it2-1], min(times2[it2], times[-1])]],
+                                              mu_h      = self.muHardware(),
+                                              mu_o      = self.muCarney(frames=(it-1)),
+                                              itr       = self.itr,
+                                              fwhm      = self.fwhm,
+                                              recmod    = self.recmod,
+                                              outpath   = self.outpath,
+                                              store_img = True,
+                                              fcomment  = fcomment + '_time' + str(it2-1))
+                    if times2[it2] == times[-1]:
+                        fit2 = it2
+                    else:
+                        fit2 = it2 - 1
+            except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
-                if it2 < len(times2)/2:
+                if times[it2] < times2[-1]/2:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
-                    wtime = times2[it2]
+                    wtime2 = times2[it2] - wtime
                 else:
                     warn('Reconstruction.createDynamic2:  break for it2->' + it2)
-                    fit2 = it2
                     break
 
-        self.save_json(taus2[:fit2 - 1], waittime=wtime) # always report early taus
+        self.save_json(taus2[:fit2], offsettime=wtime, waittime=wtime2)
         assert isinstance(dynFrame, dict)
         return dynFrame
-
 
     def createDynamicInMemory(self, taus, muo, hst=None, fcomment='_createDynamicInMemory'):
         """
@@ -378,6 +381,18 @@ class Reconstruction(object):
         colorbar()
         savefig(os.path.join(self.outpath, fcomment+'_cumaps.pdf'))
 
+    def frame_exists(self, t0, tf, fcomment, it2):
+        """
+        e.g., a_itr-4_t-577-601sec_createDynamic2Carney_time57.nii.gz
+        :param t0:
+        :param tf:
+        :param fcomment:
+        :param it2:
+        :return bool:
+        """
+        fn = "a_itr-" + str(self.itr) + "_t-" + str(t0) + "-" + str(tf) + "sec" + fcomment + "_time" + str(it2-1) + ".nii.gz"
+        return os.path.exists(os.path.join(self.PETpath, 'single-frame', fn))
+
     def getAffine(self):
         """
         :return:  affine transformations for NIfTI
@@ -465,11 +480,11 @@ class Reconstruction(object):
 
     def json_filename(self):
         return os.path.join(self.PETpath,
-                            self.tracer() + self.visitStr + '.json')
+                            self.tracer + self.visitStr + '.json')
 
     def json_filename_with(self, ac=False):
         return os.path.join(self.tracerRawdataLocation_with(ac), 'output', 'PET',
-                            self.tracer() + self.visitStr + '.json')
+                            self.tracer + self.visitStr + '.json')
 
     def open_json(self, json_file=None):
         """
@@ -487,11 +502,12 @@ class Reconstruction(object):
         wtime = int(float(jt['waiting time']))
         return taus, wtime
 
-    def save_json(self, taus=None, waittime=0):
+    def save_json(self, taus=None, offsettime=0, waittime=0):
         """
         https://stackoverflow.com/questions/26646362/numpy-array-is-not-json-serializable
         :param taus, an np array of frame durations, including waiting frames but only frames in the listmode archive:
-        :param waittime, the witing time in the early scan in sec:
+        :param offsettime, the duration between study time and the first saved frame:
+        :param waittime, the witing time in the early scan; typically nan <- 0:
         :return json_file, a canonical json filename for ancillary data including timings:
         """
         import codecs, json
@@ -500,8 +516,10 @@ class Reconstruction(object):
         jdict = {
             "study date": self.lm_studydate(),
             "study time": self.lm_studytime(),
+            "offset time": offsettime,
             "waiting time": waittime,
-            "taus": taus.tolist()
+            "taus": taus.tolist(),
+            "image duration": self.lm_imageduration()
         }
         json_file = self.json_filename()
         j = codecs.open(json_file, 'w', encoding='utf-8')  # overwrites existing
