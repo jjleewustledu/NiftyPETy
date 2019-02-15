@@ -167,6 +167,8 @@ class Reconstruction(object):
         wtime = times[0]
         for it in np.arange(1, times.shape[0]):
             try:
+                if self.frame_exists(times[it-1], times[it], fcomment, it):
+                    continue
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                           frames    = ['fluid', [times[it-1], times[it]]],
                                           mu_h      = self.muHardware(),
@@ -177,7 +179,7 @@ class Reconstruction(object):
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
-                fit = it - 1
+                fit = it
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
@@ -443,7 +445,7 @@ class Reconstruction(object):
             taus = np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
         else:
             taus = np.int_([30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
-        return taus, 0
+        return taus
 
     def getTaus2(self, json_file=None):
         """
