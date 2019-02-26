@@ -4,8 +4,8 @@ import os
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc    = '/home2/jjlee/Docker/SubjectsStash/HYGLY48/V1/Twilite_V1-Converted'
-    tracerLoc     = '/home2/jjlee/Docker/SubjectsStash/HYGLY48/V1/FDG_V1-Converted' # 20, 21, 22
+    twiliteLoc = '/home2/jjlee/Docker/Cache/CCIR_00754/sub-S58258/ses-E249151/FDG_DT20180517171848.000000-Converted'
+    tracerLoc  = '/home2/jjlee/Docker/Cache/CCIR_00754/sub-S58258/ses-E249152/FDG_DT20180517155819.000000-Converted'
 
     #def setUp(self):
 
@@ -27,10 +27,11 @@ class TestReconstruction(unittest.TestCase):
         print('\n')
 
     def test_ctor(self):
-        self.assertIsInstance(self.theTestObj, Reconstruction)
+        self.assertIsInstance(self.theTestObj(), Reconstruction)
         from numpy import array
         from numpy.testing import assert_array_equal
-        c = self.theTestObj.mMRparams['Cnt']
+        r = self.theTestObj()
+        c = r.mMRparams['Cnt']
         self.assertEqual(c['HMULIST'], ['umap_HNMCL_10606489.v.hdr', 'umap_HNMCU_10606489.v.hdr', 'umap_SPMC_10606491.v.hdr', 'umap_PT_2291734.v.hdr', 'umap_HOMCU_10606489.v.hdr', 'umap_BR4CH_10185525.v.hdr'])
         self.assertEqual(c['NSRNG'], 8)
         self.assertEqual(c['NSN11'], 837)
@@ -48,11 +49,11 @@ class TestReconstruction(unittest.TestCase):
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
 
     def test_data(self):
-        self.theTestObj.printd(self.theTestObj.mMRparams['Cnt'])
-        self.theTestObj.printd(self.theTestObj.datain)
+        self.theTestObj().printd(self.theTestObj().mMRparams['Cnt'])
+        self.theTestObj().printd(self.theTestObj().datain)
 
     def test_locs(self):
-        self.assertTrue(os.path.exists(self.twiliteLoc+'-AC'))
+        self.assertTrue(os.path.exists(self.twiliteLoc+'-NAC'))
         self.assertTrue(os.path.exists(self.tracerLoc+'-NAC'))
 
 
@@ -101,7 +102,7 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        mids = ['HYGLY48/V1/OO3_V1'] #[ 'HYGLY48/V1/HO1_V1', 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1']
+        mids = ['HYGLY48/V1/HO1_V1'] # 'HYGLY48/V1/OC1_V1','HYGLY48/V1/HO1_V1', 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1']
         for m in mids:
             loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
             obj = Reconstruction(loc, ac = False, v = True)
@@ -149,7 +150,7 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        mids = ['HYGLY48/V1/OO3_V1'] # [ 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO3_V1', 'HYGLY48/V1/OO4_V1' ] # 'HYGLY48/V1/HO1_V1'
+        mids = ['HYGLY48/V1/HO1_V1'] # 'HYGLY48/V1/OC1_V1','HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1', 'HYGLY48/V1/OO1_V1'
         for m in mids:
             loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
             obj = Reconstruction(loc, ac=True, v=True)

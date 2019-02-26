@@ -1,16 +1,12 @@
 import numpy as np
-import sys, os
-import respet.recon
-#from niftypet import nimpa
-#from pylab import *
-
-
+import os
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
     DCYCRR = True
+    DEVID = 0
     bootstrap = 0
     datain = {}
     fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
@@ -50,6 +46,14 @@ class Reconstruction(object):
         :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC/output/PET':
         """
         return os.path.join(self.outpath, 'PET')
+
+    @property
+    def reconstruction_finished(self):
+        return os.path.exists(self._filename_to_finish('_finished'))
+
+    @property
+    def reconstruction_started(self):
+        return os.path.exists(self._filename_to_touch('_started'))
 
     @property
     def tracer(self):
@@ -163,9 +167,15 @@ class Reconstruction(object):
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        if self.reconstruction_started:
+            return None
+        self._do_touch_file('_started')
+        dynFrame = None
         times = self.getTimes(taus)
         wtime = times[0]
+        fit = None
         for it in np.arange(1, times.shape[0]):
+            fit = it
             try:
                 if self.frame_exists(times[it-1], times[it], fcomment, it):
                     continue
@@ -179,7 +189,6 @@ class Reconstruction(object):
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
-                fit = it
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
@@ -188,11 +197,11 @@ class Reconstruction(object):
                     self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
                     wtime = times[it]
                 else:
-                    warn('Reconstruction.createDynamic:  break for it->' + it)
+                    warn('Reconstruction.createDynamic:  break for it->' + str(it))
                     break
 
         self.save_json(taus[:fit], waittime=wtime)
-        assert isinstance(dynFrame, dict)
+        self._do_touch_file('_finished')
         return dynFrame
 
     def createDynamic2(self, wtime, taus, taus2, fcomment='_createDynamic2'):
@@ -209,11 +218,17 @@ class Reconstruction(object):
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        if self.reconstruction_started:
+            return None
+        self._do_touch_file('_started')
+        dynFrame = None
         times = self.getTimes(taus)
         times2 = self.getTimes(taus2) + wtime
         wtime2 = times2[0] - wtime
+        fit2 = None
         it = 1                                     # mu-map frame
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
+            fit2 = it2 - 1
             try:
                 while times[it] < times2[it2-1] and times[it] < times[-1]:
                     it += 1 # find the best mu-map
@@ -232,21 +247,19 @@ class Reconstruction(object):
                                               fcomment  = fcomment + '_time' + str(it2-1))
                     if times2[it2] == times[-1]:
                         fit2 = it2
-                    else:
-                        fit2 = it2 - 1
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
-                if times[it2] < times2[-1]/2:
+                if times2[it2] < times2[-1]/2:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
                     wtime2 = times2[it2] - wtime
                 else:
-                    warn('Reconstruction.createDynamic2:  break for it2->' + it2)
+                    warn('Reconstruction.createDynamic2:  break for it2->' + str(it2))
                     break
 
         self.save_json(taus2[:fit2], offsettime=wtime, waittime=wtime2)
-        assert isinstance(dynFrame, dict)
+        self._do_touch_file('_finished')
         return dynFrame
 
     def createDynamicInMemory(self, taus, muo, hst=None, fcomment='_createDynamicInMemory'):
@@ -678,7 +691,9 @@ class Reconstruction(object):
 
         try:
             # check umap; move norm and listmode to folders
-            assert(os.path.isdir(os.path.join(self.tracerRawdataLocation, 'umap', '')))
+            u = os.path.join(self.tracerRawdataLocation, 'umap', '')
+            if not os.path.isdir(u):
+                os.makedirs(u)
             fns = glob.glob(os.path.join(self.tracerRawdataLocation, '*.dcm'))
             for fn in fns:
                 ds = pydicom.read_file(fn)
@@ -777,7 +792,7 @@ class Reconstruction(object):
 
 
 
-    # CLASS PRIVATE METHODS
+    # CLASS PRIVATE PROPERTIES & METHODS
 
     def _array2nii(self, im, A, fnii, descrip=''):
         """
@@ -845,6 +860,22 @@ class Reconstruction(object):
         pth = os.path.join(self.outpath, os.path.basename(self.datain['lm_dcm'])[:8] + fcomment + '.nii.gz')
         return pth
 
+    def _do_touch_file(self, tags=None):
+        from pathlib2 import Path
+        if not tags:
+            return None
+        f = self._filename_to_touch(tags)
+        hd, tl = os.path.split(self._filename_to_touch)
+        if not os.path.exists(hd):
+            os.makedirs(hd)
+        Path(f).touch()
+        return f
+
+    def _filename_to_touch(self, tags=None):
+        if not tags:
+            return None
+        return os.path.join(self.PETpath, 'reconstruction_Reconstruction%s.touch' % tags)
+
     def _gatherOsemoneList(self, olist):
         """
         :param olist:  list of dictionaries
@@ -862,6 +893,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['SPN']     = self.span
         self.mMRparams['Cnt']['BTP']     = self.bootstrap
         self.mMRparams['Cnt']['DCYCRR']  = self.DCYCRR
+        self.mMRparams['Cnt']['DEVID']   = self.DEVID
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
         if not os.path.exists(self.outpath):
             os.makedirs(self.outpath)
@@ -896,7 +928,7 @@ class Reconstruction(object):
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
-    def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None):
+    def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
         """
         :param:  loc specifies the location of tracer rawdata.
         :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
@@ -911,7 +943,8 @@ class Reconstruction(object):
                         -rwxr-xr-x+  1 jjlee wheel 143938 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000048.dcm
                   LM, containing, e.g.:
                           -rwxr-xr-x+  1 jjlee wheel 6817490860 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.bf
-                          -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm:param:  cndaDownload is a path
+                          -rwxr-xr-x+  1 jjlee wheel     145290 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.30000016090616552364000000049.dcm
+        :param:  cndaDownload is a path
         :param:  ac, attenuation correction, is bool
         :param:  umapSF is a fileprefix
         :param:  v, verbosity, is bool
@@ -927,6 +960,7 @@ class Reconstruction(object):
         self.umapSynthFileprefix = umapSF
         self.verbose = v
         self.organizeRawdataLocation(cndaDownload)
+        self.DEVID = devid
         self._initializeNiftypet()
 
     # listing of instance variables:
@@ -936,3 +970,29 @@ class Reconstruction(object):
     # _t0 = 0
     # _t1 = 0
     # _tracerRawdataLocation = None
+
+
+
+if __name__ == '__main__':
+    import argparse
+
+    p = argparse.ArgumentParser(description='manage reconstruction using NiftyPET')
+    p.add_argument('--loc',
+                   metavar='/path/to/TRACER_DT1234566790-Converted',
+                   required=True,
+                   help='location of tracer raw data')
+    p.add_argument('--ac',
+                   metavar='True|False',
+                   required=True,
+                   help='attenuation correction')
+    p.add_argument('--devid',
+                   metavar='INTEGER',
+                   required=True,
+                   help='gpu device ID; see also nipet.gpuinfo')
+    args = p.parse_args()
+
+    r = Reconstruction(loc=args.loc, ac=args.ac, devid=args.devid)
+    if not args.ac:
+        r.createDynamicNAC(fcomment='_createDynamicNAC')
+    else:
+        r.createDynamic2Carney(fcomment='_createDynamic2Carney')
