@@ -4,15 +4,15 @@ import os
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteLoc = '/home2/jjlee/Docker/Cache/CCIR_00754/sub-S58258/ses-E249151/FDG_DT20180517171848.000000-Converted'
-    tracerLoc  = '/home2/jjlee/Docker/Cache/CCIR_00754/sub-S58258/ses-E249152/FDG_DT20180517155819.000000-Converted'
+    twiliteBaseloc = '/home2/jjlee/Docker/Cache/ses-E00853/HO_DT20190110111638.000000-Converted'
+    tracerBaseloc  = '/home2/jjlee/Docker/Cache/ses-E00853/HO_DT20190110111638.000000-Converted'
 
     #def setUp(self):
 
     #def tearDown(self):
 
     def theTestObj(self):
-        obj = Reconstruction(self.tracerLoc)
+        obj = Reconstruction(self.tracerBaseloc+'-NAC')
         obj.itr = 4
         obj.fwhm = 4.3 / 2.08626 # num. of voxels
         obj.use_stored_hist = True
@@ -53,8 +53,8 @@ class TestReconstruction(unittest.TestCase):
         self.theTestObj().printd(self.theTestObj().datain)
 
     def test_locs(self):
-        self.assertTrue(os.path.exists(self.twiliteLoc+'-NAC'))
-        self.assertTrue(os.path.exists(self.tracerLoc+'-NAC'))
+        self.assertTrue(os.path.exists(self.twiliteBaseloc + '-NAC'))
+        self.assertTrue(os.path.exists(self.tracerBaseloc + '-NAC'))
 
 
 
@@ -62,7 +62,7 @@ class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticNAC(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.twiliteLoc, v = True)
+        obj = Reconstruction(self.twiliteBaseloc, v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -71,7 +71,7 @@ class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticUTE(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
+        obj = Reconstruction(self.twiliteBaseloc + '-AC', v = True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -80,7 +80,7 @@ class TestTwilite(TestReconstruction):
 
     def _test_createTwiliteStaticCarney(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.twiliteLoc, ac=True, v = True)
+        obj = Reconstruction(self.twiliteBaseloc + '-AC', v = True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -93,7 +93,7 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerStaticNAC(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac = False, v = True)
+        obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -102,15 +102,12 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        mids = ['HYGLY48/V1/HO1_V1'] # 'HYGLY48/V1/OC1_V1','HYGLY48/V1/HO1_V1', 'HYGLY48/V1/OO1_V1', 'HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1']
-        for m in mids:
-            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
-            obj = Reconstruction(loc, ac = False, v = True)
-            dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-            plt.matshow(dyn['im'][60,:,:])
-            plt.matshow(dyn['im'][:,170,:])
-            plt.matshow(dyn['im'][:,:,170])
-            plt.show()
+        obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
+        dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
+        plt.matshow(dyn['im'][60,:,:])
+        plt.matshow(dyn['im'][:,170,:])
+        plt.matshow(dyn['im'][:,:,170])
+        plt.show()
 
 
 
@@ -120,7 +117,7 @@ class TestUTE(TestReconstruction):
         import matplotlib.pyplot as plt
         mids = ['HYGLY30/V2/Twilite_V2' ]
         loc = '/home2/jjlee/Docker/NiftyPETd/'+mids[0]+'-Converted'
-        obj = Reconstruction(loc, ac=True, v=True)
+        obj = Reconstruction(loc, v=True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -129,7 +126,7 @@ class TestUTE(TestReconstruction):
 
     def test_createTracerUTE(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
         dyn = obj.createDynamicUTE(fcomment='_createDynamicUTE')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -142,7 +139,7 @@ class TestCarney(TestReconstruction):
 
     def test_createTracerStaticCarney(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
@@ -152,8 +149,8 @@ class TestCarney(TestReconstruction):
     def test_createTracerCarney(self):
         mids = ['HYGLY48/V1/HO1_V1'] # 'HYGLY48/V1/OC1_V1','HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1', 'HYGLY48/V1/OO1_V1'
         for m in mids:
-            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted'
-            obj = Reconstruction(loc, ac=True, v=True)
+            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted-AC'
+            obj = Reconstruction(loc, v=True)
             obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
 
 
@@ -162,7 +159,7 @@ class TestOtherUmaps(TestReconstruction):
 
     def _test_createUmapSynthFullBlurred_tracer(self):
         obj = Reconstruction(
-            self.tracerLoc,
+            self.tracerBaseloc + '-NAC',
             '/data/nil-bluearc/raichle/PPGdata/jjlee2/HYGLY23/V2/FDG_V2-NAC')
         if not os.path.isfile(obj.umapSynthFileprefix + '.nii.gz'):
             obj.createUmapSynthFullBlurred()
@@ -174,16 +171,16 @@ class TestOtherUmaps(TestReconstruction):
 class TestTimes(TestReconstruction):
 
     def test_getTimeMax(self):
-        obj = Reconstruction(self.tracerLoc, ac=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC')
         self.assertEqual(obj.getTimeMax(), 3601)
 
     def test_getTimes(self):
-        obj = Reconstruction(self.tracerLoc, ac=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC')
         print(obj.getTimes())
 
     def _test_checkTimeAliasingUTE(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True, v=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
         dyn = obj.checkTimeAliasingUTE(fcomment='_checkTimeAliasingUTE')
         plt.matshow(dyn[0]['im'][60,:,:])
         plt.matshow(dyn[1]['im'][60,:,:])
@@ -191,7 +188,7 @@ class TestTimes(TestReconstruction):
 
     def _test_checkTimeAliasingCarney(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC')
         dyn = obj.checkTimeAliasingCarney(fcomment='_checkTimeAliasingCarney')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -200,7 +197,7 @@ class TestTimes(TestReconstruction):
 
     def _test_checkTimeHierarchiesCarney(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerLoc, ac=True)
+        obj = Reconstruction(self.tracerBaseloc + '-AC')
         dyn = obj.checkTimeHierarchiesCarney(fcomment='_checkTimeHierarchiesCarney')
         plt.matshow(dyn['im'][60,:,:])
         plt.matshow(dyn['im'][:,170,:])
@@ -220,16 +217,16 @@ class TestMatlab(TestReconstruction):
 
     def test_construct_resolved_mcr(self):
         loc = '/home2/jjlee/Local/Pawel/HYGLY47/V2/FDG_V2-Converted'
-        obj = Reconstruction(loc, ac = False, v = True)
+        obj = Reconstruction(loc, v = True)
         obj.createDynamicNAC(fcomment='_createDynamicNAC')
         import construct_resolved_mcr
         mcr = construct_resolved_mcr.initialize()
-        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2', 'ac', False)
+        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2')
         mcr.terminate()
         obj._ac = True
         obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
         mcr = construct_resolved_mcr.initialize()
-        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2', 'ac', True)
+        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2')
         mcr.terminate()
 
 

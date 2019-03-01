@@ -27,13 +27,6 @@ class Reconstruction(object):
 
 
     @property
-    def acTag(self):
-        if self._ac:
-            return 'AC'
-        else:
-            return 'NAC'
-
-    @property
     def outpath(self):
         """
         :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC/output':
@@ -68,26 +61,32 @@ class Reconstruction(object):
         """
         :return e.g., '/work/HYGLY48/V1/OO1_V1-Converted-NAC':
         """
-        if not self._ac:
-            return self._tracerRawdataLocation+'-NAC'
-        else:
-            return self._tracerRawdataLocation+'-AC'
+        return self._tracerRawdataLocation
 
     def tracerRawdataLocation_with(self, ac=False):
+        from re import compile
+        conv = compile('-Converted-')
+        s = conv.search(self._tracerRawdataLocation)
+        baseloc = self._tracerRawdataLocation[:s.end()-1]
         if not ac:
-            return self._tracerRawdataLocation+'-NAC'
+            return baseloc+'-NAC'
         else:
-            return self._tracerRawdataLocation+'-AC'
+            return baseloc+'-AC'
 
     @property
     def visitStr(self):
         """
-        :return e.g., 'v1':
+        e.g., for 'FDG_DT1234567789.000000-Converted-NAC' and 'FDG_V1-Converted-NAC'
+        :return 'dt123456789' and 'v1':
         """
         import re
         v = re.split('_', os.path.basename(self.tracerRawdataLocation))[1]
-        v = re.split('-', v)[0]
-        return v.lower()
+        v = re.split('-Converted', v)[0]
+        w = re.split('\.', v)[0]
+        if not w:
+            return v.lower()
+        else:
+            return w.lower()
 
 
 
@@ -711,7 +710,7 @@ class Reconstruction(object):
         if self.tracerRawdataLocation.find('Twilite') > 0:
             self.organizeNormAndListmode()
             return
-        if not self._ac:
+        if not self.ac:
             if cndaDownload:
                 self.migrateCndaDownloads(cndaDownload)
             self.organizeNormAndListmode()
@@ -865,7 +864,7 @@ class Reconstruction(object):
         if not tags:
             return None
         f = self._filename_to_touch(tags)
-        hd, tl = os.path.split(self._filename_to_touch)
+        hd, tl = os.path.split(f)
         if not os.path.exists(hd):
             os.makedirs(hd)
         Path(f).touch()
@@ -919,6 +918,31 @@ class Reconstruction(object):
             if e.errno != errno.EEXIST:
                 raise
 
+    def _parse_prefix(self, prefix):
+        """
+        checks that prefix is well-formed and set class properties accordingly
+        :param prefix is the location of tracer rawdata, e.g., FDG_DT123456789.000000-Converted-NAC:
+        :return class properties ac & tracerRawdataLocation are valid:
+        """
+        from re import compile
+        if not prefix:
+            raise AssertionError(
+                'reconstruction.Reconstruction requires a prefix parameter, the location of tracer data')
+        nac = compile('-Converted-NAC')
+        ac = compile('-Converted-AC')
+        if nac.search(prefix):
+            self.ac = False
+        elif ac.search(prefix):
+            self.ac = True
+        else:
+            raise AssertionError(
+                'reconstruction.Reconstruction expected prefix parameter to end in -AC or -NAC')
+        self._tracerRawdataLocation = prefix
+        if not os.path.exists(self.tracerRawdataLocation):
+            raise AssertionError(
+                'reconstruction.Reconstruction could not find prefix->' + self.tracerRawdataLocation)
+            #os.makedirs(self.tracerRawdataLocation)
+
     def _riLUT(self):
         """
         :return:  radioisotope look-up table
@@ -928,9 +952,9 @@ class Reconstruction(object):
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
-    def __init__(self, loc=None, ac=False, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
+    def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
         """
-        :param:  loc specifies the location of tracer rawdata.
+        :param:  prefix specifies the location of tracer rawdata.
         :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
                   -rwxr-xr-x+  1 jjlee wheel   16814660 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.bf
                   -rwxr-xr-x+  1 jjlee wheel     141444 Sep 13  2016 1.3.12.2.1107.5.2.38.51010.2016090913012239062507614.dcm
@@ -950,12 +974,7 @@ class Reconstruction(object):
         :param:  v, verbosity, is bool
         :param:  cndaDownload is a path
         """
-        if loc is None:
-            return
-        self._tracerRawdataLocation = loc
-        self._ac = ac
-        if not os.path.exists(self.tracerRawdataLocation):
-            os.makedirs(self.tracerRawdataLocation)
+        self._parse_prefix(prefix)
         os.chdir(self.tracerRawdataLocation)
         self.umapSynthFileprefix = umapSF
         self.verbose = v
@@ -963,36 +982,19 @@ class Reconstruction(object):
         self.DEVID = devid
         self._initializeNiftypet()
 
-    # listing of instance variables:
-    # _frame = 0
-    # _ac = False
-    # _umapIdx = 0
-    # _t0 = 0
-    # _t1 = 0
-    # _tracerRawdataLocation = None
-
 
 
 if __name__ == '__main__':
     import argparse
 
-    p = argparse.ArgumentParser(description='manage reconstruction using NiftyPET')
-    p.add_argument('--loc',
-                   metavar='/path/to/TRACER_DT1234566790-Converted',
+    p = argparse.ArgumentParser(description='reconstruction manages NiftyPET reconstructions')
+    p.add_argument('-p', '--prefix',
+                   metavar='/path/to/TRACER_DT1234566790-Converted-NAC',
                    required=True,
-                   help='location of tracer raw data')
-    p.add_argument('--ac',
-                   metavar='True|False',
-                   required=True,
-                   help='attenuation correction')
-    p.add_argument('--devid',
-                   metavar='INTEGER',
-                   required=True,
-                   help='gpu device ID; see also nipet.gpuinfo')
+                   help='location containing tracer raw data')
     args = p.parse_args()
-
-    r = Reconstruction(loc=args.loc, ac=args.ac, devid=args.devid)
-    if not args.ac:
+    r = Reconstruction(prefix=args.prefix)
+    if not r.ac:
         r.createDynamicNAC(fcomment='_createDynamicNAC')
     else:
         r.createDynamic2Carney(fcomment='_createDynamic2Carney')
