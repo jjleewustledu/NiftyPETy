@@ -939,6 +939,8 @@ class Reconstruction(object):
                 'reconstruction.Reconstruction expected prefix parameter to end in -AC or -NAC')
         self._tracerRawdataLocation = prefix
         if not os.path.exists(self.tracerRawdataLocation):
+            print(os.listdir('/'))
+            print(os.listdir('/SubjectsDir'))
             raise AssertionError(
                 'reconstruction.Reconstruction could not find prefix->' + self.tracerRawdataLocation)
             #os.makedirs(self.tracerRawdataLocation)
@@ -987,12 +989,15 @@ class Reconstruction(object):
 if __name__ == '__main__':
     import argparse
 
-    p = argparse.ArgumentParser(description='reconstruction manages NiftyPET reconstructions')
+    p = argparse.ArgumentParser(description='usage:  docker run -it niftypetr-image [-h] -p /path/to/TRACER_DT12345678-Converted-NAC')
     p.add_argument('-p', '--prefix',
-                   metavar='/path/to/TRACER_DT1234566790-Converted-NAC',
+                   metavar='/path/to/TRACER_DT12345678-Converted-NAC',
                    required=True,
                    help='location containing tracer raw data')
     args = p.parse_args()
+    print(os.listdir('/'))
+    print(os.listdir('/SubjectsDir'))
+    print(os.listdir(args.prefix))
     r = Reconstruction(prefix=args.prefix)
     if not r.ac:
         r.createDynamicNAC(fcomment='_createDynamicNAC')

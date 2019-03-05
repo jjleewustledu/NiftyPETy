@@ -104,10 +104,10 @@ class TestNAC(TestReconstruction):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        plt.matshow(dyn['im'][60,:,:])
-        plt.matshow(dyn['im'][:,170,:])
-        plt.matshow(dyn['im'][:,:,170])
-        plt.show()
+        #plt.matshow(dyn['im'][60,:,:])
+        #plt.matshow(dyn['im'][:,170,:])
+        #plt.matshow(dyn['im'][:,:,170])
+        #plt.show()
 
 
 
