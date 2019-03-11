@@ -4,6 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../NiftyPETd/NIMPA" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../NiftyPETd/NIPET" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../interfile" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../XnatPET" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../PycharmProjects/NIPET" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../PycharmProjects/interfile" vcs="Git" />

@@ -86,7 +86,7 @@ class Reconstruction(object):
         if not w:
             return v.lower()
         else:
-            return w.lower()
+            return w.upper()
 
 
 
@@ -128,7 +128,8 @@ class Reconstruction(object):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamic2Carney ##########")
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
-        taus, wtime = self.getTaus(self.json_filename_with(ac=False))
+        taus = self.getTaus(self.json_filename_with(ac=False))
+        wtime = self.getWTime(self.json_filename_with(ac=False))
         return self.createDynamic2(wtime, taus, self.getTaus2(), fcomment)
 
     def createStatic(self, muo, hst=None, fcomment='_createStatic'):
@@ -162,6 +163,7 @@ class Reconstruction(object):
         :rtype:      dictionary
         """
         global dynFrame
+        from numpy import isnan
         from niftypet import nipet
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
@@ -188,6 +190,8 @@ class Reconstruction(object):
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
+                if isnan(dynFrame['im']).any():
+                    wtime = times[it]
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
@@ -213,6 +217,7 @@ class Reconstruction(object):
         :rtype          dictionary:
         """
         global dynFrame
+        from numpy import isnan
         from niftypet import nipet
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
@@ -246,6 +251,8 @@ class Reconstruction(object):
                                               fcomment  = fcomment + '_time' + str(it2-1))
                     if times2[it2] == times[-1]:
                         fit2 = it2
+                    if isnan(dynFrame['im']).any():
+                        wtime2 = times2[it2] - wtime
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
@@ -448,15 +455,20 @@ class Reconstruction(object):
     def getTaus(self, json_file=None):
         """
         :param:  json_file containing taus
-        :return:  np array of frame durations, waiting time
+        :return:  np array of frame durations
         :rtype:  numpy.int_
         """
         if json_file:
-            return self.open_json(json_file)
+            taus,wtime = self.open_json(json_file)
+            return taus
+        if not self.tracerMemory:
+            raise AssertionError('Reconstruction.getTaus:  no tracerMemory')
         if self.tracerMemory == 'Fluorodeoxyglucose':
-            taus = np.int_([30,30,30,30,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
+            taus = np.int_([30,32,33,35,37,40,43,46,49,54,59,65,72,82,94,110,132,165,218,315,535,1354])
+            # len == 22, dur == 3600
         else:
-            taus = np.int_([30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+            taus = np.int_([10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,70,187])
+            # len == 18, dur == 600
         return taus
 
     def getTaus2(self, json_file=None):
@@ -466,11 +478,19 @@ class Reconstruction(object):
         :rtype:  numpy.int_
         """
         if json_file:
-            return self.open_json(json_file)
+            taus,wtime = self.open_json(json_file)
+            return taus
+        if not self.tracerMemory:
+            raise AssertionError('Reconstruction.getTaus2:  no tracerMemory')
         if self.tracerMemory == 'Fluorodeoxyglucose':
-            taus = np.int_([10,10,10,10,10,10,10,10,10,10,10,10,30,30,30,30,30,30,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60])
-        else:
+            taus = np.int_([10,10,10,11,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,15,15,15,16,16,17,17,18,18,19,19,20,21,21,22,23,24,25,26,27,28,30,31,33,35,37,39,42,45,49,53,58,64,71,80,92,107,128,159,208,295,485,1097])
+            # len == 62, dur == 3887
+        elif self.tracerMemory == 'Oyxgen-water':
             taus = np.int_([3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,12,13,13,15,16,17,19,21,24,27,32,38,47,62,88])
+            # len == 60, dur == 684
+        else:
+            taus = np.int_([5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,9,9,9,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,69,103])
+            # len == 36, dur == 636
         return taus
 
     def getTimes(self, taus=None):
@@ -492,13 +512,24 @@ class Reconstruction(object):
         nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
 
+    def getWTime(self, json_file=None):
+        """
+        :param:  json_file containing taus
+        :return:  waiting time
+        :rtype:  numpy.int_
+        """
+        if json_file:
+            taus,wtime = self.open_json(json_file)
+            return wtime
+        return 0
+
     def json_filename(self):
         return os.path.join(self.PETpath,
-                            self.tracer + self.visitStr + '.json')
+                            self.tracer + '_' + self.visitStr + '.json')
 
     def json_filename_with(self, ac=False):
         return os.path.join(self.tracerRawdataLocation_with(ac), 'output', 'PET',
-                            self.tracer + self.visitStr + '.json')
+                            self.tracer + '_' + self.visitStr + '.json')
 
     def open_json(self, json_file=None):
         """
@@ -529,7 +560,7 @@ class Reconstruction(object):
             raise AssertionError('Reconstruction.save_json.taus is missing')
         jdict = {
             "study date": self.lm_studydate(),
-            "study time": self.lm_studytime(),
+            "acquisition time": self.lm_acquisitiontime(),
             "offset time": offsettime,
             "waiting time": waittime,
             "taus": taus.tolist(),
@@ -572,14 +603,14 @@ class Reconstruction(object):
         d = self.lm_dcmread()
         return d.StudyDate # YYYYMMDD after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
 
-    def lm_studytime(self):
+    def lm_acquisitiontime(self):
         """
         provides best estimate of start time (GMT) of listmode collection
         :param dcm filename:
         :return:
         """
         d = self.lm_dcmread()
-        return d.StudyTime # hhmmss.ffffff after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+        return d.AcquisitionTime # hhmmss.ffffff after http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
 
     def lm_tracer(self):
         import re
@@ -983,15 +1014,16 @@ class Reconstruction(object):
         self.organizeRawdataLocation(cndaDownload)
         self.DEVID = devid
         self._initializeNiftypet()
+        self.tracerMemory = self.lm_tracer()
 
 
 
 if __name__ == '__main__':
     import argparse
 
-    p = argparse.ArgumentParser(description='usage:  docker run -it niftypetr-image [-h] -p /path/to/TRACER_DT12345678-Converted-NAC')
+    p = argparse.ArgumentParser(description='usage:  nvidia-docker run -it niftypetr-image:reconstruction_cuda10 [-h] -p /SubjectsDir/CCIR_00123/ses-456789/TRACER_DT12345678000000.000000-Converted-NAC')
     p.add_argument('-p', '--prefix',
-                   metavar='/path/to/TRACER_DT12345678-Converted-NAC',
+                   metavar='/path/to/TRACER_DT12345678000000.000000-Converted-NAC',
                    required=True,
                    help='location containing tracer raw data')
     args = p.parse_args()

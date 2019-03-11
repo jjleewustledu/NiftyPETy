@@ -4,8 +4,8 @@ import os
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteBaseloc = '/home2/jjlee/Docker/Cache/ses-E00853/HO_DT20190110111638.000000-Converted'
-    tracerBaseloc  = '/home2/jjlee/Docker/Cache/ses-E00853/HO_DT20190110111638.000000-Converted'
+    twiliteBaseloc = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/OO_DT20190108105919.000000-Converted'
+    tracerBaseloc  = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/OO_DT20190108105919.000000-Converted'
 
     #def setUp(self):
 
@@ -38,7 +38,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['NRNG'], 64)
         self.assertEqual(c['NBCKT'], 224)
         self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
-        self.assertEqual(c['ISOTOPE'], 'F18')
+        self.assertEqual(c['ISOTOPE'], 'O15')
         self.assertEqual(c['SPN'], 11)
         assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
         self.assertEqual(c['NSN64'], 4096)
@@ -100,14 +100,19 @@ class TestNAC(TestReconstruction):
         plt.matshow(sta['im'][:,:,170])
         plt.show()
 
+    def test_tracerMemory(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
+        self.assertEqual('Oxygen', obj.tracerMemory)
+
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        #plt.matshow(dyn['im'][60,:,:])
-        #plt.matshow(dyn['im'][:,170,:])
-        #plt.matshow(dyn['im'][:,:,170])
-        #plt.show()
+        if dyn:
+            plt.matshow(dyn['im'][60,:,:])
+            plt.matshow(dyn['im'][:,170,:])
+            plt.matshow(dyn['im'][:,:,170])
+            plt.show()
 
 
 
@@ -147,11 +152,16 @@ class TestCarney(TestReconstruction):
         plt.show()
 
     def test_createTracerCarney(self):
-        mids = ['HYGLY48/V1/HO1_V1'] # 'HYGLY48/V1/OC1_V1','HYGLY48/V1/OO2_V1', 'HYGLY48/V1/OO4_V1', 'HYGLY48/V1/OO1_V1'
-        for m in mids:
-            loc = '/home2/jjlee/Docker/SubjectsStash/'+m+'-Converted-AC'
-            obj = Reconstruction(loc, v=True)
-            obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
+        import matplotlib.pyplot as plt
+        locs = [self.tracerBaseloc]
+        for lo in locs:
+            obj = Reconstruction(lo + '-AC', v=True)
+            dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
+            if dyn:
+                plt.matshow(dyn['im'][60,:,:])
+                plt.matshow(dyn['im'][:,170,:])
+                plt.matshow(dyn['im'][:,:,170])
+                plt.show()
 
 
 
@@ -170,13 +180,33 @@ class TestOtherUmaps(TestReconstruction):
 
 class TestTimes(TestReconstruction):
 
+    def test_acquisitiontime(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.lm_acquisitiontime())
+
+    def test_getInterfile(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.getInterfile())
+
+    def test_lm_dcmread(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.lm_dcmread())
+
     def test_getTimeMax(self):
-        obj = Reconstruction(self.tracerBaseloc + '-AC')
-        self.assertEqual(obj.getTimeMax(), 3601)
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        self.assertEqual(obj.getTimeMax(), 601)
 
     def test_getTimes(self):
-        obj = Reconstruction(self.tracerBaseloc + '-AC')
-        print(obj.getTimes())
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.getTimes(obj.getTaus()))
+
+    def test_getTaus(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.getTaus())
+
+    def test_getWTime(self):
+        obj = Reconstruction(self.tracerBaseloc + '-NAC')
+        print(obj.getWTime())
 
     def _test_checkTimeAliasingUTE(self):
         import matplotlib.pyplot as plt
