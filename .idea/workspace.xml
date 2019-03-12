@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="Reconstruction.hmuSelection -&gt; [1,2,4]">
-      <change beforePath="$PROJECT_DIR$/.idea/NiftyPETy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NiftyPETy.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/respet/recon/reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/recon/reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_reconstruction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/, 2018-01-01), AND]&quot;" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" afterDir="false" />
@@ -44,7 +40,7 @@
     <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata_FDG.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata_FDG Coverage Results" MODIFIED="1551843374803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createUmapSynthFullBlurred_tracer.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createUmapSynthFullBlurred_tracer Coverage Results" MODIFIED="1540442797064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC Coverage Results" MODIFIED="1547440613647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerCarney Coverage Results" MODIFIED="1552341357757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerCarney Coverage Results" MODIFIED="1552363464145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerStaticUTE Coverage Results" MODIFIED="1543444482978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata Coverage Results" MODIFIED="1551673746405" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_tracerMemory.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_tracerMemory Coverage Results" MODIFIED="1552255173544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -84,11 +80,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="398">
-              <caret line="260" lean-forward="true" selection-start-line="260" selection-end-line="260" />
+            <state relative-caret-position="195">
+              <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
                 <element signature="e#132#2356#0" />
@@ -102,31 +98,18 @@
                 <element signature="e#6627#6899#0" />
                 <element signature="e#6954#7259#0" />
                 <element signature="e#7317#7628#0" />
-                <element signature="e#7675#8480#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="493" column="19" lean-forward="true" selection-start-line="493" selection-start-column="19" selection-end-line="493" selection-end-column="19" />
+            <state relative-caret-position="165">
+              <caret line="218" column="23" lean-forward="true" selection-start-line="218" selection-start-column="23" selection-end-line="218" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="441" column="26" lean-forward="true" selection-start-line="441" selection-start-column="26" selection-end-line="441" selection-end-column="26" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -167,13 +150,13 @@
       <find>dcm_ver</find>
       <find>visitStr</find>
       <find>water</find>
-      <find>save_json</find>
       <find>lm_tracer</find>
       <find>tracerMemory</find>
       <find>open_json</find>
       <find>getTaus</find>
       <find>getTimes</find>
       <find>lm_studytime</find>
+      <find>save_json</find>
     </findStrings>
     <replaceStrings>
       <replace>cnt</replace>
@@ -236,9 +219,9 @@
         <option value="$PROJECT_DIR$/respet/resolve/construct_resolved.py" />
         <option value="$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/prj/mmrrec.py" />
         <option value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" />
-        <option value="$PROJECT_DIR$/respet/recon/reconstruction.py" />
         <option value="$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py" />
         <option value="$PROJECT_DIR$/tests/test_reconstruction.py" />
+        <option value="$PROJECT_DIR$/respet/recon/reconstruction.py" />
       </list>
     </option>
   </component>
@@ -639,7 +622,7 @@
       <workItem from="1551387611887" duration="23358000" />
       <workItem from="1551577574032" duration="30338000" />
       <workItem from="1552250924134" duration="468000" />
-      <workItem from="1552253078907" duration="12673000" />
+      <workItem from="1552253078907" duration="15173000" />
     </task>
     <task id="LOCAL-00001" summary="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed">
       <created>1540445211132</created>
@@ -816,13 +799,17 @@
       <option name="project" value="LOCAL" />
       <updated>1551408754404</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance">
+      <created>1552347773843</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1552347773844</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_test_reconstruction_TestTimes_test_getTimes - 2019.03.10 at 17h 15m 01s.xml">
-      <configuration name="Unittests for test_reconstruction.TestTimes.test_getTimes" configurationId="tests" />
-    </history-entry>
     <history-entry file="Unittests_for_test_reconstruction_TestTimes_test_getTimeMax - 2019.03.10 at 17h 16m 15s.xml">
       <configuration name="Unittests for test_reconstruction.TestTimes.test_getTimeMax" configurationId="tests" />
     </history-entry>
@@ -850,9 +837,12 @@
     <history-entry file="Unittests_for_test_reconstruction_TestTimes_test_acquisitiontime - 2019.03.10 at 18h 37m 18s.xml">
       <configuration name="Unittests for test_reconstruction.TestTimes.test_acquisitiontime" configurationId="tests" />
     </history-entry>
+    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.11 at 19h 12m 19s.xml">
+      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="195236000" />
+    <option name="totallyTimeSpent" value="197736000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -864,14 +854,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="24" width="1920" height="1150" extended-state="1" />
+    <frame x="0" y="24" width="1920" height="1150" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4992908" weight="0.1696905" />
-      <window_info id="Structure" order="1" visible="true" weight="0.12326574" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4992908" visible="true" weight="0.1696905" />
+      <window_info id="Structure" order="1" weight="0.12326574" />
       <window_info id="Favorites" order="2" sideWeight="0.50070924" side_tool="true" weight="0.16291533" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49785638" weight="0.16761905" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.78388476" visible="true" weight="0.60190475" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.78388476" visible="true" weight="0.18095239" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.744397" weight="0.3904762" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -882,16 +872,16 @@
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.255603" side_tool="true" weight="0.36476192" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Concurrent Activities Diagram" order="12" weight="0.3298479" />
-      <window_info anchor="bottom" id="Messages" order="13" sideWeight="0.4994641" weight="0.32889733" />
+      <window_info anchor="bottom" id="Messages" order="13" sideWeight="0.4994641" weight="0.32857144" />
       <window_info anchor="bottom" x="4" y="78" width="1916" height="406" id="Terminal" order="14" sideWeight="0.21489818" type="FLOATING" weight="0.25619048" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" sideWeight="0.49942195" weight="0.2497332" />
       <window_info anchor="right" id="Database" order="3" sideWeight="0.49904943" weight="0.329582" />
-      <window_info anchor="right" id="SciView" order="4" sideWeight="0.58721703" weight="0.357524" />
-      <window_info anchor="right" x="0" y="0" width="430" height="952" id="Documentation" order="5" sideWeight="0.5047847" side_tool="true" visible="true" weight="0.32924226" />
+      <window_info anchor="right" id="SciView" order="4" sideWeight="0.5860465" visible="true" weight="0.23265742" />
+      <window_info anchor="right" x="0" y="0" width="430" height="952" id="Documentation" order="5" sideWeight="0.41395348" side_tool="true" visible="true" weight="0.23265742" />
       <window_info anchor="right" id="R Graphics" order="6" sideWeight="0.4966711" weight="0.32924226" />
-      <window_info anchor="right" id="R Packages" order="7" sideWeight="0.4952153" visible="true" weight="0.32924226" />
+      <window_info anchor="right" id="R Packages" order="7" sideWeight="0.4952153" weight="0.32924226" />
       <window_info anchor="right" id="Coverage" order="8" sideWeight="0.39240506" side_tool="true" weight="0.24812433" />
     </layout>
   </component>
@@ -959,7 +949,6 @@
       <path value="$PROJECT_DIR$/../NIMPA" />
     </ignored-roots>
     <option name="FORCE_NON_EMPTY_COMMENT" value="true" />
-    <MESSAGE value="Testing github check-in" />
     <MESSAGE value="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed" />
     <MESSAGE value="test_createTwiliteStaticNAC has an issue within mmrimg" />
     <MESSAGE value="test_createTwiliteStaticUTE is working; modifications of niftypet.nipet =&gt; respet.nipet" />
@@ -984,7 +973,8 @@
     <MESSAGE value="Updated createDynamic to skip existing reconstructions; fixed index fit" />
     <MESSAGE value="started Pythonic construct_resolved; added &quot;__main__&quot; in reconstruction" />
     <MESSAGE value="createTracerNAC working in unittest and sh, but sh was missing interfile module" />
-    <option name="LAST_COMMIT_MESSAGE" value="createTracerNAC working in unittest and sh, but sh was missing interfile module" />
+    <MESSAGE value="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1391,20 +1381,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="493" column="19" lean-forward="true" selection-start-line="493" selection-start-column="19" selection-end-line="493" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="398">
-          <caret line="260" lean-forward="true" selection-start-line="260" selection-end-line="260" />
+        <state relative-caret-position="195">
+          <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
             <element signature="e#132#2356#0" />
@@ -1418,7 +1398,16 @@
             <element signature="e#6627#6899#0" />
             <element signature="e#6954#7259#0" />
             <element signature="e#7317#7628#0" />
-            <element signature="e#7675#8480#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="218" column="23" lean-forward="true" selection-start-line="218" selection-start-column="23" selection-end-line="218" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

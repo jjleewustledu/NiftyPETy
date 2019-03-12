@@ -232,7 +232,7 @@ class Reconstruction(object):
         fit2 = None
         it = 1                                     # mu-map frame
         for it2 in np.arange(1, times2.shape[0]):  # hist frame
-            fit2 = it2 - 1
+            fit2 = it2
             try:
                 while times[it] < times2[it2-1] and times[it] < times[-1]:
                     it += 1 # find the best mu-map
