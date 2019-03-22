@@ -463,12 +463,14 @@ class Reconstruction(object):
             return taus
         if not self.tracerMemory:
             raise AssertionError('Reconstruction.getTaus:  no tracerMemory')
-        if self.tracerMemory == 'Fluorodeoxyglucose':
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             taus = np.int_([30,32,33,35,37,40,43,46,49,54,59,65,72,82,94,110,132,165,218,315,535,1354])
             # len == 22, dur == 3600
-        else:
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon monoxide' or self.tracerMemory.lower() == 'oxygen':
             taus = np.int_([10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,70,187])
             # len == 18, dur == 600
+        else:
+            raise AssertionError('Reconstruction.getTaus does not support tracerMemory->' + self.tracerMemory)
         return taus
 
     def getTaus2(self, json_file=None):
@@ -482,15 +484,17 @@ class Reconstruction(object):
             return taus
         if not self.tracerMemory:
             raise AssertionError('Reconstruction.getTaus2:  no tracerMemory')
-        if self.tracerMemory == 'Fluorodeoxyglucose':
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             taus = np.int_([10,10,10,11,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,15,15,15,16,16,17,17,18,18,19,19,20,21,21,22,23,24,25,26,27,28,30,31,33,35,37,39,42,45,49,53,58,64,71,80,92,107,128,159,208,295,485,1097])
             # len == 62, dur == 3887
-        elif self.tracerMemory == 'Oyxgen-water':
+        elif self.tracerMemory.lower() == 'oxygen-water':
             taus = np.int_([3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,12,13,13,15,16,17,19,21,24,27,32,38,47,62,88])
             # len == 60, dur == 684
-        else:
+        elif self.tracerMemory.lower() == 'carbon monoxide' or self.tracerMemory.lower() == 'oxygen':
             taus = np.int_([5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,9,9,9,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,69,103])
             # len == 36, dur == 636
+        else:
+            raise AssertionError('Reconstruction.getTaus2 does not support tracerMemory->' + self.tracerMemory)
         return taus
 
     def getTimes(self, taus=None):
