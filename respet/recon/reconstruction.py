@@ -1011,12 +1011,24 @@ class Reconstruction(object):
         :param:  v, verbosity, is bool
         :param:  cndaDownload is a path
         """
+        from string import split
+        from niftypet import nipet
+        print('reconstruction.__init__:\n')
+        nipet.gpuinfo(extended=True)
+        print('\n')
         self._parse_prefix(prefix)
         os.chdir(self.tracerRawdataLocation)
+        print('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
+        print('\n')
         self.umapSynthFileprefix = umapSF
         self.verbose = v
         self.organizeRawdataLocation(cndaDownload)
-        self.DEVID = devid
+        print('CUDA_VISIBLE_DEVICES:  ' + str(os.getenv('CUDA_VISIBLE_DEVICES')))
+        print('\n')
+        ids = split(os.getenv('CUDA_VISIBLE_DEVICES'), ',')
+        self.DEVID = ids[0]
+        if not 0 != self.DEVID:
+            raise AssertionError('reconstruction.__init__.DEVID->' + str(self.DEVID))
         self._initializeNiftypet()
         self.tracerMemory = self.lm_tracer()
 
