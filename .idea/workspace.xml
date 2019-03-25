@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance">
       <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/NIPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/NIPET.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/respet/recon/reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/recon/reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_reconstruction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/, 2018-01-01), AND]&quot;" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" afterDir="false" />
@@ -119,8 +117,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="492" column="59" selection-start-line="492" selection-start-column="59" selection-end-line="492" selection-end-column="59" />
+            <state relative-caret-position="547">
+              <caret line="498" column="13" lean-forward="true" selection-start-line="498" selection-start-column="13" selection-end-line="498" selection-end-column="13" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -328,6 +326,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
+      <pane id="Scope" />
       <pane id="Course" />
     </panes>
   </component>
@@ -649,7 +649,7 @@
       <workItem from="1553210790730" duration="13769000" />
       <workItem from="1553449245434" duration="13550000" />
       <workItem from="1553465373889" duration="2452000" />
-      <workItem from="1553470158222" duration="1327000" />
+      <workItem from="1553470158222" duration="1846000" />
     </task>
     <task id="LOCAL-00001" summary="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed">
       <created>1540445211132</created>
@@ -847,13 +847,17 @@
       <option name="project" value="LOCAL" />
       <updated>1553448466891</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="performance adjustment:  getTaus2 attempts ~30 frames for all [15O] tracers">
+      <created>1553473910645</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1553473910645</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.24 at 15h 37m 57s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
-    </history-entry>
     <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.24 at 15h 57m 32s.xml">
       <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
     </history-entry>
@@ -881,9 +885,12 @@
     <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.24 at 18h 30m 50s.xml">
       <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
     </history-entry>
+    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.24 at 19h 35m 20s.xml">
+      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="229750000" />
+    <option name="totallyTimeSpent" value="230269000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -991,7 +998,6 @@
       <path value="$PROJECT_DIR$/../NIMPA" />
     </ignored-roots>
     <option name="FORCE_NON_EMPTY_COMMENT" value="true" />
-    <MESSAGE value="test_createTwiliteStaticUTE is working; modifications of niftypet.nipet =&gt; respet.nipet" />
     <MESSAGE value="test_createTracerCarney works only with recmod=1; recmod=2 fails with missing object in osemone; recmod=3 fails with nan in images and iter=1" />
     <MESSAGE value="Installed NIMPA/NIPET 1.1.  Reworked previous interfaces.  Jupyter tests work.  Commencing unit tests." />
     <MESSAGE value="test_createTracerCarney &amp; test_createTracerNAC passed or running" />
@@ -1016,7 +1022,8 @@
     <MESSAGE value="bug fix:  use of wtime, getWTime; adjusted getTaus, getTaus2 to balance SNR and performance" />
     <MESSAGE value="bug fix:  downstream processes lose a frame on *.json creation; createDynamic2 fit2 := it2 -1 is off-by-one; fit2 := it2 is consistent with convention of createDynamic" />
     <MESSAGE value="debugging Singularity containers on HPC:  checking CUDA_VISIBLE_DEVICES" />
-    <option name="LAST_COMMIT_MESSAGE" value="debugging Singularity containers on HPC:  checking CUDA_VISIBLE_DEVICES" />
+    <MESSAGE value="performance adjustment:  getTaus2 attempts ~30 frames for all [15O] tracers" />
+    <option name="LAST_COMMIT_MESSAGE" value="performance adjustment:  getTaus2 attempts ~30 frames for all [15O] tracers" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1103,7 +1110,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
-          <line>1034</line>
+          <line>1037</line>
           <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
@@ -1484,8 +1491,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="492" column="59" selection-start-line="492" selection-start-column="59" selection-end-line="492" selection-end-column="59" />
+        <state relative-caret-position="547">
+          <caret line="498" column="13" lean-forward="true" selection-start-line="498" selection-start-column="13" selection-end-line="498" selection-end-column="13" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
