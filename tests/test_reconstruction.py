@@ -4,8 +4,8 @@ import os
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteBaseloc = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/HO_DT20190108111833.000000-Converted'
-    tracerBaseloc  = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/HO_DT20190108111833.000000-Converted'
+    twiliteBaseloc = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/OC_DT20190108103905.000000-Converted'
+    tracerBaseloc  = '/scratch/jjlee/Singularity/CCIR_00559/ses-E00026/OC_DT20190108103905.000000-Converted'
 
     #def setUp(self):
 

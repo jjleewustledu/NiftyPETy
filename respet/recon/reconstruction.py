@@ -239,6 +239,7 @@ class Reconstruction(object):
                 if self.frame_exists(times2[it2-1], times2[it2], fcomment, it2):
                     continue
                 if times2[it2-1] < min(times2[it2], times[-1]):
+                    print('createDynamic2:  AC frame samples {}-{} s; NAC frame samples {}-{} s'.format(times2[it2-1], times2[it2], times[it-1], times[it]))
                     dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                               frames    = ['fluid', [times2[it2-1], min(times2[it2], times[-1])]],
                                               mu_h      = self.muHardware(),
@@ -251,8 +252,10 @@ class Reconstruction(object):
                                               fcomment  = fcomment + '_time' + str(it2-1))
                     if times2[it2] == times[-1]:
                         fit2 = it2
+                        print('createDynamic2.fit2->' + str(fit2))
                     if isnan(dynFrame['im']).any():
                         wtime2 = times2[it2] - wtime
+                        print('createDynamic2.wtime2->' + str(wtime2))
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
@@ -466,7 +469,7 @@ class Reconstruction(object):
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             taus = np.int_([30,32,33,35,37,40,43,46,49,54,59,65,72,82,94,110,132,165,218,315,535,1354])
             # len == 22, dur == 3600
-        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon monoxide' or self.tracerMemory.lower() == 'oxygen':
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
             taus = np.int_([10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,70,187])
             # len == 18, dur == 600
         else:
@@ -487,10 +490,7 @@ class Reconstruction(object):
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             taus = np.int_([10,10,10,11,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,15,15,15,16,16,17,17,18,18,19,19,20,21,21,22,23,24,25,26,27,28,30,31,33,35,37,39,42,45,49,53,58,64,71,80,92,107,128,159,208,295,485,1097])
             # len == 62, dur == 3887
-        elif self.tracerMemory.lower() == 'oxygen-water':
-            taus = np.int_([3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,12,13,13,15,16,17,19,21,24,27,32,38,47,62,88])
-            # len == 60, dur == 684
-        elif self.tracerMemory.lower() == 'carbon monoxide' or self.tracerMemory.lower() == 'oxygen':
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
             taus = np.int_([5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,9,9,9,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,69,103])
             # len == 36, dur == 636
         else:
@@ -989,7 +989,7 @@ class Reconstruction(object):
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
-    def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
+    def __init__(self, prefix=None, umapSF='umapSynth', v=True, cndaDownload=None, devid=0):
         """
         :param:  prefix specifies the location of tracer rawdata.
         :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
@@ -1013,24 +1013,26 @@ class Reconstruction(object):
         """
         from string import split
         from niftypet import nipet
-        print('reconstruction.__init__:\n')
-        nipet.gpuinfo(extended=True)
-        print('\n')
         self._parse_prefix(prefix)
         os.chdir(self.tracerRawdataLocation)
-        print('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
-        print('\n')
         self.umapSynthFileprefix = umapSF
         self.verbose = v
         self.organizeRawdataLocation(cndaDownload)
+        self.tracerMemory = self.lm_tracer()
+        print('reconstruction.__init__:\n')
+        nipet.gpuinfo(extended=True)
+        print('\n')
+        print('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
+        print('\n')
         print('CUDA_VISIBLE_DEVICES:  ' + str(os.getenv('CUDA_VISIBLE_DEVICES')))
         print('\n')
-        ids = split(os.getenv('CUDA_VISIBLE_DEVICES'), ',')
-        self.DEVID = ids[0]
-        if not 0 != self.DEVID:
-            raise AssertionError('reconstruction.__init__.DEVID->' + str(self.DEVID))
+        ids = os.getenv('CUDA_VISIBLE_DEVICES')
+        if not ids:
+            self.DEVID = devid
+        else:
+            self.DEVID = int(split(ids, ',')[0])
+        assert 0 == self.DEVID, 'reconstruction.__init__.DEVID->' + str(self.DEVID)
         self._initializeNiftypet()
-        self.tracerMemory = self.lm_tracer()
 
 
 
