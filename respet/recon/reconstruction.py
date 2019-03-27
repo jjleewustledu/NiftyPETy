@@ -222,6 +222,7 @@ class Reconstruction(object):
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        print(self.mMRparams)
         if self.reconstruction_started:
             return None
         self._do_touch_file('_started')
@@ -992,7 +993,7 @@ class Reconstruction(object):
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
-    def __init__(self, prefix=None, umapSF='umapSynth', v=True, cndaDownload=None, devid=0):
+    def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
         """
         :param:  prefix specifies the location of tracer rawdata.
         :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
@@ -1023,18 +1024,11 @@ class Reconstruction(object):
         self.organizeRawdataLocation(cndaDownload)
         self.tracerMemory = self.lm_tracer()
         print('reconstruction.__init__:\n')
-        nipet.gpuinfo(extended=True)
-        print('\n')
         print('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
         print('\n')
-        print('CUDA_VISIBLE_DEVICES:  ' + str(os.getenv('CUDA_VISIBLE_DEVICES')))
+        nipet.gpuinfo(extended=True)
         print('\n')
-        ids = os.getenv('CUDA_VISIBLE_DEVICES')
-        if not ids:
-            self.DEVID = devid
-        else:
-            self.DEVID = int(split(ids, ',')[0])
-        assert 0 == self.DEVID, 'reconstruction.__init__.DEVID->' + str(self.DEVID)
+        self.DEVID = devid
         self._initializeNiftypet()
 
 
@@ -1047,12 +1041,28 @@ if __name__ == '__main__':
                    metavar='/path/to/TRACER_DT12345678000000.000000-Converted-NAC',
                    required=True,
                    help='location containing tracer raw data')
+    p.add_argument('-v', '--verbose',
+                   metavar='true|false',
+                   required=False,
+                   help='')
+    p.add_argument('-g', '--gpu',
+                   metavar='cuda_device_id',
+                   required=False,
+                   help='export CUDA_DEVICE_ORDER=PCI_BUS_ID as needed')
     args = p.parse_args()
-    print(os.listdir('/'))
-    print(os.listdir('/SubjectsDir'))
-    print(os.listdir(args.prefix))
-    r = Reconstruction(prefix=args.prefix)
+    #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    #os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
+    #os.environ["NVIDIA_VISIBLE_DEVICES"] = str(args.gpu)
+    #print('CUDA_VISIBLE_DEVICES:  ' + str(os.getenv('CUDA_VISIBLE_DEVICES')))
+    #print('\n')
+    #print(os.listdir('/'))
+    #print(os.listdir('/SubjectsDir'))
+    #print(os.listdir(args.prefix))
+
+    v = args.verbose.lower() == 'true'
+    r = Reconstruction(prefix=args.prefix, v=v, devid=0)
     if not r.ac:
         r.createDynamicNAC(fcomment='_createDynamicNAC')
     else:
         r.createDynamic2Carney(fcomment='_createDynamic2Carney')
+
