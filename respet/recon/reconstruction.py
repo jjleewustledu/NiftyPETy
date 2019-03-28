@@ -1,5 +1,15 @@
 import numpy as np
 import os
+import logging, sys
+
+# create and configure main logger;
+# see also https://stackoverflow.com/questions/50714316/how-to-use-logging-getlogger-name-in-multiple-modules/50715155#50715155
+#logger = logging.getLogger()
+#logger.setLevel(logging.DEBUG)
+#handler = logging.StreamHandler()
+#handler.setLevel(logging.DEBUG)
+#logger.addHandler(handler)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
@@ -90,25 +100,22 @@ class Reconstruction(object):
 
 
 
-    def createStaticNAC(self, fcomment='_createStaticNAC'):
+    def createStaticNAC(self, time0=None, timeF=None, fcomment='_createStaticNAC'):
         self.recmod = 0
         self.bootstrap = 0
-        _hst = self.checkHistogramming(fcomment)
-        return self.createStatic(self.muNAC(), hst=_hst, fcomment=fcomment)
+        return self.createStatic(self.muNAC(), time0, timeF, fcomment=fcomment,)
 
-    def createStaticUTE(self, fcomment='_createStaticUTE'):
+    def createStaticUTE(self, time0=None, timeF=None, fcomment='_createStaticUTE'):
         self.recmod = 3
         self.bootstrap = 0
         self.checkUmaps(self.muUTE(), fcomment)
-        _hst = self.checkHistogramming(fcomment)
-        return self.createStatic(self.muUTE(), hst=_hst, fcomment=fcomment)
+        return self.createStatic(self.muUTE(), time0, timeF, fcomment=fcomment)
 
-    def createStaticCarney(self, fcomment='_createStaticCarney'):
+    def createStaticCarney(self, time0=None, timeF=None, fcomment='_createStaticCarney'):
         self.recmod = 3
         self.bootstrap = 0
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
-        _hst = self.checkHistogramming(fcomment)
-        return self.createStatic(self.muCarney(frames=[0]), hst=_hst, fcomment=fcomment)
+        return self.createStatic(self.muCarney(frames=[0]), time0, timeF, fcomment=fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
@@ -132,27 +139,38 @@ class Reconstruction(object):
         wtime = self.getWTime(self.json_filename_with(ac=False))
         return self.createDynamic2(wtime, taus, self.getTaus2(), fcomment)
 
-    def createStatic(self, muo, hst=None, fcomment='_createStatic'):
+    def createStatic(self, muo, time0=None, timeF=None, fcomment='_createStatic'):
         """
         :param muo:       mu-map of imaged object
-        :param fcomment;  string for naming subspace
+        :param time0:     int sec
+        :param time:      int sec
+        :param fcomment:  string for naming subspace
         :return:          result from nipet.mmrchain
         :rtype:           dictionary
         """
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+        if not time0:
+            time0 = self.getTime0()
+        if not timeF:
+            timeF = self.getTimeF()
+        logging.debug('reconstruction.Reconstruction.createStatic.datain->')
+        logging.debug(self.datain)
+        logging.debug('reconstruction.Reconstruction.createStatic.mMRparams->')
+        logging.debug(self.mMRparams)
         hst = nipet.mmrhist(self.datain, self.mMRparams)
         sta = nipet.mmrchain(self.datain, self.mMRparams,
+                             frames    = ['fluid', [time0, timeF]],
                              mu_h      = self.muHardware(),
                              mu_o      = muo,
                              itr       = self.itr,
                              fwhm      = self.fwhm,
                              recmod    = self.recmod,
                              outpath   = self.outpath,
-                             store_img = False,
+                             store_img = True,
                              fcomment  = fcomment)
-        self.saveStatic(sta, [muo, self.muHardware()], hst, fcomment)
+        #self.saveStatic(sta, [muo, self.muHardware()], hst, fcomment)
         return sta
 
     def createDynamic(self, taus, muo, fcomment='_createDynamic'):
@@ -169,6 +187,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         if self.reconstruction_started:
+            logging.debug('reconstruction.Reconstruction.createDynamics.reconstruction_started == True')
             return None
         self._do_touch_file('_started')
         dynFrame = None
@@ -180,6 +199,12 @@ class Reconstruction(object):
             try:
                 if self.frame_exists(times[it-1], times[it], fcomment, it):
                     continue
+                logging.info(
+                    'createDynamic:  frame samples {}-{} s;'.format(times[it-1], times[it]))
+                logging.debug('reconstruction.Reconstruction.createDynamic.datain->')
+                logging.debug(self.datain)
+                logging.debug('reconstruction.Reconstruction.createDynamic.mMRparams->')
+                logging.debug(self.mMRparams)
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                           frames    = ['fluid', [times[it-1], times[it]]],
                                           mu_h      = self.muHardware(),
@@ -224,6 +249,7 @@ class Reconstruction(object):
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
         print(self.mMRparams)
         if self.reconstruction_started:
+            logging.debug('reconstruction.Reconstruction.createDynamics2.reconstruction_started == True')
             return None
         self._do_touch_file('_started')
         dynFrame = None
@@ -240,7 +266,13 @@ class Reconstruction(object):
                 if self.frame_exists(times2[it2-1], times2[it2], fcomment, it2):
                     continue
                 if times2[it2-1] < min(times2[it2], times[-1]):
-                    print('createDynamic2:  AC frame samples {}-{} s; NAC frame samples {}-{} s'.format(times2[it2-1], times2[it2], times[it-1], times[it]))
+                    logging.info(
+                        'createDynamic2:  AC frame samples {}-{} s; NAC frame samples {}-{} s'.format(times2[it2-1], times2[it2], times[it-1], times[it]))
+
+                    logging.debug('reconstruction.Reconstruction.createDynamic2.datain->')
+                    logging.debug(self.datain)
+                    logging.debug('reconstruction.Reconstruction.createDynamic2.mMRparams->')
+                    logging.debug(self.mMRparams)
                     dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                               frames    = ['fluid', [times2[it2-1], min(times2[it2], times[-1])]],
                                               mu_h      = self.muHardware(),
@@ -501,6 +533,40 @@ class Reconstruction(object):
             raise AssertionError('Reconstruction.getTaus2 does not support tracerMemory->' + self.tracerMemory)
         return taus
 
+    def getTime0(self):
+        times = self.getTimes(self.getTaus())
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            return times[-1] - 20*60
+        elif self.tracerMemory.lower() == 'oxygen-water':
+            return times[0]
+        elif self.tracerMemory.lower() == 'carbon':
+            return times[0] + 2*60
+        elif self.tracerMemory.lower() == 'oxygen':
+            return times[0]
+        else:
+            raise AssertionError('Reconstruction.getTime0 does not support tracerMemory->' + self.tracerMemory)
+
+    def getTimeF(self):
+        times = self.getTimes(self.getTaus())
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            return times[-1]
+        elif self.tracerMemory.lower() == 'oxygen-water':
+            return times[0] + 60
+        elif self.tracerMemory.lower() == 'carbon':
+            return times[0] + 3*60
+        elif self.tracerMemory.lower() == 'oxygen':
+            return times[0] + 60
+        else:
+            raise AssertionError('Reconstruction.getTimeF does not support tracerMemory->' + self.tracerMemory)
+
+    def getTimeMax(self):
+        """
+        :return:  max time available from listmode data in sec.
+        """
+        from niftypet.nipet.lm import mmr_lmproc #CUDA
+        nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
+        return (ttags[1]-ttags[0]+999)/1000 # sec
+
     def getTimes(self, taus=None):
         """
         :return:  up to 1x66 array of times including 0 and np.cumsum(taus); max(times) <= self.getTimeMax
@@ -511,14 +577,6 @@ class Reconstruction(object):
         t = np.hstack((np.int_(0), np.cumsum(taus)))
         t = t[t <= self.getTimeMax()]
         return np.int_(t) # TODO return np.trunc(t)
-
-    def getTimeMax(self):
-        """
-        :return:  max time available from listmode data in sec.
-        """
-        from niftypet.nipet.lm import mmr_lmproc #CUDA
-        nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
-        return (ttags[1]-ttags[0]+999)/1000 # sec
 
     def getWTime(self, json_file=None):
         """
@@ -551,6 +609,8 @@ class Reconstruction(object):
             raise AssertionError('Reconstruction.open_json.json_file is missing')
         t = codecs.open(json_file, 'r', encoding='utf-8').read()
         jt = json.loads(t)
+        logging.debug('reconstruction.Reconstruction.open_json.jt->')
+        logging.debug(str(jt))
         taus = np.array(jt['taus'])
         wtime = int(float(jt['waiting time']))
         return taus, wtime
@@ -574,6 +634,8 @@ class Reconstruction(object):
             "taus": taus.tolist(),
             "image duration": self.lm_imageduration()
         }
+        logging.debug('reconstruction.Reconstruction.save_json.jdict->')
+        logging.debug(str(jdict))
         json_file = self.json_filename()
         j = codecs.open(json_file, 'w', encoding='utf-8')  # overwrites existing
         json.dump(jdict, j)
@@ -648,6 +710,8 @@ class Reconstruction(object):
         if self.use_stored_hdw_mumap:
             self.datain['hmumap'] = os.path.join(
                 os.getenv('HARDWAREUMAPS'), 'hmumap.npy')
+        logging.debug('reconstruction.Reconstruction.muHardware.datain[''hmumap'']->')
+        logging.debug(self.datain['hmumap'])
         return nipet.hdw_mumap(
             self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
 
@@ -678,8 +742,8 @@ class Reconstruction(object):
         output['exists'] = True
         output['fim'] = fqfn
         Cnt = self.mMRparams['Cnt']
-        if Cnt['VERBOSE']:
-            print 'i> using ' + imtype + ' from NIfTI file.'
+        logging.debug('reconstruction.Reconstruction.muCarney is')
+        logging.debug('using ' + imtype + ' from NIfTI file.')
         if Cnt and output['im'].shape != (Cnt['SO_IMZ'], Cnt['SO_IMY'], Cnt['SO_IMX']):
             print 'e> provided ' + imtype + ' via file has inconsistent dimensions compared to Cnt.'
             raise ValueError('Wrong dimensions of the mu-map')
@@ -782,10 +846,6 @@ class Reconstruction(object):
             os.path.join(os.getenv('SUBJECTS_DIR'), 'zeros_frame.nii.gz'),
             self.nipetFrameFilename(t0, t1, tag, fr))
 
-    @staticmethod
-    def sampleStaticMethod():
-        return 0.1234
-
     def saveDynamicInMemory(self, dyn, mumaps, hst, fcomment=''):
         """
         :param dyn:       dictionary from nipet.mmrchain
@@ -795,8 +855,8 @@ class Reconstruction(object):
         """
         fout = self._createFilename(fcomment)
         im = self._gatherOsemoneList(dyn)
-        if self.mMRparams['Cnt']['VERBOSE']:
-            print('i> saving '+str(len(im.shape))+'D image to: ', fout)
+        logging.info('reconstruction.Reconstruction.saveDynamicInMemory is')
+        logging.info('saving ' + str(len(im.shape)) + 'D image to: ' + fout)
 
         A = self.getAffine()
         muo,muh = mumaps  # object and hardware mu-maps
@@ -817,8 +877,8 @@ class Reconstruction(object):
         """
         fout = self._createFilename(fcomment)
         im = sta['im']
-        if self.mMRparams['Cnt']['VERBOSE']:
-            print('i> saving 3D image to: ', fout)
+        logging.info('reconstruction.Reconstruction.saveStatic is')
+        logging.info('saving 3D image to: ' + fout)
 
         A = self.getAffine()
         muo,muh = mumaps  # object and hardware mu-maps
@@ -935,9 +995,8 @@ class Reconstruction(object):
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
         if not os.path.exists(self.outpath):
             os.makedirs(self.outpath)
-        if self.verbose:
-            print("########## respet.recon.reconstruction.Reconstruction._initializeNiftypet ##########")
-            print(self.datain)
+        logging.info("reconstruction.Reconstruction._initializeNiftypet.datain->")
+        logging.info(self.datain)
             
     def _moveToNamedLocation(self, dcm, name):
         import shutil
@@ -991,6 +1050,7 @@ class Reconstruction(object):
         return {'Ge68':{'BF':0.891, 'thalf':270.9516*24*60*60},
                 'Ga68':{'BF':0.891, 'thalf':67.71*60},
                  'F18':{'BF':0.967, 'thalf':109.77120*60},
+                 'O15':{'BF':0.999, 'thalf':122.2416},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
     def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0):
@@ -1015,54 +1075,85 @@ class Reconstruction(object):
         :param:  v, verbosity, is bool
         :param:  cndaDownload is a path
         """
-        from string import split
-        from niftypet import nipet
+        from niftypet.nipet.dinf import dev_info
+        logging.info('reconstruction.Reconstruction.__init__')
         self._parse_prefix(prefix)
+        logging.info('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
         os.chdir(self.tracerRawdataLocation)
+        logging.info('cwd->' + os.getcwd())
         self.umapSynthFileprefix = umapSF
         self.verbose = v
         self.organizeRawdataLocation(cndaDownload)
         self.tracerMemory = self.lm_tracer()
-        print('reconstruction.__init__:\n')
-        print('self.tracerRawdataLocation->' + self.tracerRawdataLocation)
-        print('\n')
-        nipet.gpuinfo(extended=True)
-        print('\n')
+        logging.info(str(dev_info(1)))
         self.DEVID = devid
         self._initializeNiftypet()
 
 
 
-if __name__ == '__main__':
-    import argparse
+def main():
+    import argparse, textwrap
+    from niftypet.nipet.dinf import dev_info
 
-    p = argparse.ArgumentParser(description='usage:  nvidia-docker run -it niftypetr-image:reconstruction_cuda10 [-h] -p /SubjectsDir/CCIR_00123/ses-456789/TRACER_DT12345678000000.000000-Converted-NAC')
+    p = argparse.ArgumentParser(
+        description='provides interfaces to https://github.com/pjmark/NIPET.git, https://github.com/jjleewustledu/NIPET.git',
+        usage=textwrap.dedent('''\
+        
+    python reconstruction.py -h
+    nvidia-docker run -it \\
+                  -v ${DOCKER_HOME}/hardwareumaps/:/hardwareumaps \\
+                  -v ${SINGULARITY_HOME}/:/SubjectsDir \\
+                  niftypetr-image:reconstruction:latest -h
+    singularity exec \\
+                --nv \\
+                --bind $SINGULARITY_HOME/hardwareumaps:/hardwareumaps \\
+                --bind $SINGULARITY_HOME:/SubjectsDir \\
+                $SINGULARITY_HOME/niftypetr-image_reconstruction.sif \\
+                "python" "/work/NiftyPETy/respet/recon/reconstruction.py" "-h" 
+        '''),
+        formatter_class=argparse.RawTextHelpFormatter)
+    p.add_argument('-m', '--method',
+                   metavar='createDynamic|createStatic|info',
+                   type=str,
+                   default='createDynamic')
     p.add_argument('-p', '--prefix',
-                   metavar='/path/to/TRACER_DT12345678000000.000000-Converted-NAC',
-                   required=True,
-                   help='location containing tracer raw data')
+                   metavar='/path/to/experiment-NAC',
+                   help='location containing tracer listmode and norm data',
+                   type=str,
+                   required=True)
     p.add_argument('-v', '--verbose',
                    metavar='true|false',
-                   required=False,
-                   help='')
+                   type=str,
+                   default='false')
     p.add_argument('-g', '--gpu',
-                   metavar='cuda_device_id',
-                   required=False,
-                   help='export CUDA_DEVICE_ORDER=PCI_BUS_ID as needed')
+                   metavar='0',
+                   help='device ID used by cudaSetDevice',
+                   type=str,
+                   default='0')
     args = p.parse_args()
     #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     #os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
     #os.environ["NVIDIA_VISIBLE_DEVICES"] = str(args.gpu)
-    #print('CUDA_VISIBLE_DEVICES:  ' + str(os.getenv('CUDA_VISIBLE_DEVICES')))
-    #print('\n')
-    #print(os.listdir('/'))
-    #print(os.listdir('/SubjectsDir'))
-    #print(os.listdir(args.prefix))
 
     v = args.verbose.lower() == 'true'
-    r = Reconstruction(prefix=args.prefix, v=v, devid=0)
-    if not r.ac:
-        r.createDynamicNAC(fcomment='_createDynamicNAC')
-    else:
-        r.createDynamic2Carney(fcomment='_createDynamic2Carney')
+    r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu))
+    if args.method.lower() == 'createDynamic':
+        if not r.ac:
+            r.createDynamicNAC(fcomment='_createDynamicNAC')
+        else:
+            r.createDynamic2Carney(fcomment='_createDynamic2Carney')
+    elif args.method.lower() == 'createStatic':
+        if not r.ac:
+            r.createStaticNAC(fcomment='_createStaticNAC')
+        else:
+            r.createStaticCarney(fcomment='_createStaticCarney')
+    elif args.method.lower() == 'info':
+        print(dev_info(1))
+        print('\n')
+        print(r.mMRparams)
+        print('\n')
+        print(r.datain)
+        print('\n')
 
+if __name__ == '__main__':
+    main()
