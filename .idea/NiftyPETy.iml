@@ -8,9 +8,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="module" module-name="XnatPET" />
     <orderEntry type="module" module-name="NIPET" />
-    <orderEntry type="module" module-name="NIMPA" />
+    <orderEntry type="module" module-name="interfile" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

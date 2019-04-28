@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="debugging:  recon halts early on CHPC torque submissions">
-      <change afterPath="$PROJECT_DIR$/respet/context.py" afterDir="false" />
+    <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="checking">
+      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/NIMPA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/NIMPA.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/NiftyPETy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NiftyPETy.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/respet/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/respet/recon/reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/recon/reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/context.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../XnatPET/, 2018-01-01), AND]&quot;" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/.idea/XnatPET.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_reconstruction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../PycharmProjects/NIPET/.idea/NIPET.iml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,46 +25,56 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestOtherUmaps.coverage" NAME="Unittests for test_reconstruction.TestOtherUmaps Coverage Results" MODIFIED="1544159481893" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata_OC.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata_OC Coverage Results" MODIFIED="1551673069272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_getTimeMax.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_getTimeMax Coverage Results" MODIFIED="1552256174267" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_acquisitiontime.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_acquisitiontime Coverage Results" MODIFIED="1552261037352" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_sampleStaticMethod.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_sampleStaticMethod Coverage Results" MODIFIED="1547437573580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestUITE_test_createTracerStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestUITE.test_createTracerStaticUTE Coverage Results" MODIFIED="1543615333490" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$NiftyPETy.coverage" NAME="NiftyPETy Coverage Results" MODIFIED="1543618869645" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_getTimes.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_getTimes Coverage Results" MODIFIED="1552256100425" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerNAC Coverage Results" MODIFIED="1553737560491" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestUTE_test_createTracerStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestUTE.test_createTracerStaticUTE Coverage Results" MODIFIED="1547453218565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestStaging_test_stage_umaps.coverage" NAME="pytest for test_xnatpet.TestStaging.test_stage_umaps Coverage Results" MODIFIED="1554071461476" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_checkTimeAliasingUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_checkTimeAliasingUTE Coverage Results" MODIFIED="1543408096102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_studyTime.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_studyTime Coverage Results" MODIFIED="1552260762543" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_lm_dcmread.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_lm_dcmread Coverage Results" MODIFIED="1552260918356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestStaging_test_stage_project.coverage" NAME="pytest for test_xnatpet.TestStaging.test_stage_project Coverage Results" MODIFIED="1554067960670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_installation.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_installation Coverage Results" MODIFIED="1553469718564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTwiliteStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTwiliteStaticUTE Coverage Results" MODIFIED="1542052572010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerStaticNAC Coverage Results" MODIFIED="1543405359900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_ctor.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_ctor Coverage Results" MODIFIED="1552253259403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes.coverage" NAME="Unittests for test_reconstruction.TestTimes Coverage Results" MODIFIED="1543554573258" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_data.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_data Coverage Results" MODIFIED="1552253266668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTwiliteStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTwiliteStaticNAC Coverage Results" MODIFIED="1542039771530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_in_test_reconstruction_py.coverage" NAME="Unittests in test_reconstruction.py Coverage Results" MODIFIED="1543553155818" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata_FDG.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata_FDG Coverage Results" MODIFIED="1551843374803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createUmapSynthFullBlurred_tracer.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createUmapSynthFullBlurred_tracer Coverage Results" MODIFIED="1540442797064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC Coverage Results" MODIFIED="1553738996359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerCarney Coverage Results" MODIFIED="1553741101244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerStaticUTE Coverage Results" MODIFIED="1543444482978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata Coverage Results" MODIFIED="1551673746405" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_project.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_project Coverage Results" MODIFIED="1554424731148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerUTE Coverage Results" MODIFIED="1543410609072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_locs.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_locs Coverage Results" MODIFIED="1552253273798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerNAC Coverage Results" MODIFIED="1542755550340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerStaticCarney.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerStaticCarney Coverage Results" MODIFIED="1543440603411" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestUTE_test_createTracerUTE.coverage" NAME="Unittests for test_reconstruction.TestUTE.test_createTracerUTE Coverage Results" MODIFIED="1551392309064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_getTimeMax.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_getTimeMax Coverage Results" MODIFIED="1541989092918" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerStaticCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney Coverage Results" MODIFIED="1553739124654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestStaging_test_stage_session.coverage" NAME="pytest for test_xnatpet.TestStaging.test_stage_session Coverage Results" MODIFIED="1554072184998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata_OC.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata_OC Coverage Results" MODIFIED="1551673069272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_session.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_session Coverage Results" MODIFIED="1554426505786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestUITE_test_createTracerStaticUTE.coverage" NAME="Unittests for test_reconstruction.TestUITE.test_createTracerStaticUTE Coverage Results" MODIFIED="1543615333490" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$NiftyPETy.coverage" NAME="NiftyPETy Coverage Results" MODIFIED="1543618869645" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_getTimes.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_getTimes Coverage Results" MODIFIED="1552256100425" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerNAC Coverage Results" MODIFIED="1553917765108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_scan_resources.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_scan_resources Coverage Results" MODIFIED="1554070975416" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_studyTime.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_studyTime Coverage Results" MODIFIED="1552260762543" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_subject.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_subject Coverage Results" MODIFIED="1554426493102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTwiliteStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTwiliteStaticNAC Coverage Results" MODIFIED="1542039771530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestSortRawData_test_sort_rawdata_FDG.coverage" NAME="pytest for test_xnatpet.TestSortRawData.test_sort_rawdata_FDG Coverage Results" MODIFIED="1551843374803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_scan.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_scan Coverage Results" MODIFIED="1554426625095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC Coverage Results" MODIFIED="1553738996359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_tracerMemory.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_tracerMemory Coverage Results" MODIFIED="1552255173544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_getTaus.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_getTaus Coverage Results" MODIFIED="1552256076010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestMatlab_test_construct_resolved_mcr.coverage" NAME="Unittests for test_reconstruction.TestMatlab.test_construct_resolved_mcr Coverage Results" MODIFIED="1545352755911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerUTE.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerUTE Coverage Results" MODIFIED="1543410609072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_locs.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_locs Coverage Results" MODIFIED="1552253273798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_time_diff_norm_acq.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_time_diff_norm_acq Coverage Results" MODIFIED="1543553803163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerNAC Coverage Results" MODIFIED="1542755550340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerStaticCarney.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerStaticCarney Coverage Results" MODIFIED="1543440603411" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_session_resources.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_session_resources Coverage Results" MODIFIED="1554071294345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_createTracerCarney.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_createTracerCarney Coverage Results" MODIFIED="1543411414142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestUTE_test_createTracerUTE.coverage" NAME="Unittests for test_reconstruction.TestUTE.test_createTracerUTE Coverage Results" MODIFIED="1551392309064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_getTimeMax.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_getTimeMax Coverage Results" MODIFIED="1541989092918" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$pytest_for_test_xnatpet_TestPrimitives_test_ctor.coverage" NAME="pytest for test_xnatpet.TestPrimitives.test_ctor Coverage Results" MODIFIED="1554424703460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction.coverage" NAME="Unittests for test_reconstruction.TestReconstruction Coverage Results" MODIFIED="1543619569248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTimes_test_getWTime.coverage" NAME="Unittests for test_reconstruction.TestTimes.test_getWTime Coverage Results" MODIFIED="1552256015460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerStaticCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney Coverage Results" MODIFIED="1553739124654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
   <component name="CoverageViewManager">
     <option name="myElementSize" value="268" />
@@ -86,13 +99,42 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="228">
+              <caret line="668" column="50" lean-forward="true" selection-start-line="668" selection-start-column="50" selection-end-line="668" selection-end-column="50" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../interfile/interfile/Interfile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="300">
+              <caret line="21" column="6" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/interfile/Interfile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="563">
+              <caret line="400" selection-start-line="400" selection-end-line="400" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="61">
-              <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
+            <state relative-caret-position="330">
+              <caret line="109" selection-start-line="109" selection-end-line="109" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
-                <element signature="e#132#2356#0" />
                 <element signature="e#430#601#0" />
                 <element signature="e#650#711#0" />
                 <element signature="e#754#837#0" />
@@ -100,48 +142,13 @@
                 <element signature="e#2072#2191#0" />
                 <element signature="e#2226#2356#0" />
                 <element signature="e#2404#3461#0" />
+                <element signature="e#3551#3851#0" />
                 <element signature="e#3894#4006#0" />
                 <element signature="e#4430#5205#0" />
+                <element signature="e#5301#5604#0" />
                 <element signature="e#6115#6511#0" />
                 <element signature="e#6557#8490#0" />
                 <element signature="e#8537#9342#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1000">
-              <caret line="189" column="71" selection-start-line="189" selection-start-column="71" selection-end-line="189" selection-end-column="71" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#2780#2950#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/pipe.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19">
-              <caret line="106" column="73" selection-start-line="106" selection-start-column="73" selection-end-line="106" selection-end-column="73" />
-              <folding>
-                <element signature="e#214#232#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5475">
-              <caret line="365" column="80" selection-start-line="365" selection-start-column="80" selection-end-line="365" selection-end-column="80" />
-              <folding>
-                <element signature="e#198#216#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -159,10 +166,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>DEVID</find>
-      <find>mMRparams</find>
-      <find>hmumap</find>
-      <find>osemone</find>
       <find>datain</find>
       <find>hst</find>
       <find>createStatic</find>
@@ -187,8 +190,12 @@
       <find>verbose</find>
       <find>VERBOSE</find>
       <find>logging.</find>
-      <find>store_img</find>
       <find>store_img_intrmd</find>
+      <find>store_img</find>
+      <find>_initializeNiftypet</find>
+      <find>tracerMemory</find>
+      <find>getTaus2</find>
+      <find>getInterfile</find>
     </findStrings>
     <replaceStrings>
       <replace>cnt</replace>
@@ -255,24 +262,24 @@
         <option value="$PROJECT_DIR$/tests/test_construct_resolved.py" />
         <option value="$PROJECT_DIR$/respet/resolve/construct_resolved.py" />
         <option value="$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/prj/mmrrec.py" />
-        <option value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" />
         <option value="$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py" />
         <option value="$PROJECT_DIR$/../../NiftyGPU/NiftyGPU/respet/recon/reconstruction.py" />
-        <option value="$PROJECT_DIR$/tests/test_reconstruction.py" />
         <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/auximg.py" />
         <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/mmraux.py" />
         <option value="$PROJECT_DIR$/tests/context.py" />
         <option value="$PROJECT_DIR$/respet/__init__.py" />
         <option value="$PROJECT_DIR$/respet/context.py" />
-        <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" />
         <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py" />
         <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/pipe.py" />
+        <option value="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" />
+        <option value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py" />
+        <option value="$PROJECT_DIR$/tests/test_reconstruction.py" />
         <option value="$PROJECT_DIR$/respet/recon/reconstruction.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="24" />
+    <option name="y" value="25" />
     <option name="width" value="1920" />
     <option name="height" value="1150" />
   </component>
@@ -320,6 +327,26 @@
               <item name="NiftyPETy" type="462c0819:PsiDirectoryNode" />
               <item name="respet" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="NiftyPETy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="NiftyPETy" type="462c0819:PsiDirectoryNode" />
+              <item name="respet" type="462c0819:PsiDirectoryNode" />
+              <item name="recon" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="NiftyPETy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="NiftyPETy" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="NiftyPETy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="interfile" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="NiftyPETy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="interfile" type="462c0819:PsiDirectoryNode" />
+              <item name="interfile" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -328,8 +355,12 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../NiftyPETd/NIMPA" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../interfile" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -363,7 +394,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerCarney">
+  <component name="RunManager" selected="Python tests.Unittests for test_reconstruction.TestNAC.test_createTracerNAC">
     <configuration default="true" type="DjangoTestsConfigurationType">
       <module name="interfile" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -450,7 +481,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="Python.FlaskServer" factoryName="Flask server">
+    <configuration default="true" type="Python.FlaskServer">
       <module name="interfile" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -475,36 +506,6 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="NiftyPETy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestCarney.test_createTracerCarney&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="NiftyPETy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestCarney.test_createTracerStaticCarney&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="NiftyPETy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -517,36 +518,6 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_reconstruction.TestNAC.test_createTracerNAC&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="NiftyPETy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestNAC.test_createTracerStaticNAC&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Unittests for test_reconstruction.TestReconstruction.test_installation" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="NiftyPETy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestReconstruction.test_installation&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -600,21 +571,84 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="pytest for test_xnatpet.TestPrimitives.test_ctor" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="XnatPET" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_xnatpet.TestPrimitives.test_ctor&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_xnatpet.TestPrimitives.test_project" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="XnatPET" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_xnatpet.TestPrimitives.test_project&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_xnatpet.TestPrimitives.test_scan" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="XnatPET" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_xnatpet.TestPrimitives.test_scan&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_xnatpet.TestPrimitives.test_session" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="XnatPET" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../XnatPET/xnatpet/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_xnatpet.TestPrimitives.test_session&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
-      <item itemvalue="Jupyter Notebook.NiftyPETy" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerCarney" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_installation" />
+      <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_ctor" />
+      <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_project" />
+      <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_scan" />
+      <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_session" />
       <item itemvalue="Python tests.Unittests for test_reconstruction.TestNAC.test_createTracerNAC" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerCarney" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC" />
         <item itemvalue="Python tests.Unittests for test_reconstruction.TestNAC.test_createTracerNAC" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_installation" />
+        <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_scan" />
+        <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_session" />
+        <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_project" />
+        <item itemvalue="Python tests.pytest for test_xnatpet.TestPrimitives.test_ctor" />
       </list>
     </recent_temporary>
   </component>
@@ -650,7 +684,16 @@
       <workItem from="1553465373889" duration="2452000" />
       <workItem from="1553470158222" duration="2769000" />
       <workItem from="1553475311821" duration="187000" />
-      <workItem from="1553475554092" duration="53079000" />
+      <workItem from="1553475554092" duration="63324000" />
+      <workItem from="1554069419500" duration="311000" />
+      <workItem from="1554070221272" duration="5805000" />
+      <workItem from="1554424590564" duration="2575000" />
+      <workItem from="1554428345315" duration="145000" />
+      <workItem from="1555791970879" duration="45000" />
+      <workItem from="1555792039234" duration="602000" />
+      <workItem from="1556404853552" duration="39000" />
+      <workItem from="1556404893894" duration="35000" />
+      <workItem from="1556404948599" duration="5658000" />
     </task>
     <task id="LOCAL-00001" summary="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed">
       <created>1540445211132</created>
@@ -876,43 +919,50 @@
       <option name="project" value="LOCAL" />
       <updated>1553700419223</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="debugging:  recon halts early on CHPC torque submissions">
+      <created>1553743243173</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1553743243173</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.27 at 20h 36m 34s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.27 at 20h 38m 37s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.03.27 at 20h 40m 34s.xml">
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 18h 52m 29s.xml">
       <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.03.27 at 20h 42m 23s.xml">
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 06m 45s.xml">
       <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC - 2019.03.27 at 20h 45m 06s.xml">
-      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.03.27 at 20h 53m 38s.xml">
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 20m 40s.xml">
       <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC - 2019.03.27 at 21h 10m 36s.xml">
-      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC" configurationId="tests" />
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 21m 10s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerStaticCarney - 2019.03.27 at 21h 16m 26s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney" configurationId="tests" />
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 21m 54s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.27 at 21h 40m 27s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 22m 47s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney - 2019.03.27 at 21h 42m 59s.xml">
-      <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" configurationId="tests" />
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 27m 30s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 28m 04s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 46m 18s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC - 2019.04.27 at 19h 46m 44s.xml">
+      <configuration name="Unittests for test_reconstruction.TestNAC.test_createTracerNAC" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="284458000" />
+    <option name="totallyTimeSpent" value="309918000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -924,33 +974,34 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="24" width="1920" height="1150" extended-state="0" />
+    <frame x="0" y="25" width="1920" height="1150" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4992908" visible="true" weight="0.17289221" />
-      <window_info id="Structure" order="1" weight="0.1696905" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4992908" weight="0.18569905" />
+      <window_info id="Structure" order="1" visible="true" weight="0.17129135" />
       <window_info id="Favorites" order="2" sideWeight="0.50070924" side_tool="true" weight="0.16291533" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49785638" weight="0.22504893" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7529349" visible="true" weight="0.38845402" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7502668" weight="0.83365947" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.7529349" visible="true" weight="0.36497065" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7502668" weight="0.29452056" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4994641" weight="0.3298479" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.65273315" weight="0.31434" />
-      <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.75987196" weight="0.13405088" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.65273315" weight="0.2514677" />
+      <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.75987196" weight="0.23972602" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.2497332" side_tool="true" weight="0.4667319" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Concurrent Activities Diagram" order="12" weight="0.3298479" />
       <window_info anchor="bottom" id="Messages" order="13" sideWeight="0.4994641" weight="0.32857144" />
-      <window_info anchor="bottom" x="2" y="724" width="1916" height="402" id="Terminal" order="14" sideWeight="0.21489818" weight="0.3444227" />
+      <window_info anchor="bottom" x="2" y="724" width="1916" height="402" id="Terminal" order="14" sideWeight="0.21489818" weight="0.34408602" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" sideWeight="0.49942195" weight="0.2497332" />
       <window_info anchor="right" id="Database" order="3" sideWeight="0.4978479" weight="0.32924226" />
-      <window_info anchor="right" content_ui="combo" x="280" y="180" width="1234" height="892" id="SciView" order="4" sideWeight="0.6656" side_tool="true" visible="true" weight="0.23425826" />
-      <window_info anchor="right" x="0" y="0" width="430" height="952" id="Documentation" order="5" sideWeight="0.4611111" side_tool="true" weight="0.32924226" />
-      <window_info anchor="right" id="R Graphics" order="6" sideWeight="0.3344" visible="true" weight="0.23425826" />
+      <window_info anchor="right" content_ui="combo" x="280" y="180" width="1234" height="892" id="SciView" order="4" sideWeight="0.6656892" side_tool="true" weight="0.23425826" />
+      <window_info anchor="right" x="0" y="0" width="430" height="952" id="Documentation" order="5" sideWeight="0.6733436" side_tool="true" visible="true" weight="0.23425826" />
+      <window_info anchor="right" id="R Graphics" order="6" sideWeight="0.3266564" visible="true" weight="0.23425826" />
       <window_info anchor="right" id="R Packages" order="7" sideWeight="0.4952153" weight="0.32924226" />
       <window_info anchor="right" id="Coverage" order="8" sideWeight="0.39240506" side_tool="true" weight="0.24812433" />
     </layout>
@@ -1129,6 +1180,56 @@
           <line>35</line>
           <option name="timeStamp" value="58" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py</url>
+          <line>125</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py</url>
+          <line>124</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py</url>
+          <line>41</line>
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py</url>
+          <line>48</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
+          <line>230</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
+          <line>633</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
+          <line>476</line>
+          <option name="timeStamp" value="87" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
+          <line>481</line>
+          <option name="timeStamp" value="90" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/respet/recon/reconstruction.py</url>
+          <line>480</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/interfile/Interfile.py</url>
+          <line>347</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -1139,8 +1240,46 @@
       </default-breakpoints>
     </breakpoint-manager>
   </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerNAC Coverage Results" MODIFIED="1556412378432" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+  </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>scn.id()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scn.label()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str(scn)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>ses.label()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>ses.id()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>res.get()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scn.get()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>print(&quot;a string&quot;)</expression-string>
         <language-id>Python</language-id>
@@ -1151,143 +1290,56 @@
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>print json.dumps(jt)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>print(json.dumps(jt))</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>print(jt)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>print(json.dumps(t))</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>json.dumps(t)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>nib.save(nii, '/home/usr/jjlee/Tmp/test_nimpa_imio.nii.gz')</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>import os
-os.listdir()</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>c</expression-string>
+        <expression-string>Interfile.load(dcm)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>c['DEV_ID']</expression-string>
+        <expression-string>self.getInterfile(self.lm_dcm())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>times2[-1]</expression-string>
+        <expression-string>from interfile import Interfile self.getInterfile(self.lm_dcm())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>times[it2]</expression-string>
+        <expression-string>from interfile import Interfileself.getInterfile(self.lm_dcm())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>self.getTimeMax()</expression-string>
+        <expression-string>self.lm_dcm()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>self.PETpath</expression-string>
+        <expression-string>self.lm_imageduration()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e.message</expression-string>
+        <expression-string>self.lm_acquisitiontime()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>type(taus)</expression-string>
+        <expression-string>self.lm_studydate()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>loc</expression-string>
+        <expression-string>taus.lm_studydate()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/respet/godo.py" />
-    <entry file="file://$PROJECT_DIR$/../NIPET/niftypet/nipet/lm/mmrhist.py" />
-    <entry file="file://$PROJECT_DIR$/../NIPET/niftypet/nipet/img/mmrimg.py" />
-    <entry file="file://$PROJECT_DIR$/../NIPET/niftypet/nipet/prj/mmrrec.py" />
-    <entry file="file://$PROJECT_DIR$/../NIPET/niftypet/nipet/img/pipe.py" />
-    <entry file="file://$PROJECT_DIR$/../NIMPA/resources/resources.py" />
-    <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/lm/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="26" lean-forward="true" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="897" selection-start-line="897" selection-end-line="897" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/json/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="338" selection-start-line="338" selection-end-line="338" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/json/decoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="582">
-          <caret line="379" selection-start-line="379" selection-end-line="379" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/img/mmrimg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9251">
-          <caret line="1102" selection-start-line="1102" selection-end-line="1102" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/prj/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="58" lean-forward="true" selection-start-line="23" selection-start-column="58" selection-end-line="23" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/prj/mmrrec.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -1356,19 +1408,6 @@ os.listdir()</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="148" column="183" selection-start-line="148" selection-start-column="183" selection-end-line="148" selection-end-column="183" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#134#2475#0" />
-            <element signature="e#2522#5782#0" />
-            <element signature="e#8935#11385#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/src/hst.cu">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1384,16 +1423,6 @@ os.listdir()</expression-string>
     </entry>
     <entry file="file://$PROJECT_DIR$/respet/recon/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="17" column="44" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="49" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../PycharmProjects/NIPET/niftypet/nipet/img/pipe.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1547,30 +1576,10 @@ os.listdir()</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
-          <folding>
-            <element signature="e#40#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/dinf/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5475">
-          <caret line="365" column="80" selection-start-line="365" selection-start-column="80" selection-end-line="365" selection-end-column="80" />
-          <folding>
-            <element signature="e#198#216#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1584,13 +1593,152 @@ os.listdir()</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_reconstruction.py">
+    <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61">
-          <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
+        <state relative-caret-position="502">
+          <caret line="377" selection-start-line="377" selection-end-line="377" />
+          <folding>
+            <element signature="e#198#216#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/orchestrate.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/_pytest/unittest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2625">
+          <caret line="191" selection-start-line="191" selection-end-line="191" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/pluggy/hooks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4215">
+          <caret line="283" selection-start-line="283" selection-end-line="283" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#40#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/pluggy/manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="66" selection-start-line="66" selection-end-line="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/pluggy/callers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="186" selection-start-line="186" selection-end-line="186" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/_pytest/runner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="90" selection-start-line="90" selection-end-line="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/unittest/case.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="328" selection-start-line="328" selection-end-line="328" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/pyxnat/pyxnat/examples/examples.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="60" lean-forward="true" selection-start-line="17" selection-start-column="60" selection-end-line="17" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/pyxnat/pyxnat/examples/central_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/pyxnat/pyxnat/version.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatpet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#132#2356#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/xnatpet/xnatpet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="940">
+          <caret line="305" selection-start-line="305" selection-end-line="305" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../XnatPET/pyxnat/pyxnat/tests/array_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../anaconda2/lib/python2.7/site-packages/interfile/Interfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="400" selection-start-line="400" selection-end-line="400" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../interfile/interfile/Interfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="21" column="6" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="668" column="50" lean-forward="true" selection-start-line="668" selection-start-column="50" selection-end-line="668" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="109" selection-start-line="109" selection-end-line="109" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
             <element signature="e#430#601#0" />
             <element signature="e#650#711#0" />
             <element signature="e#754#837#0" />
@@ -1598,22 +1746,13 @@ os.listdir()</expression-string>
             <element signature="e#2072#2191#0" />
             <element signature="e#2226#2356#0" />
             <element signature="e#2404#3461#0" />
+            <element signature="e#3551#3851#0" />
             <element signature="e#3894#4006#0" />
             <element signature="e#4430#5205#0" />
+            <element signature="e#5301#5604#0" />
             <element signature="e#6115#6511#0" />
             <element signature="e#6557#8490#0" />
             <element signature="e#8537#9342#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/respet/recon/reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1000">
-          <caret line="189" column="71" selection-start-line="189" selection-start-column="71" selection-end-line="189" selection-end-column="71" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#2780#2950#0" />
           </folding>
         </state>
       </provider>

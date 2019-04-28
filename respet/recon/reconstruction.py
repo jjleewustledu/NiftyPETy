@@ -471,8 +471,13 @@ class Reconstruction(object):
         :return lm_dict, a dictionary of interfile fields:
         """
         from interfile import Interfile
+        from warnings import warn
         try:
-            lm_dict = Interfile.load(dcm)
+            try:
+                lm_dict = Interfile.load(dcm)
+            except Interfile.ParsingError as e:
+                warn(e.message)
+                return None
         except (AttributeError, TypeError):
             raise AssertionError('dcm must be a filename')
         return lm_dict
@@ -662,7 +667,10 @@ class Reconstruction(object):
 
     def lm_imageduration(self):
         lm_dict = self.getInterfile(self.lm_dcm())
-        return lm_dict['image duration']['value'] # sec
+        if lm_dict:
+            return lm_dict['image duration']['value'] # sec
+        else:
+            return self.getTaus().sum()
 
     def lm_studydate(self):
         """
@@ -1137,17 +1145,24 @@ def main():
 
     v = args.verbose.lower() == 'true'
     r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu))
-    if args.method.lower() == 'createDynamic':
+    if args.method.lower() == 'createdynamic':
+        print('main.args.method->createdynamic')
         if not r.ac:
+            print('main.r.createDynamicNAC')
             r.createDynamicNAC(fcomment='_createDynamicNAC')
         else:
+            print('main.r.createDynamic2Carney')
             r.createDynamic2Carney(fcomment='_createDynamic2Carney')
-    elif args.method.lower() == 'createStatic':
+    elif args.method.lower() == 'createstatic':
+        print('main.args.method->createstatic')
         if not r.ac:
+            print('main.r.createStaticNAC')
             r.createStaticNAC(fcomment='_createStaticNAC')
         else:
+            print('main.r.createStaticCarney')
             r.createStaticCarney(fcomment='_createStaticCarney')
     elif args.method.lower() == 'info':
+        print('main.args.method->info')
         print(dev_info(1))
         print('\n')
         print(r.mMRparams)
