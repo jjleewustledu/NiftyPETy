@@ -9,7 +9,7 @@ import logging, sys
 #handler = logging.StreamHandler()
 #handler.setLevel(logging.DEBUG)
 #logger.addHandler(handler)
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
@@ -1104,7 +1104,7 @@ def main():
     from niftypet.nipet.dinf import dev_info
 
     p = argparse.ArgumentParser(
-        description='provides interfaces to https://github.com/pjmark/NIPET.git, https://github.com/jjleewustledu/NIPET.git',
+        description='provides interfaces to https://github.com/pjmark/NIMPA.git, https://github.com/jjleewustledu/NIPET.git',
         usage=textwrap.dedent('''\
         
     python reconstruction.py -h
