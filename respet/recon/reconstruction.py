@@ -9,7 +9,7 @@ import logging, sys
 #handler = logging.StreamHandler()
 #handler.setLevel(logging.DEBUG)
 #logger.addHandler(handler)
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
@@ -103,19 +103,21 @@ class Reconstruction(object):
     def createStaticNAC(self, time0=None, timeF=None, fcomment='_createStaticNAC'):
         self.recmod = 0
         self.bootstrap = 0
-        return self.createStatic(self.muNAC(), time0, timeF, fcomment=fcomment,)
+        return self.createStatic(self.muNAC(), 0, time0, timeF, fcomment=fcomment,)
 
     def createStaticUTE(self, time0=None, timeF=None, fcomment='_createStaticUTE'):
         self.recmod = 3
         self.bootstrap = 0
         self.checkUmaps(self.muUTE(), fcomment)
-        return self.createStatic(self.muUTE(), time0, timeF, fcomment=fcomment)
+        wtime = self.getWTime(self.json_filename_with(ac=False))
+        return self.createStatic(self.muUTE(), wtime, time0, timeF, fcomment=fcomment)
 
     def createStaticCarney(self, time0=None, timeF=None, fcomment='_createStaticCarney'):
-        self.recmod = 3
-        self.bootstrap = 0
+        print("########## respet.recon.reconstruction.Reconstruction.createStaticCarney ##########")
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
-        return self.createStatic(self.muCarney(frames=[0]), time0, timeF, fcomment=fcomment)
+        self.checkHistogramming(fcomment)
+        wtime = self.getWTime(self.json_filename_with(ac=False))
+        return self.createStatic(self.muCarney(frames=[0]), wtime, time0, timeF, fcomment=fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
@@ -139,14 +141,15 @@ class Reconstruction(object):
         wtime = self.getWTime(self.json_filename_with(ac=False))
         return self.createDynamic2(wtime, taus, self.getTaus2(), fcomment)
 
-    def createStatic(self, muo, time0=None, timeF=None, fcomment='_createStatic'):
+    def createStatic(self, muo, wtime=0, time0=None, timeF=None, fcomment='_createStatic'):
         """
-        :param muo:       mu-map of imaged object
-        :param time0:     int sec
-        :param time:      int sec
-        :param fcomment:  string for naming subspace
-        :return:          result from nipet.mmrchain
-        :rtype:           dictionary
+        :param muo       mu-map of imaged object:
+        :param wtime is determined by createDynamic:
+        :param time0     int sec:
+        :param timeF     int sec:
+        :param fcomment  string for naming subspace:
+        :return          result from nipet.mmrchain:
+        :rtype           dictionary:
         """
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
@@ -155,13 +158,9 @@ class Reconstruction(object):
             time0 = self.getTime0()
         if not timeF:
             timeF = self.getTimeF()
-        logging.debug('reconstruction.Reconstruction.createStatic.datain->')
-        logging.debug(self.datain)
-        logging.debug('reconstruction.Reconstruction.createStatic.mMRparams->')
-        logging.debug(self.mMRparams)
-        hst = nipet.mmrhist(self.datain, self.mMRparams)
+        print(self.mMRparams)
         sta = nipet.mmrchain(self.datain, self.mMRparams,
-                             frames    = ['fluid', [time0, timeF]],
+                             frames    = ['fluid', [wtime+time0, wtime+timeF]],
                              mu_h      = self.muHardware(),
                              mu_o      = muo,
                              itr       = self.itr,
@@ -170,7 +169,6 @@ class Reconstruction(object):
                              outpath   = self.outpath,
                              store_img = True,
                              fcomment  = fcomment)
-        #self.saveStatic(sta, [muo, self.muHardware()], hst, fcomment)
         return sta
 
     def createDynamic(self, taus, muo, fcomment='_createDynamic'):
@@ -292,7 +290,7 @@ class Reconstruction(object):
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
-                if times2[it2] < times2[-1]/2:
+                if times2[it2] < times2[-1]:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
                     wtime2 = times2[it2] - wtime
