@@ -5,7 +5,7 @@ import logging, sys
 # create and configure main logger;
 # see also https://stackoverflow.com/questions/50714316/how-to-use-logging-getlogger-name-in-multiple-modules/50715155#50715155
 
-#logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
@@ -181,53 +181,50 @@ class Reconstruction(object):
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+
         if self.reconstruction_started:
             logging.debug('reconstruction.Reconstruction.createDynamics.reconstruction_started == True')
-            print('reconstruction.Reconstruction.createDynamics.reconstruction_started == True')
-            return None
+            return None # to avoid race-conditions in parallel computing contexts
+
         self._do_touch_file('_started')
         dynFrame = None
-        times = self.getTimes(taus)
-        wtime = times[0]
-        fit = None
+        times,taus = self.getTimes(taus) # length(times) == length(taus) + 1; revise taus using NIPET metrics
+        wtime = times[0] # time to wait for nans to clear
+        it_fin = None # passed to save_json()
         for it in np.arange(1, times.shape[0]):
-            fit = it
             try:
                 if self.frame_exists(times[it-1], times[it], fcomment, it):
-                    continue
-                times_next = min(times[it], times[-1], self.lm_imageduration())
-                if times[it-1] < times_next:
-                    logging.info(
-                        'createDynamic:  frame samples {}-{} s;'.format(times[it-1], times[it]))
-                    logging.debug('reconstruction.Reconstruction.createDynamic.datain->')
-                    logging.debug(self.datain)
-                    logging.debug('reconstruction.Reconstruction.createDynamic.mMRparams->')
-                    logging.debug(self.mMRparams)
-                    taus[it-1] = times_next - times[it-1]
-                    dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                              frames    = ['fluid', [times[it-1], times_next]],
-                                              mu_h      = self.muHardware(),
-                                              mu_o      = muo,
-                                              itr       = self.itr,
-                                              fwhm      = self.fwhm,
-                                              recmod    = self.recmod,
-                                              outpath   = self.outpath,
-                                              store_img = True,
-                                              fcomment  = fcomment + '_time' + str(it-1))
-                    if isnan(dynFrame['im']).any():
-                        wtime = times[it]
+                    continue # and reuse existings reconstructions
+
+                logging.info('createDynamic:  frame samples {}-{} s;'.format(times[it-1], times[it]))
+                logging.debug('createDynamic.datain->')
+                logging.debug(self.datain)
+                logging.debug('createDynamic.mMRparams->')
+                logging.debug(self.mMRparams)
+                dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
+                                          frames    = ['fluid', [times[it-1], times[it]]],
+                                          mu_h      = self.muHardware(),
+                                          mu_o      = muo,
+                                          itr       = self.itr,
+                                          fwhm      = self.fwhm,
+                                          recmod    = self.recmod,
+                                          outpath   = self.outpath,
+                                          store_img = True,
+                                          fcomment  = fcomment + '_time' + str(it-1))
+                it_fin = it
+                if isnan(dynFrame['im']).any():
+                    wtime = times[it]
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
-                warn('Reconstruction.createDynamic:  nipet.img.pipe will fail by attempting to use recimg before assignment')
                 if times[it] < times[-1]/2:
-                    warn('Reconstruction.createDynamic:  calling requestFrameInSitu')
+                    warn('createDynamic:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
                     wtime = times[it]
                 else:
-                    warn('Reconstruction.createDynamic:  break for it->' + str(it))
+                    warn('createDynamic:  break for it->' + str(it))
                     break
 
-        self.save_json(taus[:fit], waittime=wtime)
+        self.save_json(taus[:it_fin], waittime=wtime)
         self._do_touch_file('_finished')
         return dynFrame
 
@@ -584,14 +581,18 @@ class Reconstruction(object):
 
     def getTimes(self, taus=None):
         """
-        :return:  up to 1x66 array of times including 0 and np.cumsum(taus); max(times) <= self.getTimeMax
+        :return:  array of times including 0 and np.cumsum(taus); max(times) == getTimeMax()
+        :return:  array of taus revised to be consistent with getTimeMax()
         :rtype:  numpy.int_
         """
         if not isinstance(taus, np.ndarray):
             raise AssertionError('Reconstruction.getTimes.taus is missing')
+        tmax = self.getTimeMax()
         t = np.hstack((np.int_(0), np.cumsum(taus)))
-        #t = t[t <= self.getTimeMax()]
-        return np.int_(t) # TODO return np.trunc(t)
+        t = t[t < tmax]
+        t = np.hstack((t, np.int_(tmax)))
+        taus = t[1:] - t[:-1]
+        return np.int_(t), taus
 
     def getWTime(self, json_file=None):
         """
