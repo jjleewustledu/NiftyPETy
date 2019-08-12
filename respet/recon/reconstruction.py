@@ -135,8 +135,8 @@ class Reconstruction(object):
         self.checkUmaps(self.muCarney(frames=[0]), fcomment)
         self.checkHistogramming(fcomment)
         taus = self.getTaus(self.json_filename_with(ac=False))
-        wtime = self.getWTime(self.json_filename_with(ac=False))
-        return self.createDynamic2(wtime, taus, self.getTaus2(), fcomment)
+        offset = self.getWTime(self.json_filename_with(ac=False))
+        return self.createDynamic2(max(offset, self.minTime), taus, self.getTaus2(), fcomment)
 
     def createStatic(self, muo, wtime=0, time0=None, timeF=None, fcomment='_createStatic'):
         """
@@ -201,6 +201,7 @@ class Reconstruction(object):
                 logging.debug(self.datain)
                 logging.debug('createDynamic.mMRparams->')
                 logging.debug(self.mMRparams)
+
                 dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
                                           frames    = ['fluid', [times[it-1], times[it]]],
                                           mu_h      = self.muHardware(),
@@ -228,14 +229,14 @@ class Reconstruction(object):
         self._do_touch_file('_finished')
         return dynFrame
 
-    def createDynamic2(self, wtime, taus, taus2, fcomment='_createDynamic2'):
+    def createDynamic2(self, offset, taus, taus2, fcomment='_createDynamic2'):
         """
-        :param wtime is determined by createDynamic:
-        :param taus     np.int_ for mu-map frames:
-        :param taus2    np.int_ for emission frames:
-        :param muo      3D or 4D mu-map of imaged object:
-        :return         last result from nipet.mmrchain:
-        :rtype          dictionary:
+        :param offset is determined externaly by createDynamic():
+        :param taus   np.int_ for mu-map frames:
+        :param taus2  np.int_ for emission frames:
+        :param muo    3D or 4D mu-map of imaged object:
+        :return       last result from nipet.mmrchain:
+        :rtype        dictionary:
         """
         global dynFrame
         from numpy import isnan
@@ -243,100 +244,59 @@ class Reconstruction(object):
         from warnings import warn
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
-        print(self.mMRparams)
+
         if self.reconstruction_started:
             logging.debug('reconstruction.Reconstruction.createDynamics2.reconstruction_started == True')
-            print('reconstruction.Reconstruction.createDynamics2.reconstruction_started == True')
-            return None
+            return None # to avoid race-conditions in parallel computing contexts
+
         self._do_touch_file('_started')
         dynFrame = None
-        times = self.getTimes(taus)
-        times2 = self.getTimes(taus2) + wtime
-        wtime2 = times2[0] - wtime
-        lm_imageduration = self.lm_imageduration()
-        fit2 = None
-        iit2 = 0
-        it = 1                                     # mu-map frame
-        for it2 in np.arange(1, times2.shape[0]):  # hist frame
-            fit2 = it2
+        times = self.getTimes(taus) # of umap alignments
+        times2,taus2 = self.getTimes(taus2, offset=offset)
+        wtime2 = times2[0]
+        it2_fin = None
+        it = 1                                     # right edge of mu-map frame
+        for it2 in np.arange(1, times2.shape[0]):  # right edge of hist frame to be attenuation corrected
             try:
                 while times[it] < times2[it2-1] and times[it] < times[-1]:
-                    it += 1 # find the best mu-map
-                if self.frame_exists(times2[it2-1], times2[it2], fcomment, it2):
-                    continue
-                if times2[it2-1] < self.minTime:
-                    iit2 = it2
-                    continue
-                times2_next = min(times2[it2], times[-1], lm_imageduration)
-                if times2[it2-1] < times2_next:
-                    logging.info(
-                        'createDynamic2:  AC frame samples {}-{} s; NAC frame samples {}-{} s'.format(times2[it2-1], times2[it2], times[it-1], times[it]))
+                    it += 1 # select the mu-map for the hist in:  [times2[it2-1], times2[it2]]
 
-                    logging.debug('reconstruction.Reconstruction.createDynamic2.datain->')
-                    logging.debug(self.datain)
-                    logging.debug('reconstruction.Reconstruction.createDynamic2.mMRparams->')
-                    logging.debug(self.mMRparams)
-                    taus2[it2-1] = times2_next - times2[it2-1]
-                    dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
-                                              frames    = ['fluid', [times2[it2-1], times2_next]],
-                                              mu_h      = self.muHardware(),
-                                              mu_o      = self.muCarney(frames=(it-1)),
-                                              itr       = self.itr,
-                                              fwhm      = self.fwhm,
-                                              recmod    = self.recmod,
-                                              outpath   = self.outpath,
-                                              store_img = True,
-                                              fcomment  = fcomment + '_time' + str(it2-1))
-                    if times2[it2] == times[-1]:
-                        fit2 = it2
-                        print('createDynamic2.fit2->' + str(fit2))
-                    if times2[it2] > lm_imageduration:
-                        fit2 = it2
-                        print('createDynamic2.fit2->' + str(fit2))
-                    if isnan(dynFrame['im']).any():
-                        wtime2 = times2[it2] - wtime
-                        print('createDynamic2.wtime2->' + str(wtime2))
+                if self.frame_exists(times2[it2-1], times2[it2], fcomment, it2):
+                    continue # and reuse existings reconstructions
+
+                logging.info('createDynamic2:  AC frame samples {}-{} s; NAC frame samples {}-{} s'.format(times2[it2-1], times2[it2], times[it-1], times[it]))
+                logging.debug('reconstruction.Reconstruction.createDynamic2.datain->')
+                logging.debug(self.datain)
+                logging.debug('reconstruction.Reconstruction.createDynamic2.mMRparams->')
+                logging.debug(self.mMRparams)
+
+                dynFrame = nipet.mmrchain(self.datain, self.mMRparams,
+                                          frames    = ['fluid', [times2[it2-1], times2[it2]]],
+                                          mu_h      = self.muHardware(),
+                                          mu_o      = self.muCarney(frames=(it-1)),
+                                          itr       = self.itr,
+                                          fwhm      = self.fwhm,
+                                          recmod    = self.recmod,
+                                          outpath   = self.outpath,
+                                          store_img = True,
+                                          fcomment  = fcomment + '_time' + str(it2-1))
+                it2_fin = it2
+                if isnan(dynFrame['im']).any():
+                    wtime2 = times2[it2]
+                    print('createDynamic2.wtime2->' + str(wtime2))
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
-                warn('Reconstruction.createDynamic2:  nipet.img.pipe will fail by attempting to use recimg before assignment')
                 if times2[it2] < times2[-1]:
                     warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
-                    wtime2 = times2[it2] - wtime
+                    wtime2 = times2[it2]
                 else:
                     warn('Reconstruction.createDynamic2:  break for it2->' + str(it2))
                     break
 
-        self.save_json(taus2[iit2:fit2], offsettime=wtime+times2[iit2], waittime=wtime2)
+        self.save_json(taus2[:it2_fin], offsettime=offset, waittime=(wtime2-offset))
         self._do_touch_file('_finished')
         return dynFrame
-
-    def createDynamicInMemory(self, taus, muo, hst=None, fcomment='_createDynamicInMemory'):
-        """
-        within unittest environment, may use ~60 GB memory for 60 min FDG recon with MRAC
-        :param taus:  np.int_
-        :param muo:   3D or 4D mu-map of imaged object
-        :return:      result from nipet.mmrchain
-        :rtype:       dictionary
-        """
-        from niftypet import nipet
-        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
-        self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
-        times = self.getTimes(taus)[0:3] # abbreviated for testing
-        dyn = (times.shape[0]-1)*[None]
-        for it in np.arange(1, times.shape[0]):
-            dyn[it-1] = nipet.mmrchain(self.datain, self.mMRparams,
-                                       frames    = ['fluid', [times[it-1], times[it]]],
-                                       mu_h      = self.muHardware(),
-                                       mu_o      = muo,
-                                       itr       = self.itr,
-                                       fwhm      = self.fwhm,
-                                       recmod    = self.recmod,
-                                       outpath   = self.outpath,
-                                       store_img = False,
-                                       fcomment  = fcomment + '_time' + str(it - 1))
-        self.saveDynamicInMemory(dyn, [muo, self.muHardware()], hst, fcomment)
-        return dyn
 
     def createUmapSynthFullBlurred(self):
         """
@@ -405,10 +365,6 @@ class Reconstruction(object):
         savefig(os.path.join(self.outpath, fcomment+'_cmass.pdf'))
 
         return hst
-
-    def checkTimeAliasingUTE(self, fcomment='_checkTimeAliasingUTE'):
-        print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingUTE ##########")
-        return self.createDynamicInMemory(self.getTaus(), self.muUTE(), fcomment)
 
     def checkTimeAliasingCarney(self, fcomment='_checkTimeAliasingCarney'):
         times = self.getTimes(self.getTaus())
@@ -579,8 +535,9 @@ class Reconstruction(object):
         nele, ttags, tpos = mmr_lmproc.lminfo(self.datain['lm_bf'])
         return (ttags[1]-ttags[0]+999)/1000 # sec
 
-    def getTimes(self, taus=None):
+    def getTimes(self, taus=None, offset=0):
         """
+        :param:  offset is predetermined duration to exclude from times
         :return:  array of times including 0 and np.cumsum(taus); max(times) == getTimeMax()
         :return:  array of taus revised to be consistent with getTimeMax()
         :rtype:  numpy.int_
@@ -589,6 +546,7 @@ class Reconstruction(object):
             raise AssertionError('Reconstruction.getTimes.taus is missing')
         tmax = self.getTimeMax()
         t = np.hstack((np.int_(0), np.cumsum(taus)))
+        t = t + offset
         t = t[t < tmax]
         t = np.hstack((t, np.int_(tmax)))
         taus = t[1:] - t[:-1]
