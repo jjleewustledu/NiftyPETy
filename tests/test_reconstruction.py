@@ -4,22 +4,19 @@ import os
 
 class TestReconstruction(unittest.TestCase):
 
-    twiliteBaseloc = '/scratch/jjlee/Singularity/CCIR_00993/ses-E00035/OC_DT20190115101502.000000-Converted'
-    tracerBaseloc  = '/scratch/jjlee/Singularity/CCIR_00993/ses-E257706/HO_DT20180822125606.000000-Converted'
+    twiliteBaseloc = '/scratch/jjlee/Singularity/CCIR_00559/ses-E03056/FDG_DT20190523154204.000000-Converted'
+    tracerBaseloc  = '/scratch/jjlee/Singularity/CCIR_00754/ses-E201038/OO_DT20161216112441.000000-Converted'
 
     #def setUp(self):
 
     #def tearDown(self):
 
     def theTestObj(self):
-        obj = Reconstruction(self.tracerBaseloc+'-NAC')
-        obj.itr = 4
-        obj.fwhm = 4.3 / 2.08626 # num. of voxels
+        obj = Reconstruction(self.tracerBaseloc+'-AC')
+        obj.itr = 3
+        obj.fwhm = 0 # 4.3 / 2.08626 # num. of voxels
         obj.use_stored_hist = True
         return obj
-
-    def test_sampleStaticMethod(self):
-        self.assertEqual(Reconstruction.sampleStaticMethod(), 0.1234)
 
     def test_installation(self):
         from niftypet import nipet
@@ -39,7 +36,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['NBCKT'], 224)
         self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
         self.assertEqual(c['ISOTOPE'], 'O15')
-        self.assertEqual(c['SPN'], 11)
+        self.assertEqual(c['SPN'], 1)
         assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
         self.assertEqual(c['NSN64'], 4096)
         self.assertEqual(c['CWND'], 5.85938e-09)
@@ -47,6 +44,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['BTP'], 0)
         self.assertTrue( c['DCYCRR'])
         assert_array_equal(c['IMSIZE'], array([127, 344, 344]))
+        print(str(c))
 
     def test_data(self):
         self.theTestObj().printd(self.theTestObj().mMRparams['Cnt'])
@@ -60,16 +58,16 @@ class TestReconstruction(unittest.TestCase):
 
 class TestTwilite(TestReconstruction):
 
-    def _test_createTwiliteStaticNAC(self):
+    def test_createTwiliteStaticNAC(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.twiliteBaseloc, v = True)
+        obj = Reconstruction(self.twiliteBaseloc + '-NAC', v = True, phantom = True)
         sta = obj.createStaticNAC(fcomment='_createStaticNAC')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
         plt.matshow(sta['im'][:,:,170])
         plt.show()
 
-    def _test_createTwiliteStaticUTE(self):
+    def test_createTwiliteStaticUTE(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.twiliteBaseloc + '-AC', v = True)
         sta = obj.createStaticUTE(fcomment='_createStaticUTE')
@@ -78,10 +76,19 @@ class TestTwilite(TestReconstruction):
         plt.matshow(sta['im'][:,:,170])
         plt.show()
 
-    def _test_createTwiliteStaticCarney(self):
+    def test_createTwiliteStaticCarney(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.twiliteBaseloc + '-AC', v = True)
         sta = obj.createStaticCarney(fcomment='_createStaticCarney')
+        plt.matshow(sta['im'][60,:,:])
+        plt.matshow(sta['im'][:,170,:])
+        plt.matshow(sta['im'][:,:,170])
+        plt.show()
+
+    def test_createTwilitePhantom(self):
+        import matplotlib.pyplot as plt
+        obj = Reconstruction(self.twiliteBaseloc + '-AC', v = True, phantom = True)
+        sta = obj.createPhantom(fcomment='_createPhantom')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
         plt.matshow(sta['im'][:,:,170])
@@ -106,13 +113,23 @@ class TestNAC(TestReconstruction):
 
     def test_createTracerNAC(self):
         import matplotlib.pyplot as plt
-        obj = Reconstruction(self.tracerBaseloc + '-NAC', v = True)
+        obj = Reconstruction(self.tracerBaseloc + '-NAC', v=True, devid=1)
         dyn = obj.createDynamicNAC(fcomment='_createDynamicNAC')
         if dyn:
             plt.matshow(dyn['im'][60,:,:])
             plt.matshow(dyn['im'][:,170,:])
             plt.matshow(dyn['im'][:,:,170])
             plt.show()
+
+    def test_createAllTracerNACs(self):
+        from glob2 import glob
+        sespth = '/home2/jjlee/Singularity/CCIR_00754/ses-E00165'
+        tracers = ['OC', 'OO', 'HO', 'FDG']
+        for t in tracers:
+            trapths = glob(os.path.join(sespth, t + '_DT*.000000-Converted-NAC'))
+            for p in trapths:
+                obj = Reconstruction(p, v = True)
+                obj.createDynamicNAC()
 
 
 
@@ -145,7 +162,7 @@ class TestCarney(TestReconstruction):
     def test_createTracerStaticCarney(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
-        sta = obj.createStaticCarney(fcomment='_createStaticCarney')
+        sta = obj.createStaticCarney(time0=0, timeF=600, fcomment='_createStaticCarney')
         plt.matshow(sta['im'][60,:,:])
         plt.matshow(sta['im'][:,170,:])
         plt.matshow(sta['im'][:,:,170])
@@ -155,13 +172,29 @@ class TestCarney(TestReconstruction):
         import matplotlib.pyplot as plt
         locs = [self.tracerBaseloc]
         for lo in locs:
-            obj = Reconstruction(lo + '-AC', v=True)
+            obj = Reconstruction(lo + '-AC', v=True, minTime=0)
             dyn = obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
             if dyn:
                 plt.matshow(dyn['im'][60,:,:])
                 plt.matshow(dyn['im'][:,170,:])
                 plt.matshow(dyn['im'][:,:,170])
                 plt.show()
+
+    def test_createAllTracerCarneys(self):
+        from glob2 import glob
+        sespth = '/scratch/jjlee/Singularity/CCIR_00559/ses-E120895'
+        tracers = ['FDG' 'OC', 'OO', 'HO']
+        for t in tracers:
+            trapths = glob(os.path.join(sespth, t + '_DT*.000000-Converted-AC'))
+            for p in trapths:
+                obj = Reconstruction(p, v = True)
+                obj.createDynamic2Carney()
+
+    def test_mirror(self):
+        pth = '/scratch/jjlee/Singularity/CCIR_00754/ses-E201038/OO_DT20161216112441.000000-Converted-AC'
+        obj = Reconstruction(pth, v = True, minTime=0, si=31)
+        obj.createDynamic2Carney()
+
 
 
 
@@ -233,31 +266,6 @@ class TestTimes(TestReconstruction):
         plt.matshow(dyn['im'][:,170,:])
         plt.matshow(dyn['im'][:,:,170])
         plt.show()
-
-
-
-class TestMatlab(TestReconstruction):
-
-    def test_MagicSquarePkg(self):
-        import MagicSquarePkg
-        mcr = MagicSquarePkg.initialize()
-        print(mcr.makesqr(3))
-        mcr.terminate()
-
-
-    def test_construct_resolved_mcr(self):
-        loc = '/home2/jjlee/Local/Pawel/HYGLY47/V2/FDG_V2-Converted'
-        obj = Reconstruction(loc, v = True)
-        obj.createDynamicNAC(fcomment='_createDynamicNAC')
-        import construct_resolved_mcr
-        mcr = construct_resolved_mcr.initialize()
-        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2')
-        mcr.terminate()
-        obj._ac = True
-        obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
-        mcr = construct_resolved_mcr.initialize()
-        mcr.construct_resolved('sessionsExpr', 'HYGLY47', 'visitsExpr', 'V2')
-        mcr.terminate()
 
 
 

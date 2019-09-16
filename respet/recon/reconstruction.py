@@ -5,28 +5,31 @@ import logging, sys
 # create and configure main logger;
 # see also https://stackoverflow.com/questions/50714316/how-to-use-logging-getlogger-name-in-multiple-modules/50715155#50715155
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 class Reconstruction(object):
     __author__ = "John J. Lee"
     __copyright__ = "Copyright 2018"
 
+    # see also:   mmrrec.py osemone param mask_radious
+    bootstrap = 0
+    cached_hdw_mumap = None
+    datain = {}
     DCYCRR = True
     DEVID = 0
-    bootstrap = 0
-    datain = {}
-    fwhm = 4.3/2.08626 # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
+
+    histogram_si = 63 # sinogram index (<127 for direct sinograms)
     hmuSelection = [1,4,5] # selects from ~/.niftypet/resources.py:  hrdwr_mu
-    itr = 4
     minTime = 0
     mMRparams = {}
     outfolder = 'output'
+    phantom = False
     recmod = 3
-    span = 11
     tracerMemory = None
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
     umapSynthFileprefix = ''
+    use_mirror_hdw_mumap = False
     use_stored_hdw_mumap = True
     use_stored_hist = False
     verbose = True
@@ -106,8 +109,8 @@ class Reconstruction(object):
         self.recmod = 3
         self.bootstrap = 0
         self.checkUmaps(self.muUTE(), fcomment)
-        wtime = self.getWTime(self.json_filename_with(ac=False))
-        return self.createStatic(self.muUTE(), wtime, time0, timeF, fcomment=fcomment)
+        #wtime = self.getWTime(self.json_filename_with(ac=False))
+        return self.createStatic(self.muUTE(), 0, time0, timeF, fcomment=fcomment)
 
     def createStaticCarney(self, time0=None, timeF=None, fcomment='_createStaticCarney'):
         print("########## respet.recon.reconstruction.Reconstruction.createStaticCarney ##########")
@@ -115,6 +118,13 @@ class Reconstruction(object):
         self.checkHistogramming(fcomment)
         wtime = self.getWTime(self.json_filename_with(ac=False))
         return self.createStatic(self.muCarney(frames=[0]), wtime, time0, timeF, fcomment=fcomment)
+
+    def createPhantom(self, time0=None, timeF=None, fcomment='_createPhantom'):
+        print("########## respet.recon.reconstruction.Reconstruction.createPhantom ##########")
+        self.phantom = True
+        self.checkUmaps(self.muCarney(), fcomment)
+        self.checkHistogramming(fcomment)
+        return self.createStatic(self.muCarney(), 0, time0, timeF, fcomment=fcomment)
 
     def createDynamicNAC(self, fcomment='_createDynamicNAC'):
         print("########## respet.recon.reconstruction.Reconstruction.createDynamicNAC ##########")
@@ -151,21 +161,30 @@ class Reconstruction(object):
         from niftypet import nipet
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
         self.mMRparams['Cnt']['DCYCRR'] = self.DCYCRR
+
+        if self.reconstruction_started:
+            logging.debug('reconstruction.Reconstruction.createDynamics.reconstruction_started == True')
+            return None # to avoid race-conditions in parallel computing contexts
+
+        self._do_touch_file('_started')
         if not time0:
             time0 = self.getTime0()
+        time0 = min(wtime+time0, self.getTimeMax())
         if not timeF:
             timeF = self.getTimeF()
-        print(self.mMRparams)
+        timeF = min(wtime+timeF, self.getTimeMax())
         sta = nipet.mmrchain(self.datain, self.mMRparams,
-                             frames    = ['fluid', [wtime+time0, wtime+timeF]],
+                             frames    = ['fluid', [time0, timeF]],
                              mu_h      = self.muHardware(),
                              mu_o      = muo,
-                             itr       = self.itr,
-                             fwhm      = self.fwhm,
+                             itr       = self.getItr(),
+                             fwhm      = self.getFwhm(),
                              recmod    = self.recmod,
                              outpath   = self.outpath,
                              store_img = True,
                              fcomment  = fcomment)
+        self.save_json(np.int_([timeF-time0]), waittime=wtime)
+        self._do_touch_file('_finished')
         return sta
 
     def createDynamic(self, taus, muo, fcomment='_createDynamic'):
@@ -189,6 +208,8 @@ class Reconstruction(object):
         self._do_touch_file('_started')
         dynFrame = None
         times,taus = self.getTimes(taus) # length(times) == length(taus) + 1; revise taus using NIPET metrics
+        print("times->" + str(times))
+        print("taus->" + str(taus))
         wtime = times[0] # time to wait for nans to clear
         it_fin = None # passed to save_json()
         for it in np.arange(1, times.shape[0]):
@@ -206,19 +227,19 @@ class Reconstruction(object):
                                           frames    = ['fluid', [times[it-1], times[it]]],
                                           mu_h      = self.muHardware(),
                                           mu_o      = muo,
-                                          itr       = self.itr,
-                                          fwhm      = self.fwhm,
+                                          itr       = self.getItr(),
+                                          fwhm      = self.getFwhm(),
                                           recmod    = self.recmod,
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it-1))
                 it_fin = it
                 if isnan(dynFrame['im']).any():
-                    wtime = times[it]
+                    if times[it] < times[-1] / 2:
+                        wtime = times[it]
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 if times[it] < times[-1]/2:
-                    warn('createDynamic:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times[it-1], times[it], fcomment, it-1)
                     wtime = times[it]
                 else:
@@ -251,8 +272,12 @@ class Reconstruction(object):
 
         self._do_touch_file('_started')
         dynFrame = None
-        times = self.getTimes(taus) # of umap alignments
+        times,trash = self.getTimes(taus) # of umap alignments
         times2,taus2 = self.getTimes(taus2, offset=offset)
+        print("times->" + str(times))
+        print("trash->" + str(trash))
+        print("times2->" + str(times2))
+        print("taus2->" + str(taus2))
         wtime2 = times2[0]
         it2_fin = None
         it = 1                                     # right edge of mu-map frame
@@ -274,20 +299,19 @@ class Reconstruction(object):
                                           frames    = ['fluid', [times2[it2-1], times2[it2]]],
                                           mu_h      = self.muHardware(),
                                           mu_o      = self.muCarney(frames=(it-1)),
-                                          itr       = self.itr,
-                                          fwhm      = self.fwhm,
+                                          itr       = self.getItr(),
+                                          fwhm      = self.getFwhm(),
                                           recmod    = self.recmod,
                                           outpath   = self.outpath,
                                           store_img = True,
                                           fcomment  = fcomment + '_time' + str(it2-1))
                 it2_fin = it2
                 if isnan(dynFrame['im']).any():
-                    wtime2 = times2[it2]
-                    print('createDynamic2.wtime2->' + str(wtime2))
+                    if times2[it2] < times2[-1]:
+                        wtime2 = times2[it2]
             except (UnboundLocalError, IndexError) as e:
                 warn(e.message)
                 if times2[it2] < times2[-1]:
-                    warn('Reconstruction.createDynamic2:  calling requestFrameInSitu')
                     self.replaceFrameInSitu(times2[it2-1], times2[it2], fcomment, it2-1)
                     wtime2 = times2[it2]
                 else:
@@ -326,7 +350,7 @@ class Reconstruction(object):
             os.mkdir(self.outpath)
 
         # sinogram index (<127 for direct sinograms, >=127 for oblique sinograms)
-        si = 64
+        si = self.histogram_si
 
         # prompt sinogram
         figure()
@@ -336,6 +360,14 @@ class Reconstruction(object):
         ylabel('angles')
         savefig(os.path.join(self.outpath, fcomment+'_promptsino.pdf'))
 
+        # prompt sinogram oblique
+        figure()
+        matshow(hst['psino'][si+128, :, :], cmap='inferno')
+        colorbar()
+        xlabel('bins')
+        ylabel('angles')
+        savefig(os.path.join(self.outpath, fcomment+'_promptsino_oblique.pdf'))
+
         # delayed sinogram
         figure()
         matshow(hst['dsino'][si, :, :], cmap='inferno')
@@ -343,6 +375,14 @@ class Reconstruction(object):
         xlabel('bins')
         ylabel('angles')
         savefig(os.path.join(self.outpath, fcomment+'_delayedsino.pdf'))
+
+        # delayed sinogram oblique
+        figure()
+        matshow(hst['dsino'][si+128, :, :], cmap='inferno')
+        colorbar()
+        xlabel('bins')
+        ylabel('angles')
+        savefig(os.path.join(self.outpath, fcomment+'_delayedsino_oblique.pdf'))
 
         # head curve for prompt and delayed events
         figure()
@@ -364,17 +404,54 @@ class Reconstruction(object):
         ylabel('center of mas of radiodistribution')
         savefig(os.path.join(self.outpath, fcomment+'_cmass.pdf'))
 
+        # scattering
+        # I don't recommend using it for dynamic scans, but static only, as it drains the memory big time:
+        # recon = nipet.mmrchain(
+        #     self.datain, self.mMRparams,
+        #     mu_h=self.muHardware(),
+        #     mu_o=self.muCarney(frames=1),
+        #     itr=2,
+        #     fwhm=0.0,
+        #     outpath=self.outpath,
+        #     fcomment='_scattering',
+        #     ret_sinos=True,
+        #     store_img=True)
+        #
+        # # Then you sum up all sinograms to see the average performace:
+        # ssn = np.sum(recon['sinos']['ssino'], axis=(0, 1))
+        # psn = np.sum(recon['sinos']['psino'], axis=(0, 1))
+        # rsn = np.sum(recon['sinos']['rsino'], axis=(0, 1))
+        # msk = np.sum(recon['sinos']['amask'], axis=(0, 1))
+        #
+        # # plotting the sinogram profiles for angle indexes 128 and 196:
+        # figure()
+        # ia = 128
+        # plot(psn[ia, :], label='prompts')
+        # plot(rsn[ia, :], label='randoms')
+        # plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
+        # plot(msk[ia, :], label='mask')
+        # legend()
+        # savefig(os.path.join(self.outpath, fcomment+'_scattering128.pdf'))
+        # figure()
+        # ia = 196
+        # plot(psn[ia, :], label='prompts')
+        # plot(rsn[ia, :], label='randoms')
+        # plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
+        # plot(msk[ia, :], label='mask')
+        # legend()
+        # savefig(os.path.join(self.outpath, fcomment + '_scattering196.pdf'))
+
         return hst
 
     def checkTimeAliasingCarney(self, fcomment='_checkTimeAliasingCarney'):
-        times = self.getTimes(self.getTaus())
+        times,trash = self.getTimes(self.getTaus())
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeAliasingCarney ##########")
         print(times[0:2])
         return self.createDynamic(self.getTaus()[0:2], self.muCarney(frames=[0,1]), fcomment)
 
     def checkTimeHierarchiesCarney(self, fcomment='_checkTimeHierarchiesCarney'):
-        times = self.getTimes(self.getTaus())
-        times2 = self.getTimes(self.getTaus2())
+        times,trash = self.getTimes(self.getTaus())
+        times2,trash = self.getTimes(self.getTaus2())
         print("########## respet.recon.reconstruction.Reconstruction.checkTimeHierarchiesCarney ##########")
         print(times)
         return self.createDynamic2(self.getTaus()[0:2], self.getTaus2()[0:6], self.muCarney(frames=[0,1]), fcomment)
@@ -401,6 +478,20 @@ class Reconstruction(object):
         colorbar()
         savefig(os.path.join(self.outpath, fcomment+'_cumaps.pdf'))
 
+
+    def emissionsScatterThresh(self):
+        """ provisions Cnt['ETHRLD'] for use by:
+         mmrrec.py lines 208, 272 228; mmrimg.py 209; sct_module.cu line 302 """
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            thresh = 0.05
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon':
+            thresh = 0.05
+        elif self.tracerMemory.lower() == 'oxygen':
+            thresh = 0.05
+        else:
+            raise AssertionError('Reconstruction.emissionsScatterThresh does not support tracerMemory->' + self.tracerMemory)
+        return thresh
+
     def frame_exists(self, t0, tf, fcomment, it2):
         """
         e.g., a_itr-4_t-577-601sec_createDynamic2Carney_time57.nii.gz
@@ -410,7 +501,7 @@ class Reconstruction(object):
         :param it2:
         :return bool:
         """
-        fn = "a_itr-" + str(self.itr) + "_t-" + str(t0) + "-" + str(tf) + "sec" + fcomment + "_time" + str(it2-1) + ".nii.gz"
+        fn = "a_itr-" + str(self.getItr()) + "_t-" + str(t0) + "-" + str(tf) + "sec" + fcomment + "_time" + str(it2-1) + ".nii.gz"
         return os.path.exists(os.path.join(self.PETpath, 'single-frame', fn))
 
     def getAffine(self):
@@ -427,6 +518,17 @@ class Reconstruction(object):
         A[1,3] = 10*((-0.5*cnt['SO_IMY'] + 1)*cnt['SO_VXY'])
         A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
         return A
+
+    def getFwhm(self):
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            fwhm = 4.3 / 2.08626  # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
+        elif self.tracerMemory.lower() == 'oxygen-water':
+            fwhm = 4.3 / 2.08626
+        elif self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
+            fwhm = 0
+        else:
+            raise AssertionError('Reconstruction.getFwhm does not support tracerMemory->' + self.tracerMemory)
+        return fwhm
 
     def getInterfile(self, dcm):
         """
@@ -445,6 +547,17 @@ class Reconstruction(object):
             raise AssertionError('dcm must be a filename')
         return lm_dict
 
+    def getItr(self):
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            itr = 4
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon':
+            itr = 4
+        elif self.tracerMemory.lower() == 'oxygen':
+            itr = 2
+        else:
+            raise AssertionError('Reconstruction.getItr does not support tracerMemory->' + self.tracerMemory)
+        return itr
+
     def getMumaps(self, muo, it = 0):
         """
         :param muo:  numpy.array of len == 3 or len == 4
@@ -456,8 +569,19 @@ class Reconstruction(object):
         else:
             return [muo, self.muHardware()]
 
+    def getSpan(self):
+        if self.tracerMemory.lower() == 'fluorodeoxyglucose':
+            span = 11
+        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon':
+            span = 11
+        elif self.tracerMemory.lower() == 'oxygen':
+            span = 11
+        else:
+            raise AssertionError('Reconstruction.getSpan does not support tracerMemory->' + self.tracerMemory)
+        return span
+
     def getTaus(self, json_file=None):
-        """
+        """ see also mfiles/t0_and_dt.m
         :param:  json_file containing taus
         :return:  np array of frame durations
         :rtype:  numpy.int_
@@ -468,17 +592,17 @@ class Reconstruction(object):
         if not self.tracerMemory:
             raise AssertionError('Reconstruction.getTaus:  no tracerMemory')
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
-            taus = np.int_([30,32,33,35,37,40,43,46,49,54,59,65,72,82,94,110,132,165,218,315,535,1354])
-            # len == 22, dur == 3600
+            taus = np.int_([30,35,39,43,47,51,55,59,64,68,72,76,81,85,89,93,98,102,106,111,115,120,124,129,133,138,142,147,151,156,161,165,170,175,171])
+            # len == 35, nudge = 4, dur == 3601
         elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
-            taus = np.int_([10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,70,187])
-            # len == 18, dur == 600
+            taus = np.int_([12,13,14,15,17,18,20,23,26,30,35,43,55,75,114,91])
+            # len == 16, dur == 601
         else:
             raise AssertionError('Reconstruction.getTaus does not support tracerMemory->' + self.tracerMemory)
         return taus
 
     def getTaus2(self, json_file=None):
-        """
+        """ see also mfiles/t0_and_dt.m
         :param:  json_file containing taus
         :return:  np array of frame durations, waiting time
         :rtype:  numpy.int_
@@ -489,20 +613,27 @@ class Reconstruction(object):
         if not self.tracerMemory:
             raise AssertionError('Reconstruction.getTaus2:  no tracerMemory')
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
-            taus = np.int_([10,10,10,11,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,15,15,15,16,16,17,17,18,18,19,19,20,21,21,22,23,24,25,26,27,28,30,31,33,35,37,39,42,45,49,53,58,64,71,80,92,107,128,159,208,295,485,810])
-            # len == 62, dur == 3600
+            taus = np.int_([10,13,14,16,17,19,20,22,23,25,26,28,29,31,32,34,35,37,38,40,41,43,44,46,47,49,50,52,53,56,57,59,60,62,63,65,66,68,69,71,72,74,76,78,79,81,82,84,85,87,88,91,92,94,95,97,98,100,101,104,105,108])
+            # len == 62, nudge = 1.5, dur == 3601
         elif self.tracerMemory.lower() == 'oxygen-water':
-            taus = np.int_([3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,12,13,13,15,16,17,19,21,24,27,32,38,47,66])
-            # len == 59, dur == 600
-        elif self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
-            taus = np.int_([5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,9,9,9,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,136])
-            # len == 35, dur == 600
+            taus = np.int_([3,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,51,52])
+            # len == 54, dur == 601
+        elif self.tracerMemory.lower() == 'carbon':
+            # taus = np.int_([5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,9,9,9,10,11,11,12,13,14,15,16,18,20,22,25,29,34,41,52,137])
+            # len == 35, dur == 601
+            taus = np.int_([3,3,3,3,3,3,3,3,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,11,11,12,13,14,15,16,18,19,22,24,28,33,39,49,64,49])
+            # len = 45, dur = 601
+        elif self.tracerMemory.lower() == 'oxygen':
+            taus = np.int_([2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,10,10,15])
+            # len = 63, dur = 301
         else:
             raise AssertionError('Reconstruction.getTaus2 does not support tracerMemory->' + self.tracerMemory)
         return taus
 
     def getTime0(self):
-        times = self.getTimes(self.getTaus())
+        if self.phantom:
+            return 0
+        times,trash = self.getTimes(self.getTaus())
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             return times[-1] - 20*60
         elif self.tracerMemory.lower() == 'oxygen-water':
@@ -515,7 +646,9 @@ class Reconstruction(object):
             raise AssertionError('Reconstruction.getTime0 does not support tracerMemory->' + self.tracerMemory)
 
     def getTimeF(self):
-        times = self.getTimes(self.getTaus())
+        if self.phantom:
+            return self.getTimeMax()
+        times,trash = self.getTimes(self.getTaus())
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             return times[-1]
         elif self.tracerMemory.lower() == 'oxygen-water':
@@ -550,7 +683,7 @@ class Reconstruction(object):
         t = t[t < tmax]
         t = np.hstack((t, np.int_(tmax)))
         taus = t[1:] - t[:-1]
-        return np.int_(t), taus
+        return np.int_(t), np.int_(taus)
 
     def getWTime(self, json_file=None):
         """
@@ -678,6 +811,20 @@ class Reconstruction(object):
     def migrateCndaDownloads(self, cndaDownload):
         return None
 
+    def adjust_mirror_hdw_mumap(self, hmu_dct):
+        import nibabel as nib
+
+        if not self.tracerMemory.lower() == 'oxygen':
+            return hmu_dct
+
+        nim = nib.load(os.path.join(os.getenv('HARDWAREUMAPS'), 'adhoc_mu.nii.gz'))
+        imo = nim.get_data()
+        hmu = np.transpose(imo[:,::-1,::-1], (2, 1, 0))
+        hmu_dct = {'im': hmu+hmu_dct['im'],
+                   'fim': hmu_dct['fim'],
+                   'affine': hmu_dct['affine']}
+        return hmu_dct
+
     def muHardware(self):
         """
         :return:  dictionary for hardware mu-map image provided by nipet.hdw_mumap.  Keys:  'im', ...
@@ -687,10 +834,14 @@ class Reconstruction(object):
         if self.use_stored_hdw_mumap:
             self.datain['hmumap'] = os.path.join(
                 os.getenv('HARDWAREUMAPS'), 'hmumap.npy')
+        if not self.cached_hdw_mumap:
+            self.cached_hdw_mumap = nipet.hdw_mumap(
+                self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
+        if self.use_mirror_hdw_mumap:
+            self.cached_hdw_mumap = self.adjust_mirror_hdw_mumap(self.cached_hdw_mumap)
         logging.debug('reconstruction.Reconstruction.muHardware.datain[''hmumap'']->')
         logging.debug(self.datain['hmumap'])
-        return nipet.hdw_mumap(
-            self.datain, self.hmuSelection, self.mMRparams, outpath=self.outpath, use_stored=self.use_stored_hdw_mumap)
+        return self.cached_hdw_mumap
 
     def muCarney(self, fileprefix=None, imtype='object mu-map', fcomment='', frames=None):
         """
@@ -762,7 +913,7 @@ class Reconstruction(object):
     def nipetFrameFilename(self, t0, t1, tag, fr):
         #       a_itr-4_t-10-20sec_createDynamic2Carney_time1.nii.gz
         return os.path.join(self.outpath, 'PET', 'single-frame',
-                            'a_itr-'+str(self.itr)+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz')
+                            'a_itr-'+str(self.getItr())+'_t-'+str(t0)+'-'+str(t1)+'sec'+tag+'_time'+str(fr)+'.nii.gz')
 
     def organizeNormAndListmode(self):
         import glob
@@ -788,6 +939,9 @@ class Reconstruction(object):
         import shutil
 
         if self.tracerRawdataLocation.find('Twilite') > 0:
+            self.organizeNormAndListmode()
+            return
+        if self.phantom:
             self.organizeNormAndListmode()
             return
         if not self.ac:
@@ -921,8 +1075,8 @@ class Reconstruction(object):
                  ';att='   + str(attnum * (self.recmod > 0)) + \
                  ';sct='   + str(1 * (self.recmod > 1)) + \
                  ';spn='   + str(cnt['SPN']) + \
-                 ';itr='   + str(self.itr)   + \
-                 ';fwhm='  + str(self.fwhm)  + \
+                 ';itr='   + str(self.getItr())   + \
+                 ';fwhm='  + str(self.getFwhm())  + \
                  ';t0='    + str(hst['t0'])  + \
                  ';t1='    + str(hst['t1'])  + \
                  ';dur='   + str(hst['dur']) + \
@@ -965,10 +1119,11 @@ class Reconstruction(object):
         from niftypet import nipet
         self.mMRparams = nipet.get_mmrparams()
         self.mMRparams['Cnt']['VERBOSE'] = self.verbose
-        self.mMRparams['Cnt']['SPN']     = self.span
+        self.mMRparams['Cnt']['SPN']     = self.getSpan()
         self.mMRparams['Cnt']['BTP']     = self.bootstrap
         self.mMRparams['Cnt']['DCYCRR']  = self.DCYCRR
         self.mMRparams['Cnt']['DEVID']   = self.DEVID
+        self.mMRparams['Cnt']['ETHRLD']  = self.emissionsScatterThresh()
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
         if not os.path.exists(self.outpath):
             os.makedirs(self.outpath)
@@ -1030,7 +1185,7 @@ class Reconstruction(object):
                  'O15':{'BF':0.999, 'thalf':122.2416},
                  'C11':{'BF':0.998, 'thalf':20.38*60}}
 
-    def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0, minTime=0):
+    def __init__(self, prefix=None, umapSF='umapSynth', v=False, cndaDownload=None, devid=0, minTime=0, phantom=False, si=63):
         """
         :param:  prefix specifies the location of tracer rawdata.
         :param:  self.tracerRawdataLocation contains Siemens sinograms, e.g.:
@@ -1060,12 +1215,14 @@ class Reconstruction(object):
         logging.info('cwd->' + os.getcwd())
         self.umapSynthFileprefix = umapSF
         self.verbose = v
+        self.phantom = phantom
         self.organizeRawdataLocation(cndaDownload)
         self.tracerMemory = self.lm_tracer()
         logging.info(str(dev_info(1)))
         self.DEVID = devid
         self._initializeNiftypet()
         self.minTime = minTime
+        self.histogram_si = si
 
 
 
@@ -1091,7 +1248,7 @@ def main():
         '''),
         formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument('-m', '--method',
-                   metavar='createDynamic|createStatic|info',
+                   metavar='createDynamic|createStatic|createPhantom|info',
                    type=str,
                    default='createDynamic')
     p.add_argument('-p', '--prefix',
@@ -1119,9 +1276,9 @@ def main():
     #os.environ["NVIDIA_VISIBLE_DEVICES"] = str(args.gpu)
 
     v = args.verbose.lower() == 'true'
-    r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu), minTime=int(args.minTime))
     if args.method.lower() == 'createdynamic':
         print('main.args.method->createdynamic')
+        r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu), minTime=int(args.minTime))
         if not r.ac:
             print('main.r.createDynamicNAC')
             r.createDynamicNAC(fcomment='_createDynamicNAC')
@@ -1130,12 +1287,18 @@ def main():
             r.createDynamic2Carney(fcomment='_createDynamic2Carney')
     elif args.method.lower() == 'createstatic':
         print('main.args.method->createstatic')
+        r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu), minTime=int(args.minTime))
         if not r.ac:
             print('main.r.createStaticNAC')
             r.createStaticNAC(fcomment='_createStaticNAC')
         else:
             print('main.r.createStaticCarney')
             r.createStaticCarney(fcomment='_createStaticCarney')
+    elif args.method.lower() == 'createphantom':
+        print('main.args.method->createphantom')
+        print('main.r.createPhantom')
+        r = Reconstruction(prefix=args.prefix, v=v, devid=int(args.gpu), minTime=int(args.minTime), phantom=True)
+        r.createPhantom(fcomment='_createPhantom')
     elif args.method.lower() == 'info':
         print('main.args.method->info')
         print(dev_info(1))
