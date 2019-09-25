@@ -29,8 +29,8 @@ class Reconstruction(object):
     umap4dfp='umapSynth.4dfp'
     umapFolder = 'umap'
     umapSynthFileprefix = ''
-    use_mirror_hdw_mumap = False
-    use_stored_hdw_mumap = True
+    use_mirror_hdw_mumap = True
+    use_stored_hdw_mumap = False
     use_stored_hist = False
     verbose = True
 
@@ -528,13 +528,16 @@ class Reconstruction(object):
         A[2,3] = 10*((-0.5*cnt['SO_IMZ'] + 1)*cnt['SO_VXZ'] + hbed)
         return A
 
+    def getEmmsks(self):
+        return self.tracerMemory.lower() == 'oxygen' or self.tracerMemory.lower() == 'carbon'
+
     def getFwhm(self):
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             fwhm = 4.3 / 2.08626  # number of voxels;  https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
         elif self.tracerMemory.lower() == 'oxygen-water':
             fwhm = 4.3 / 2.08626
         elif self.tracerMemory.lower() == 'carbon' or self.tracerMemory.lower() == 'oxygen':
-            fwhm = 0
+            fwhm = 4.3 / 2.08626
         else:
             raise AssertionError('Reconstruction.getFwhm does not support tracerMemory->' + self.tracerMemory)
         return fwhm
@@ -1127,12 +1130,13 @@ class Reconstruction(object):
     def _initializeNiftypet(self):
         from niftypet import nipet
         self.mMRparams = nipet.get_mmrparams()
-        self.mMRparams['Cnt']['VERBOSE'] = self.verbose
-        self.mMRparams['Cnt']['SPN']     = self.getSpan()
-        self.mMRparams['Cnt']['BTP']     = self.bootstrap
-        self.mMRparams['Cnt']['DCYCRR']  = self.DCYCRR
-        self.mMRparams['Cnt']['DEVID']   = self.DEVID
-        self.mMRparams['Cnt']['ETHRLD']  = self.emissionsScatterThresh()
+        self.mMRparams['Cnt']['VERBOSE']  = self.verbose
+        self.mMRparams['Cnt']['SPN']      = self.getSpan()
+        self.mMRparams['Cnt']['BTP']      = self.bootstrap
+        self.mMRparams['Cnt']['DCYCRR']   = self.DCYCRR
+        self.mMRparams['Cnt']['DEVID']    = self.DEVID
+        self.mMRparams['Cnt']['ETHRLD']   = self.emissionsScatterThresh()
+        self.mMRparams['Cnt']['EMMSKS']   = self.getEmmsks()
         self.datain = nipet.classify_input(self.tracerRawdataLocation, self.mMRparams)
         if not os.path.exists(self.outpath):
             os.makedirs(self.outpath)
