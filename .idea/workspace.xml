@@ -2,28 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53fd6965-b7b3-48b8-866e-73af6bd0e50f" name="Default Changelist" comment="checking">
-      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/vcs.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../XnatPET/.idea/other.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/tests/test_xnatcal.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../XnatPET/xnatpet/xnatcal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/NIMPA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/NIMPA.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/niftypet/nimpa/dinf/dinf.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/niftypet/nimpa/dinf/dinf.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/niftypet/nimpa/prc/improc.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIMPA/niftypet/nimpa/prc/improc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/dinf/dinf.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/dinf/dinf.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/mmrimg.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/mmrimg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/mmr_lmproc.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/mmr_lmproc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/lm/pviews.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/mmr_auxe.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/mmr_auxe.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/pipe.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/img/pipe.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/mmraux.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/mmraux.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/mmrrec.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/petprj.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/prj/petprj.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/petsct.so" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/petsct.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/nipet.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/nipet.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/mmrsct.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/mmrsct.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/src/sct_module.cu" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/src/sct_module.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/src/sctaux.cu" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/niftypet/nipet/sct/src/sctaux.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NiftyPETd/NIPET/resources/resources.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../NiftyPETd/NIPET/resources/resources.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/NiftyPETy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NiftyPETy.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/respet/recon/reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/respet/recon/reconstruction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_reconstruction.py" afterDir="false" />
@@ -278,21 +271,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_reconstruction.TestCarney.test_createTracerCarney" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="NiftyPETy" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestCarney.test_createTracerCarney&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="Unittests for test_reconstruction.TestCarney.test_mirror" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="NiftyPETy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -308,7 +286,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_reconstruction.TestReconstruction.test_ctor" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+    <configuration name="Unittests for test_reconstruction.TestCarney.test_scatter" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="NiftyPETy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -319,7 +297,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestReconstruction.test_ctor&quot;" />
+      <option name="_new_target" value="&quot;test_reconstruction.TestCarney.test_scatter&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -338,7 +316,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_reconstruction.TestTwilite.test_createTwilitePhantom" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+    <configuration name="Unittests for test_reconstruction.TestReconstruction.test_installation" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="NiftyPETy" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -349,24 +327,39 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_reconstruction.TestTwilite.test_createTwilitePhantom&quot;" />
+      <option name="_new_target" value="&quot;test_reconstruction.TestReconstruction.test_installation&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Unittests for test_reconstruction.TestReconstruction.test_locs" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+      <module name="NiftyPETy" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_reconstruction.TestReconstruction.test_locs&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestTwilite.test_createTwilitePhantom" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_ctor" />
       <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_data" />
-      <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerCarney" />
+      <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_locs" />
+      <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_scatter" />
       <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_mirror" />
+      <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_installation" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_mirror" />
+        <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_scatter" />
+        <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_installation" />
+        <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_locs" />
         <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_data" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestReconstruction.test_ctor" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestCarney.test_createTracerCarney" />
-        <item itemvalue="Python tests.Unittests for test_reconstruction.TestTwilite.test_createTwilitePhantom" />
       </list>
     </recent_temporary>
   </component>
@@ -447,7 +440,17 @@
       <workItem from="1565583311001" duration="15428000" />
       <workItem from="1565892606759" duration="16905000" />
       <workItem from="1566008408060" duration="93239000" />
-      <workItem from="1567902445300" duration="63803000" />
+      <workItem from="1567902445300" duration="66570000" />
+      <workItem from="1568683720583" duration="62000" />
+      <workItem from="1568683909016" duration="823000" />
+      <workItem from="1568685332272" duration="943000" />
+      <workItem from="1568686451091" duration="676000" />
+      <workItem from="1568687181899" duration="213000" />
+      <workItem from="1568687429791" duration="39000" />
+      <workItem from="1568687493699" duration="1004000" />
+      <workItem from="1568688570723" duration="641000" />
+      <workItem from="1568689399328" duration="21022000" />
+      <workItem from="1568842474041" duration="37124000" />
     </task>
     <task id="LOCAL-00001" summary="test_createUmapSynthFullBlurred_tracer passed; manual checks of umap with FDG_V2-NAC/FDG_V2-LM-00-OP passed">
       <created>1540445211132</created>
@@ -722,17 +725,22 @@
       <option name="project" value="LOCAL" />
       <updated>1565592365845</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="attempted masking to resolve emissions losses associated with tracer accumulation on mirror">
+      <created>1568651148061</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1568651148061</updated>
+    </task>
+    <task id="LOCAL-00041" summary="attempted masking to resolve emissions losses associated with tracer accumulation on mirror">
+      <created>1568651187472</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1568651187472</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
-  </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -929,15 +937,18 @@
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerCarney Coverage Results" MODIFIED="1566861815848" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createAllTracerCarneys.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createAllTracerCarneys Coverage Results" MODIFIED="1563328973097" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerStaticNAC Coverage Results" MODIFIED="1562216646971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_locs.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_locs Coverage Results" MODIFIED="1568689648548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_scatter.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_scatter Coverage Results" MODIFIED="1568846452387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_createTracerStaticCarney.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_createTracerStaticCarney Coverage Results" MODIFIED="1558732146606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTwilite_test_createTwiliteStaticNAC.coverage" NAME="Unittests for test_reconstruction.TestTwilite.test_createTwiliteStaticNAC Coverage Results" MODIFIED="1565925300920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_data.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_data Coverage Results" MODIFIED="1567910874761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_ctor.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_ctor Coverage Results" MODIFIED="1567910842995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_mirror.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_mirror Coverage Results" MODIFIED="1568266144615" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_data.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_data Coverage Results" MODIFIED="1568689597680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_ctor.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_ctor Coverage Results" MODIFIED="1568689569872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestCarney_test_mirror.coverage" NAME="Unittests for test_reconstruction.TestCarney.test_mirror Coverage Results" MODIFIED="1569353642030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTwilite.coverage" NAME="Unittests for test_reconstruction.TestTwilite Coverage Results" MODIFIED="1565904312546" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestTwilite_test_createTwilitePhantom.coverage" NAME="Unittests for test_reconstruction.TestTwilite.test_createTwilitePhantom Coverage Results" MODIFIED="1566021318737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction.coverage" NAME="Unittests for test_reconstruction.TestReconstruction Coverage Results" MODIFIED="1568686783363" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createTracerNAC.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createTracerNAC Coverage Results" MODIFIED="1565584060689" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_installation.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_installation Coverage Results" MODIFIED="1565903890743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestReconstruction_test_installation.coverage" NAME="Unittests for test_reconstruction.TestReconstruction.test_installation Coverage Results" MODIFIED="1568842663142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/NiftyPETy$Unittests_for_test_reconstruction_TestNAC_test_createAllTracerNACs.coverage" NAME="Unittests for test_reconstruction.TestNAC.test_createAllTracerNACs Coverage Results" MODIFIED="1562278678915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
   <component name="hg4idea.settings">
