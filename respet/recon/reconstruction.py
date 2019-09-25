@@ -404,44 +404,53 @@ class Reconstruction(object):
         ylabel('center of mas of radiodistribution')
         savefig(os.path.join(self.outpath, fcomment+'_cmass.pdf'))
 
+        return hst
+
+    def checkScattering(self, fcomment=''):
+        from niftypet import nipet
+        from matplotlib.pyplot import figure, plot, xlabel, ylabel, title, show, savefig, matshow, colorbar, legend, grid
+
+        if not os.path.exists(self.outpath):
+            os.mkdir(self.outpath)
+
         # scattering
         # I don't recommend using it for dynamic scans, but static only, as it drains the memory big time:
-        # recon = nipet.mmrchain(
-        #     self.datain, self.mMRparams,
-        #     mu_h=self.muHardware(),
-        #     mu_o=self.muCarney(frames=1),
-        #     itr=2,
-        #     fwhm=0.0,
-        #     outpath=self.outpath,
-        #     fcomment='_scattering',
-        #     ret_sinos=True,
-        #     store_img=True)
-        #
-        # # Then you sum up all sinograms to see the average performace:
-        # ssn = np.sum(recon['sinos']['ssino'], axis=(0, 1))
-        # psn = np.sum(recon['sinos']['psino'], axis=(0, 1))
-        # rsn = np.sum(recon['sinos']['rsino'], axis=(0, 1))
-        # msk = np.sum(recon['sinos']['amask'], axis=(0, 1))
-        #
-        # # plotting the sinogram profiles for angle indexes 128 and 196:
-        # figure()
-        # ia = 128
-        # plot(psn[ia, :], label='prompts')
-        # plot(rsn[ia, :], label='randoms')
-        # plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
-        # plot(msk[ia, :], label='mask')
-        # legend()
-        # savefig(os.path.join(self.outpath, fcomment+'_scattering128.pdf'))
-        # figure()
-        # ia = 196
-        # plot(psn[ia, :], label='prompts')
-        # plot(rsn[ia, :], label='randoms')
-        # plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
-        # plot(msk[ia, :], label='mask')
-        # legend()
-        # savefig(os.path.join(self.outpath, fcomment + '_scattering196.pdf'))
+        recon = nipet.mmrchain(
+            self.datain, self.mMRparams,
+            mu_h=self.muHardware(),
+            mu_o=self.muCarney(frames=1),
+            itr=2,
+            fwhm=0.0,
+            outpath=self.outpath,
+            fcomment='_scattering',
+            ret_sinos=True,
+            store_img=True)
 
-        return hst
+        # Then you sum up all sinograms to see the average performace:
+        ssn = np.sum(recon['sinos']['ssino'], axis=(0, 1))
+        psn = np.sum(recon['sinos']['psino'], axis=(0, 1))
+        rsn = np.sum(recon['sinos']['rsino'], axis=(0, 1))
+        msk = np.sum(recon['sinos']['amask'], axis=(0, 1))
+
+        # plotting the sinogram profiles for angle indexes 128 and 196:
+        figure()
+        ia = 128
+        plot(psn[ia, :], label='prompts')
+        plot(rsn[ia, :], label='randoms')
+        plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
+        plot(msk[ia, :], label='mask')
+        legend()
+        savefig(os.path.join(self.outpath, fcomment + '_scattering128.pdf'))
+        figure()
+        ia = 196
+        plot(psn[ia, :], label='prompts')
+        plot(rsn[ia, :], label='randoms')
+        plot(rsn[ia, :] + ssn[ia, :], label='scatter+randoms')
+        plot(msk[ia, :], label='mask')
+        legend()
+        savefig(os.path.join(self.outpath, fcomment + '_scattering196.pdf'))
+
+        return ssn, psn, rsn, msk
 
     def checkTimeAliasingCarney(self, fcomment='_checkTimeAliasingCarney'):
         times,trash = self.getTimes(self.getTaus())
@@ -484,9 +493,9 @@ class Reconstruction(object):
          mmrrec.py lines 208, 272 228; mmrimg.py 209; sct_module.cu line 302 """
         if self.tracerMemory.lower() == 'fluorodeoxyglucose':
             thresh = 0.05
-        elif self.tracerMemory.lower() == 'oxygen-water' or self.tracerMemory.lower() == 'carbon':
+        elif self.tracerMemory.lower() == 'oxygen-water':
             thresh = 0.05
-        elif self.tracerMemory.lower() == 'oxygen':
+        elif self.tracerMemory.lower() == 'oxygen' or self.tracerMemory.lower() == 'carbon':
             thresh = 0.05
         else:
             raise AssertionError('Reconstruction.emissionsScatterThresh does not support tracerMemory->' + self.tracerMemory)

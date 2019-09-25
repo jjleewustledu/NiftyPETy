@@ -36,7 +36,7 @@ class TestReconstruction(unittest.TestCase):
         self.assertEqual(c['NBCKT'], 224)
         self.assertEqual(c['SCTSCLMU'], [0.49606299212598426, 0.5, 0.5])
         self.assertEqual(c['ISOTOPE'], 'O15')
-        self.assertEqual(c['SPN'], 1)
+        self.assertEqual(c['SPN'], 11)
         assert_array_equal(c['SCTRNG'], array([ 0, 10, 19, 28, 35, 44, 53, 63], dtype='int16'))
         self.assertEqual(c['NSN64'], 4096)
         self.assertEqual(c['CWND'], 5.85938e-09)
@@ -51,8 +51,8 @@ class TestReconstruction(unittest.TestCase):
         self.theTestObj().printd(self.theTestObj().datain)
 
     def test_locs(self):
-        self.assertTrue(os.path.exists(self.twiliteBaseloc + '-NAC'))
-        self.assertTrue(os.path.exists(self.tracerBaseloc + '-NAC'))
+        self.assertTrue(os.path.exists(self.twiliteBaseloc + '-AC'))
+        self.assertTrue(os.path.exists(self.tracerBaseloc + '-AC'))
 
 
 
@@ -159,6 +159,10 @@ class TestUTE(TestReconstruction):
 
 class TestCarney(TestReconstruction):
 
+    def test_scatter(self):
+        obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
+        obj.checkScattering(fcomment='_checkScattering')
+
     def test_createTracerStaticCarney(self):
         import matplotlib.pyplot as plt
         obj = Reconstruction(self.tracerBaseloc + '-AC', v=True)
@@ -193,7 +197,8 @@ class TestCarney(TestReconstruction):
     def test_mirror(self):
         pth = '/scratch/jjlee/Singularity/CCIR_00754/ses-E201038/OO_DT20161216112441.000000-Converted-AC'
         obj = Reconstruction(pth, v = True, minTime=0, si=31)
-        obj.createDynamic2Carney()
+        obj.checkScattering(fcomment='_checkScattering')
+        obj.createDynamic2Carney(fcomment='_createDynamic2Carney')
 
 
 
